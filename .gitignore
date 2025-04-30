@@ -1,0 +1,49 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+env/
+build/
+dist/
+develop-eggs/
+dist/
+.eggs/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache
+
+# Installer logs
+pip-log.txt
+.vscode
+pibody.code-workspace
+.coverage
+coverage.xml
+.coverage.*
+upload_cov.sh
+*.code-workspace
+*._.DS_Store
+*.DS_Store
+
+.ipynb_checkpoints**
+local_gene_reference/*
+htmlcov*
+Main/~$Figure1H_Table.xlsx
+src/g002_figures/data/g002/final_df.feather
+notebooks/SPR/Data_S3.csv.gz
+notebooks/g002_sequences.csv.gz
+
+*.docx
+final_df.feather
+src/g002_figures/data/g002/Icon*
+src/g002_figures/data/g002/final_df.*
+*.feather
+*.csv
+src/g002_figures/data/g002/*
+
+Icon*
