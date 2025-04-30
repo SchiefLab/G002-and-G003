@@ -1,0 +1,302 @@
+[
+    {
+        "group": 1,
+        "ptid": "G002516",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 1,
+        "ptid": "G002905",
+        "site": "80 - UTHSA"
+    },
+    {
+        "group": 1,
+        "ptid": "G002678",
+        "site": "80 - UTHSA"
+    },
+    {
+        "group": 1,
+        "ptid": "G002509",
+        "site": "59 - FH"
+    },
+    {
+        "group": 1,
+        "ptid": "G002834",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 1,
+        "ptid": "G002302",
+        "site": "80 - UTHSA"
+    },
+    {
+        "group": 1,
+        "ptid": "G002546",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 1,
+        "ptid": "G002758",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 1,
+        "ptid": "G002852",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 1,
+        "ptid": "G002479",
+        "site": "59 - FH"
+    },
+    {
+        "group": 1,
+        "ptid": "G002616",
+        "site": "80 - UTHSA"
+    },
+    {
+        "group": 1,
+        "ptid": "G002813",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 1,
+        "ptid": "G002619",
+        "site": "80 - UTHSA"
+    },
+    {
+        "group": 1,
+        "ptid": "G002733",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 1,
+        "ptid": "G002502",
+        "site": "80 - UTHSA"
+    },
+    {
+        "group": 1,
+        "ptid": "G002254",
+        "site": "79-Emory"
+    },
+    {
+        "group": 1,
+        "ptid": "G002969",
+        "site": "80 - UTHSA"
+    },
+    {
+        "group": 2,
+        "ptid": "G002831",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 2,
+        "ptid": "G002630",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 2,
+        "ptid": "G002341",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 2,
+        "ptid": "G002493",
+        "site": "80 - UTHSA"
+    },
+    {
+        "group": 2,
+        "ptid": "G002855",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 2,
+        "ptid": "G002820",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 2,
+        "ptid": "G002230",
+        "site": "80 - UTHSA"
+    },
+    {
+        "group": 2,
+        "ptid": "G002136",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 2,
+        "ptid": "G002620",
+        "site": "79-Emory"
+    },
+    {
+        "group": 2,
+        "ptid": "G002119",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 2,
+        "ptid": "G002947",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 2,
+        "ptid": "G002577",
+        "site": "59 - FH"
+    },
+    {
+        "group": 2,
+        "ptid": "G002480",
+        "site": "59 - FH"
+    },
+    {
+        "group": 2,
+        "ptid": "G002293",
+        "site": "59 - FH"
+    },
+    {
+        "group": 2,
+        "ptid": "G002943",
+        "site": "79-Emory"
+    },
+    {
+        "group": 2,
+        "ptid": "G002957",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 2,
+        "ptid": "G002145",
+        "site": "59 - FH"
+    },
+    {
+        "group": 3,
+        "ptid": "G002796",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 3,
+        "ptid": "G002884",
+        "site": "80 - UTHSA"
+    },
+    {
+        "group": 3,
+        "ptid": "G002997",
+        "site": "80 - UTHSA"
+    },
+    {
+        "group": 3,
+        "ptid": "G002866",
+        "site": "80 - UTHSA"
+    },
+    {
+        "group": 3,
+        "ptid": "G002427",
+        "site": "80 - UTHSA"
+    },
+    {
+        "group": 3,
+        "ptid": "G002871",
+        "site": "79-Emory"
+    },
+    {
+        "group": 3,
+        "ptid": "G002304",
+        "site": "80 - UTHSA"
+    },
+    {
+        "group": 3,
+        "ptid": "G002810",
+        "site": "79-Emory"
+    },
+    {
+        "group": 3,
+        "ptid": "G002371",
+        "site": "59 - FH"
+    },
+    {
+        "group": 3,
+        "ptid": "G002477",
+        "site": "79-Emory"
+    },
+    {
+        "group": 3,
+        "ptid": "G002632",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 3,
+        "ptid": "G002462",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 3,
+        "ptid": "G002595",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 3,
+        "ptid": "G002988",
+        "site": "59 - FH"
+    },
+    {
+        "group": 3,
+        "ptid": "G002931",
+        "site": "59 - FH"
+    },
+    {
+        "group": 3,
+        "ptid": "G002689",
+        "site": "59 - FH"
+    },
+    {
+        "group": 3,
+        "ptid": "G002278",
+        "site": "80 - UTHSA"
+    },
+    {
+        "group": 3,
+        "ptid": "G002825",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 4,
+        "ptid": "G002611",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 4,
+        "ptid": "G002396",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 4,
+        "ptid": "G002710",
+        "site": "58 - GWU"
+    },
+    {
+        "group": 4,
+        "ptid": "G002387",
+        "site": "80 - UTHSA"
+    },
+    {
+        "group": 4,
+        "ptid": "G002365",
+        "site": "80 - UTHSA"
+    },
+    {
+        "group": 4,
+        "ptid": "G002489",
+        "site": "79-Emory"
+    },
+    {
+        "group": 4,
+        "ptid": "G002104",
+        "site": "79-Emory"
+    },
+    {
+        "group": 4,
+        "ptid": "G002794",
+        "site": "58 - GWU"
+    }
+]

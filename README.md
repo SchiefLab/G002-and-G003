@@ -1,7 +1,6 @@
-<h1 align="center">
-  <br>
- G00x - Generalizable Germline-Targeting Clinical Trial Pipeline
-</h1>
+<div align="center">
+<img src="readme.svg" style="margin:-5em;width:75%;height:75%">
+</div>
 
 <div class="flex-container" align="center">
     <a href="https://img.shields.io/badge/Python-3.10-blue">
@@ -14,6 +13,11 @@
     <img src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white"
         alt="pre commit"></a>
 </div>
+
+<h1 align="center" style="font-size: 1.8em">
+  <br>
+ G00x - Generalizable Germline-Targeting Clinical Trial Pipeline
+</h1>
 
 - [About / Summary](#about--summary)
 - [Data Access](#data-access)
@@ -45,11 +49,30 @@
 
 # About / Summary
 
-The G00x pipeline is designed to facilitate the analysis of germline-targeting vaccine clinical trials. It is an all-in-one pipeline and analysis that parses, validates, calculates B cell frequencies, runs 10X and combines all analyses into a plottable dataframe. The pipeline supports datasets for both G002 and G003 trials (related to germline targeting to elicit VRC01-class antibodies against HIV) and ensures that all data is processed and validated to maintain the integrity of the clinical trial results. The pipeline is readily modifiable to enable handling of other types of germline-targeting trials, with other types of analyses, and can also be modified to enable data storage/data flow pathways different from that used in G002 and G003.
+This repository serves two major purposes. 
+
+First, this repository contains the data for the publication “Vaccination with mRNA-encoded nanoparticles drives early maturation of HIV bnAb precursors in humans”, Willis, Prabhakaran, Muthui, Naidoo, Sincomb, Wu, Cottrell, Landais, deCamp, et al., Science, 2025. This publication reports the safety and immunogenicity data from the clinical trials IAVI G002 (in the United States) and IAVI G003 (in Rwanda and South Africa). The data in the repository includes:
+  - Antigen- and epitope-specific memory B cell frequencies (FACS data)
+  - 10x-based sequencing data from epitope-specific memory B cells
+  - Frequencies of VRC01-class bnAb precursor memory B cells
+  - SPR *K*<sub>D</sub>, *k*<sub>on</sub>, and *k*<sub>off</sub> values for VRC01-class and non-VRC01-class competitor antibodies (derived from sorted memory B cells) binding to various antigens
+  - Code for generating main text figures 2 through 7.
+  - Code for generating the spreadsheet Data S10. “Source data”.
+  
+Second, the repository presents the G00x pipeline designed to facilitate the analysis of germline-targeting vaccine clinical trials. It is an all-in-one pipeline and analysis platform that parses, validates, calculates B cell frequencies, runs cellranger and combines all analyses into a plottable dataframe. The pipeline supports datasets for both G002 and G003 trials (related to germline targeting to elicit VRC01-class antibodies against HIV) and ensures that all data is processed and validated to maintain the integrity of the clinical trial results. The pipeline is readily modifiable to enable handling of other types of germline-targeting trials, with other types of analyses, and can also be modified to enable data storage/data flow pathways different from that used in G002 and G003.
 
 ---
 
 # Data Access
+
+If you don't want to run the pipeline, you can access the important data via the following links.
+- The annotated, filtered and paired antibody sequences:
+  - G002 [final_df.feather](https://iavig002public.s3.us-west-2.amazonaws.com/g002/G002/output/final_df.feather)
+  - G003 [final_df.feather](https://iavig003public.s3.af-south-1.amazonaws.com/g003/output/final_df.feather)
+- Merged summary file with all frequencies reported in this study:
+  - G002 [flow_and_sequencing_long_names.csv](https://iavig002public.s3.us-west-2.amazonaws.com/g002/G002/output/flow_and_sequencing_long_names.csv)
+  - G003 [flow_and_sequencing_long_names.csv](https://iavig003public.s3.af-south-1.amazonaws.com/g003/output/flow_and_sequencing_long_names.csv)
+
 
 ## G002
 To run testing, you will need a `g002` directory in the root of the project. You can get this with the sync command:

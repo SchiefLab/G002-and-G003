@@ -1,0 +1,74 @@
+[
+    {
+        "numerator": "P8",
+        "denominator": "P5",
+        "axis_name": "percent_ep_among_igd_neg",
+        "long_name": "Percent epitope-specific (KO^-Ag^{++}) among IgD^-"
+    },
+    {
+        "numerator": "P8",
+        "denominator": "P16",
+        "axis_name": "percent_cd4bs_among_igg",
+        "long_name": "Percent epitope-specific (CD4bs-specific) among IgG^{+}"
+    },
+    {
+        "numerator": "P9",
+        "denominator": "P5",
+        "axis_name": "percent_ag_among_igd_neg",
+        "long_name": "Percent antigen-specific among IgD^-"
+    },
+    {
+        "numerator": "P9",
+        "denominator": "P16",
+        "axis_name": "percent_gt8++_among_igg",
+        "long_name": "Percent antigen-specific (IgD-GT8^{++}) among IgG^{+}"
+    },
+    {
+        "numerator": "P10",
+        "denominator": "P9",
+        "axis_name": "percent_ko_among_ag_igd_neg",
+        "long_name": "Percent IgD^{-}KO^{-} among Ag^{++}"
+    },
+    {
+        "numerator": "P17",
+        "denominator": "P16",
+        "axis_name": "percent_ag_among_igg",
+        "long_name": "Percent antigen-specific among IgG^{+}"
+    },
+    {
+        "numerator": "P18",
+        "denominator": "P17",
+        "axis_name": "percent_iggko_among_ag",
+        "long_name": "Percent IgG^{+}KO^- among Ag^{++}"
+    },
+    {
+        "numerator": "P20",
+        "denominator": "P16",
+        "axis_name": "percent_ep_among_igg",
+        "long_name": "Percent epitope-specific (KO^-Ag^{++}) among IgG^{+}"
+    },
+    {
+        "numerator": "P23",
+        "denominator": "P22",
+        "axis_name": "percent_ag_among_igm",
+        "long_name": "Percent antigen-specific among IgM"
+    },
+    {
+        "numerator": "P24",
+        "denominator": "P25",
+        "axis_name": "percent_igmko_among_ag",
+        "long_name": "Percent IgM{+}KO^- among Ag^{++}"
+    },
+    {
+        "numerator": "P26",
+        "denominator": "P22",
+        "axis_name": "percent_ep_among_igm",
+        "long_name": "Percent epitope-specific (KO^-Ag^{++}) among IgM"
+    },
+    {
+        "numerator": "P30",
+        "denominator": "P29",
+        "axis_name": "percent_igako_among_ag",
+        "long_name": "Percent IgA^{+}KO^- among Ag^{--}"
+    }
+]

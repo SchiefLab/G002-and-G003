@@ -1,0 +1,50 @@
+
+    \documentclass{article}
+    \usepackage{lscape}
+    \usepackage{graphicx}
+    \usepackage{adjustbox}
+    \usepackage{array}
+    \usepackage{multirow}
+    \usepackage{booktabs}
+    \usepackage{caption}
+    \pagenumbering{gobble}
+    \captionsetup{labelformat=empty}
+    \usepackage[margin=1in]{geometry}
+    \begin{document}
+    \begin{table}
+\centering
+\caption{eOD-GT8 CD4bs-specific VRC01-class B Cells Sequenced}
+\begin{tabular}{lllllll}
+\toprule
+       & weeks &     -5 &     8 &    10 &     16 &     21 \\
+site & pubID &        &       &       &        &        \\
+\midrule
+Aurum & G003-135 &  ND &  ND &  0 &  289 &  ND \\
+       & G003-210 &  0 &  56 &  24 &  728 &  39 \\
+       & G003-291 &  $0^a$ &  32 &  46 &  556 &  291 \\
+       & G003-434 &  $0^a$ &  397 &  14 &  1661 &  436 \\
+       & G003-622 &  0 &  168 &  28 &  646 &  212 \\
+       & G003-732 &  0 &  117 &  19 &  164 &  190 \\
+       & G003-768 &  ND &  ND &  32 &  NA &  ND \\
+       & G003-799 &  0 &  250 &  71 &  636 &  404 \\
+\midrule
+CFHR & G003-138 &  0 &  0 &  0 &  0 &  0 \\
+       & G003-243 &  $0^a$ &  27 &  64 &  15 &  159 \\
+       & G003-396 &  0 &  59 &  33 &  76 &  45 \\
+       & G003-516 &  1 &  132 &  210 &  349 &  694 \\
+       & G003-550 &  0 &  58 &  68 &  42 &  71 \\
+       & G003-611 &  0 &  120 &  67 &  64 &  228 \\
+       & G003-630 &  $0^a$ &  55 &  37 &  57 &  80 \\
+       & G003-710 &  $0^a$ &  291 &  94 &  109 &  423 \\
+       & G003-753 &  0 &  68 &  274 &  41 &  36 \\
+       & G003-831 &  $0^a$ &  20 &  27 &  26 &  105 \\
+\midrule
+Median & G003-* &  0.0 &  63.5 &  35.0 &  109.0 &  174.5 \\
+\bottomrule
+\multicolumn{7}{l}{\tiny } \\
+\multicolumn{7}{l}{\tiny ND: \textit{Sequencing data not generated due to failed Gel bead in Emulsion (GEM) generation}} \\
+\multicolumn{7}{l}{\tiny NA: \textit{Sample not available for sorting and BCR sequencing (failed leukapheresis)}} \\
+\multicolumn{7}{l}{\tiny $0^a$: \textit{Sample was analyzed by sorting but no CD4 binding site-specific B cells were detected}} \\
+\end{tabular}
+\end{table}
+\end{document}

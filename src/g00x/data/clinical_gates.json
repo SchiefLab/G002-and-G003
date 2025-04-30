@@ -1,0 +1,62 @@
+{
+    "gates": [
+        {
+            "easy_name": "all_b_cells",
+            "gate": "P4",
+            "gate_parent": "P3",
+            "value_type": "count",
+            "verbose_name": "All B Cells"
+        },
+        {
+            "easy_name": "igd_negative_b_cells",
+            "gate": "P5",
+            "gate_parent": "P4",
+            "value_type": "count",
+            "verbose_name": "IgD$^{-}$ B Cells"
+        },
+        {
+            "easy_name": "igd_positive_b_cells",
+            "gate": "P6",
+            "gate_parent": "P4",
+            "value_type": "count",
+            "verbose_name": "IgD$^{+}$ B Cells"
+        },
+        {
+            "easy_name": "igg_positive_b_cells",
+            "gate": "P16",
+            "gate_parent": "P15",
+            "value_type": "count",
+            "verbose_name": "IgG$^{+}$ B Cells"
+        },
+        {
+            "easy_name": "igm_positive_b_cells",
+            "gate": "P22",
+            "gate_parent": "P21",
+            "value_type": "count",
+            "verbose_name": "IgM$^{+}$ B Cells"
+        },
+        {
+            "easy_name": "iga_positive_b_cells",
+            "gate": "P28",
+            "gate_parent": "P27",
+            "value_type": "count",
+            "verbose_name": "IgA$^{+}$ B Cells"
+        },
+        {
+            "easy_name": "epitope_specific_from_igd_negative",
+            "gate": "P8",
+            "gate_parent": "P7",
+            "value_type": "count",
+            "verbose_name": "Epitope$^{+}$ from IgD$^{-}$/KO$^{-}$ B cells",
+            "notes": "This is gate for epitope positive cells from IgD negative B cells where KO is sorted first"
+        },
+        {
+            "easy_name": "epitope_specific_from_igd_negative_reverse",
+            "gate": "P10",
+            "gate_parent": "P9",
+            "value_type": "count",
+            "verbose_name": "Epitope$^{+}$ from IgD$^{-}$/KO$^{-} B Cells/reverse",
+            "notes": "This is gate for epitope positive cells from IgD negative B cells where KO is sorted second"
+        }
+    ]
+}

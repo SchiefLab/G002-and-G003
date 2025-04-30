@@ -1,0 +1,6 @@
+[Unit]
+Description=Sync Box mnt to fsx user workspace
+
+[Service]
+Type=simple
+ExecStart=sh -c 'rsync -a -v --delete /mnt/box/G002/ ~/g002/G002/sorting/G002/'

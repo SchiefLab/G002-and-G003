@@ -1,0 +1,86 @@
+site_name: "G00x"
+site_description: "G00x: A generalized pipeline for analyzing germline-targeting clinical trials"
+site_url: https://g00x.schieflab.com/
+og_image: https://repository-images.githubusercontent.com/313568721/5adf0900-c0d7-11eb-921d-36288bd44b7c
+theme:
+  name: material
+  custom_dir: docs/overrides
+  favicon: img/favico.svg
+  palette:
+    - scheme: default
+      primary: white
+      accent: amber
+      toggle:
+        icon: material/weather-night
+        name: Switch to night mode
+    - scheme: slate
+      primary: black
+      accent: red
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features: # look for feature flag in documentation
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - search.share
+    - navigation.tracking
+    - navigation.tabs.sticky
+  icon:
+    admonition:
+      info: material/test-tube
+    repo: fontawesome/brands/github-alt
+    logo: material/needle
+repo_name: schieflab/g00x
+repo_url: https://github.com/schieflab/g00x
+plugins: #  look for plugins tag in material markdown documentation
+  - search
+markdown_extensions: #
+  - admonition # https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown/#admonition
+  - attr_list
+  - md_in_html
+  - toc: # https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown/#table-of-contents
+      permalink: true
+  - pymdownx.highlight: #https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown-extensions/#highlight
+      linenums: false
+      use_pygments: true
+  - pymdownx.superfences: #https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown-extensions/#superfences
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.inlinehilite
+  - mdx_include: # pip install mdx-include
+      base_path: docs/
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+
+nav: # this is how we layout the documents
+  - Introduction: index.md
+  - G002:
+      - Data: g002_data.md
+      - Validation: g002_validation.md
+      - Pipeline: g002_pipeline.md
+      - Analysis and Visualization: g002_analysis.md
+      - Cloud Management (Advanced): g002_cloud.md
+  - G003:
+      - Data: g003_data.md
+      - Validation: g003_validation.md
+      - Pipeline: g003_pipeline.md
+      - Analysis and Visualization: g003_analysis.md
+  - Contributing: Contributing.md
+extra_css:
+  - css/termynal.css
+  - css/custom.css
+extra_javascript:
+  - https://unpkg.com/mermaid@8.4.6/dist/mermaid.min.js
+  - js/termynal.js
+  - js/custom.js
+extra:
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/schieflab/g00x

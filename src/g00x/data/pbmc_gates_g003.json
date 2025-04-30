@@ -1,0 +1,205 @@
+[
+    {
+        "gate": "P1",
+        "phenotype": "Lymphocytes",
+        "branch": "None",
+        "count": "count",
+        "easy_name": "Lymphocytes"
+    },
+    {
+        "gate": "P2",
+        "phenotype": "Singlets FSC",
+        "branch": "None",
+        "count": "count",
+        "easy_name": "Singlets"
+    },
+    {
+        "gate": "P3",
+        "phenotype": "Live-Dump-",
+        "branch": "None",
+        "count": "count",
+        "easy_name": "Dump-"
+    },
+    {
+        "gate": "P4",
+        "phenotype": "CD19+ ",
+        "branch": "None",
+        "count": "count",
+        "easy_name": "B cells"
+    },
+    {
+        "gate": "P5",
+        "phenotype": "IgD- B cells",
+        "branch": "IgD-",
+        "count": "count",
+        "easy_name": "IgD- B cells"
+    },
+    {
+        "gate": "P6",
+        "phenotype": "IgD+ B cells",
+        "branch": "IgD+",
+        "count": "count",
+        "easy_name": "IgD+ B cells"
+    },
+    {
+        "gate": "P7",
+        "phenotype": "IgD-/KO-",
+        "branch": "IgD-",
+        "count": "count",
+        "easy_name": "IgD-KO- B cells"
+    },
+    {
+        "gate": "P8",
+        "phenotype": "IgD-/KO-/Epitope++",
+        "branch": "IgD-",
+        "count": "count",
+        "easy_name": "IgD-/KO-/Antigen++ (sorted) B cells"
+    },
+    {
+        "gate": "P9",
+        "phenotype": "IgD-/Antigen++",
+        "branch": "IgD-",
+        "count": "count",
+        "easy_name": "IgD-/Antigen++ B cells"
+    },
+    {
+        "gate": "P10",
+        "phenotype": "IgD-/Antigen++/KO-",
+        "branch": "IgD-",
+        "count": "count",
+        "easy_name": "IgD-/Antigen++/KO- B cells"
+    },
+    {
+        "gate": "P11",
+        "phenotype": "IgD+/Antigen++",
+        "branch": "IgD+",
+        "count": "count",
+        "easy_name": "IgD+/Antigen++ B cells"
+    },
+    {
+        "gate": "P12",
+        "phenotype": "IgD+/Antigen++/KO-",
+        "branch": "IgD+",
+        "count": "count",
+        "easy_name": "IgD+/Antigen++/KO- B cells"
+    },
+    {
+        "gate": "P13",
+        "phenotype": "IgD+/KO-",
+        "branch": "IgD+",
+        "count": "count",
+        "easy_name": "IgD+/KO- B Cells"
+    },
+    {
+        "gate": "P14",
+        "phenotype": "IgD+/KO-/Epitope++",
+        "branch": "IgD+",
+        "count": "count",
+        "easy_name": "IgD+/KO-/Antigen++ B cells"
+    },
+    {
+        "gate": "P16",
+        "phenotype": "IgM-IgG+",
+        "branch": "IgG+",
+        "count": "count",
+        "easy_name": "IgD-IgM-IgG+ B cells"
+    },
+    {
+        "gate": "P17",
+        "phenotype": "IgM-IgG+/Antigen++",
+        "branch": "IgG+",
+        "count": "count",
+        "easy_name": "IgD-/IgM-/IgG+/Antigen++ B cells"
+    },
+    {
+        "gate": "P18",
+        "phenotype": "IgM-IgG+/Antigen++/KO-",
+        "branch": "IgG+",
+        "count": "count",
+        "easy_name": "IgD-/IgM-/IgG+/Antigen++/KO- B cells"
+    },
+    {
+        "gate": "P19",
+        "phenotype": "IgM-IgG+/KO-",
+        "branch": "IgG+",
+        "count": "count",
+        "easy_name": "IgD-/IgG+/KO-"
+    },
+    {
+        "gate": "P20",
+        "phenotype": "IgM-IgG+/KO-/Epitope++",
+        "branch": "IgG+",
+        "count": "count",
+        "easy_name": "IgM-/IgG+/KO-/Antigen++ B cells"
+    },
+    {
+        "gate": "P22",
+        "phenotype": "IgM+IgG-",
+        "branch": "IgM+",
+        "count": "count",
+        "easy_name": "IgD-/IgM+/IgG- B cells"
+    },
+    {
+        "gate": "P23",
+        "phenotype": "IgM+IgG-/Antigen++",
+        "branch": "IgM+",
+        "count": "count",
+        "easy_name": "IgD-/IgG-/IgM+/Antigen++ B cells"
+    },
+    {
+        "gate": "P24",
+        "phenotype": "IgM+IgG-/Antigen++/KO-",
+        "branch": "IgM+",
+        "count": "count",
+        "easy_name": "IgD-/IgG-/IgM+/KO-/Antigen++ B cells"
+    },
+    {
+        "gate": "P25",
+        "phenotype": "IgM+IgG-/KO-",
+        "branch": "IgM+",
+        "count": "count",
+        "easy_name": "IgG-/IgM+/KO- B cells"
+    },
+    {
+        "gate": "P26",
+        "phenotype": "IgM+IgG-\/KO-\/Epitope++",
+        "branch": "IgM+",
+        "count": "count",
+        "easy_name": "IgG-/IgM+/KO-/Antigen++ B cells"
+    },
+    {
+        "gate": "P27",
+        "phenotype": "IgM-IgG-",
+        "branch": "None",
+        "count": "count",
+        "easy_name": "IgM-/IgG- B cells"
+    },
+    {
+        "gate": "P29",
+        "phenotype": "IgM-IgG-/Antigen--",
+        "branch": "IgG-IgM-",
+        "count": "count",
+        "easy_name": "IgM-/IgG-/Antigen-- B cells"
+    },
+    {
+        "gate": "P30",
+        "phenotype": "IgM-IgG-/Antigen--/KO-",
+        "branch": "IgG-IgM-",
+        "count": "count",
+        "easy_name": "IgM-IgG-/Antigen--/KO- B cells"
+    },
+    {
+        "gate": "P31",
+        "phenotype": "IgM-IgG-/KO-",
+        "branch": "IgG-IgM-",
+        "count": "count",
+        "easy_name": "IgM-/IgG-/KO- B cells"
+    },
+    {
+        "gate": "P32",
+        "phenotype": "IgM-IgG-/KO-/Epitope--",
+        "branch": "IgG-IgM-",
+        "count": "count",
+        "easy_name": "IgM-/IgG-/KO-/Antigen-- B cells"
+    }
+]

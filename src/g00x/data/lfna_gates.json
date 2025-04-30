@@ -1,0 +1,58 @@
+[
+    {
+        "gate": "P1",
+        "phenotype": "Lymphocytes",
+        "branch": "None",
+        "value_type": "count",
+        "easy_name": "Lymphocytes"
+    },
+    {
+        "gate": "P2",
+        "phenotype": "Singlets",
+        "branch": "None",
+        "value_type": "count",
+        "easy_name": "Singlets"
+    },
+    {
+        "gate": "P3",
+        "phenotype": "Dump-",
+        "branch": "None",
+        "value_type": "count",
+        "easy_name": "Dump-"
+    },
+    {
+        "gate": "P4",
+        "phenotype": "Non T Cells",
+        "branch": "None",
+        "value_type": "count",
+        "easy_name": "Non T Cells"
+    },
+    {
+        "gate": "P5",
+        "phenotype": "B cells",
+        "branch": "None",
+        "value_type": "count",
+        "easy_name": "B cells"
+    },
+    {
+        "gate": "P6",
+        "phenotype": "IgD- B cells",
+        "branch": "IgD-",
+        "value_type": "count",
+        "easy_name": "IgD- B cells"
+    },
+    {
+        "gate": "P7",
+        "phenotype": "IgD-/KO-",
+        "branch": "IgD-",
+        "value_type": "count",
+        "easy_name": "IgD-KO- B cells"
+    },
+    {
+        "gate": "P8",
+        "phenotype": "IgD-/KO-/Epitope++",
+        "branch": "IgD-",
+        "value_type": "count",
+        "easy_name": "IgD-/KO-/Antigen++ (sorted) B cells"
+    }
+]

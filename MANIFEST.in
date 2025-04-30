@@ -1,0 +1,3 @@
+recursive-include src/g00x_figures/*/data *
+include README.md
+include LICENSE

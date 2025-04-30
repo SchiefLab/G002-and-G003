@@ -1,0 +1,50 @@
+
+    \documentclass{article}
+    \usepackage{lscape}
+    \usepackage{graphicx}
+    \usepackage{adjustbox}
+    \usepackage{array}
+    \usepackage{multirow}
+    \usepackage{booktabs}
+    \usepackage{caption}
+    \pagenumbering{gobble}
+    \captionsetup{labelformat=empty}
+    \usepackage[margin=1in]{geometry}
+    \begin{document}
+    \begin{table}
+\centering
+\caption{eOD-GT8 CD4bs-specific IgG$^{+}$ B Cells Sequenced}
+\begin{tabular}{lllllll}
+\toprule
+       & weeks &     -5 &      8 &     10 &     16 &     21 \\
+site & pubID &        &        &        &        &        \\
+\midrule
+Aurum & G003-135 &  ND &  ND &  3 &  662 &  ND \\
+       & G003-210 &  2 &  1258 &  300 &  4399 &  288 \\
+       & G003-291 &  $0^a$ &  230 &  340 &  3024 &  763 \\
+       & G003-434 &  $0^a$ &  1200 &  47 &  3602 &  832 \\
+       & G003-622 &  0 &  391 &  52 &  1081 &  290 \\
+       & G003-732 &  1 &  356 &  97 &  525 &  590 \\
+       & G003-768 &  ND &  ND &  179 &  NA &  ND \\
+       & G003-799 &  0 &  366 &  151 &  684 &  451 \\
+\midrule
+CFHR & G003-138 &  10 &  967 &  496 &  107 &  565 \\
+       & G003-243 &  $0^a$ &  106 &  780 &  72 &  502 \\
+       & G003-396 &  3 &  269 &  115 &  230 &  95 \\
+       & G003-516 &  1 &  255 &  1517 &  1045 &  1530 \\
+       & G003-550 &  6 &  229 &  306 &  176 &  250 \\
+       & G003-611 &  0 &  727 &  523 &  209 &  509 \\
+       & G003-630 &  $0^a$ &  313 &  249 &  255 &  254 \\
+       & G003-710 &  $0^a$ &  895 &  1324 &  414 &  854 \\
+       & G003-753 &  2 &  249 &  980 &  120 &  78 \\
+       & G003-831 &  $0^a$ &  85 &  183 &  45 &  139 \\
+\midrule
+Median & G003-* &  1.5 &  334.5 &  274.5 &  414.0 &  476.5 \\
+\bottomrule
+\multicolumn{7}{l}{\tiny } \\
+\multicolumn{7}{l}{\tiny ND: \textit{Sequencing data not generated due to failed Gel bead in Emulsion (GEM) generation}} \\
+\multicolumn{7}{l}{\tiny NA: \textit{Sample not available for sorting and BCR sequencing (failed leukapheresis)}} \\
+\multicolumn{7}{l}{\tiny $0^a$: \textit{Sample was analyzed by sorting but no CD4 binding site-specific B cells were detected}} \\
+\end{tabular}
+\end{table}
+\end{document}

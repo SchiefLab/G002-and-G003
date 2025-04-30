@@ -1,0 +1,11 @@
+[Unit]
+Description=Globus Connect Personal
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=%h/.globusconnectpersonal/globusconnectpersonal -start -debug
+
+[Install]
+WantedBy=default.target

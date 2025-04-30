@@ -1,0 +1,100 @@
+{
+ "gates": [
+  {
+   "easy_name": "all_b_cells",
+   "gate": "P4",
+   "gate_parent": "P3",
+   "value_type": "count",
+   "verbose_name": "All B Cells"
+  },
+  {
+   "easy_name": "igd_negative_b_cells",
+   "gate": "P5",
+   "gate_parent": "P4",
+   "value_type": "count",
+   "verbose_name": "IgD- B Cells"
+  },
+  {
+   "easy_name": "ko_negative",
+   "gate": "P6",
+   "gate_parent": "P5",
+   "value_type": "count",
+   "verbose_name": "KO- IgD- B Cells"
+  },
+  {
+   "easy_name": "epiotpe_specific",
+   "gate": "P7",
+   "gate_parent": "P6",
+   "value_type": "count",
+   "verbose_name": "Epiotpe Specific"
+  },
+  {
+   "easy_name": "antigen_specific",
+   "gate": "P8",
+   "gate_parent": "P5",
+   "value_type": "count",
+   "verbose_name": "Antigen Specific"
+  },
+  {
+   "easy_name": "epitope_specific_from_igG",
+   "gate": "P14",
+   "gate_parent": "P13",
+   "value_type": "count",
+   "verbose_name": "Epiotpe Specific from IgG"
+  },
+  {
+   "easy_name": "antigen_specific_among_IgG",
+   "gate_denominator": "P12",
+   "gate_numerator": "P15",
+   "gate_parent_denominator": "P11",
+   "gate_parent_numerator": "P12",
+   "value_type": "frequency",
+   "verbose_name": "Antigen-specific among IgG"
+  },
+  {
+   "easy_name": "epitope_specific_among_igG",
+   "gate_denominator": "P12",
+   "gate_numerator": "P14",
+   "gate_parent_denominator": "P11",
+   "gate_parent_numerator": "P13",
+   "value_type": "frequency",
+   "verbose_name": "Epiotpe Specific among IgG"
+  },
+  {
+   "easy_name": "antigen_specific_among_all_b_cells",
+   "gate_denominator": "P4",
+   "gate_numerator": "P8",
+   "gate_parent_denominator": "P3",
+   "gate_parent_numerator": "P5",
+   "value_type": "frequency",
+   "verbose_name": "Antigen Specific Among B Cells"
+  },
+  {
+   "easy_name": "antigen_specific_among_igd_negative",
+   "gate_denominator": "P5",
+   "gate_numerator": "P8",
+   "gate_parent_denominator": "P4",
+   "gate_parent_numerator": "P5",
+   "value_type": "frequency",
+   "verbose_name": "Antigen Specific Among IgD- B Cells"
+  },
+  {
+   "easy_name": "epiotpe_specific_among_igd_negative",
+   "gate_denominator": "P5",
+   "gate_numerator": "P7",
+   "gate_parent_denominator": "P4",
+   "gate_parent_numerator": "P6",
+   "value_type": "frequency",
+   "verbose_name": "Epiotpe frequency among IgD-"
+  },
+  {
+   "easy_name": "epiotpe_specific_among_all_b_cells",
+   "gate_denominator": "P4",
+   "gate_numerator": "P7",
+   "gate_parent_denominator": "P3",
+   "gate_parent_numerator": "P6",
+   "value_type": "frequency",
+   "verbose_name": "Epiotpe frequency among all B cells"
+  }
+ ]
+}

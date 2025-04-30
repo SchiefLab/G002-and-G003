@@ -1,0 +1,12 @@
+[Unit]
+Description=Sync Globus Endpoints
+
+[Service]
+Type=simple
+ExecStart=/bin/bash -c 'g00x g002 globus start'
+
+StandardOutput=file:%h/.config/systemd/user/globus/stdout.log
+StandardError=file:%h/.config/systemd/user/globus/stderr.log
+
+[Install]
+WantedBy=multi-user.target

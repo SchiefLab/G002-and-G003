@@ -1,0 +1,56 @@
+{
+    "NIH Box": {
+        "G00[1-9]": {
+            "Prescreens": {
+                "Prescreen_RunDate[0-9][0-9][0-1][1-2][0][1-4]_UploadDate[0-9][0-9][0-1][1-2][0][1-4]": {
+                    "xmlFile": "\\.xml$",
+                    "FlowManifest": "\\.xlsx$",
+                    "^DataFiles": {
+                        "": "\\.fcs$"
+                    },
+                    "^PopulationSummary": {
+                        "": "\\.csv$"
+                    },
+                    "^Screenshots": {
+                        "": "\\.png$"
+                    }
+                }
+            },
+            "Sorts": {
+                "Sort_RunDate[0-9][0-9][0-1][1-2][0][1-4]_UploadDate[0-9][0-9][0-1][1-2][0][1-4]": {
+                    "FlowManifest": "\\.xlsx$",
+                    "ClinicalSamples": {
+                        "xmlFile": "\\.xml$",
+                        "^DataFiles": {
+                            "": "\\.fcs$"
+                        },
+                        "^PopulationSummary": {
+                            "": "\\.csv$"
+                        },
+                        "^Screenshots": {
+                            "": "\\.png$"
+                        },
+                        "^SortReports": {
+                            "": "\\.png$"
+                        }
+                    },
+                    "ControlSamples": {
+                        "xmlFile": "\\.xml$",
+                        "^DataFiles": {
+                            "": "\\.fcs$"
+                        },
+                        "^PopulationSummary": {
+                            "": "\\.csv$"
+                        },
+                        "^Screenshots": {
+                            "": "\\.png$"
+                        },
+                        "^SortReports": {
+                            "": "\\.png$"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
