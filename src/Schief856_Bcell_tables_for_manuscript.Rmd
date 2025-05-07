@@ -1,0 +1,1231 @@
+---
+title: "Schief 856 (G002) B Cell Figures and Tables for Manuscript"
+shorttitle: "Schief 856 (G002) B Cell Figures and Tables for Revised Manuscript"
+leftheader: "VISC"
+from:
+ - name: Kellie MacPhee
+   email: kmacphee@fredhutch.org
+   contact: true
+ - name: Allan deCamp
+   email: adecamp@scharp.org
+   contact: true
+ - name: Ollivier Hyrien
+   contact: false
+to:
+ - name: William Schief
+dropcc: false
+cc:
+ - name: Troy Sincomb
+ - name: Christopher Cottrell
+ - name: Michael Duff
+ - name: Drienna Holman
+ - name: Erica Beatman
+ - name: Amanda Tsai
+includesummary: false
+lof: false
+lot: false
+toc: true
+dropVISClogo: false
+header-includes:
+   - \usepackage[font={scriptsize}]{caption}
+output:
+  VISCtemplates::visc_pdf_document: default
+---
+
+```{r package-loading-and-options, include=FALSE}
+
+library(VISCtemplates)
+library(VISCfunctions)
+
+check_pandoc_version()
+
+cran_packages_needed <- c(
+  "conflicted", "tidyverse", "knitr", "kableExtra", "here",
+  "arrow", "readxl", "patchwork", "flextable"
+  )
+install_load_cran_packages(cran_packages_needed)
+
+my_data_package_lib <- "/Volumes/kmacphee/RLib/" # must be on SCHARP server
+.libPaths(c(.libPaths(), my_data_package_lib))
+
+conflict_prefer("filter", "dplyr") # prefer over stats::filter
+
+# knitr options
+opts_chunk$set(cache = FALSE, 
+               message = TRUE, 
+               warning = TRUE, 
+               echo = FALSE,
+               dev = c("png", "pdf"), 
+               dpi = 200, 
+               fig.width = 7,
+               fig.height = 6.5,
+               out.width = "100%", 
+               out.extra = "", 
+               # fig.align = "center", # commented out because raises warnings in docx
+               fig.pos = "H")
+
+opts_knit$set(eval.after = c('fig.scap', 'fig.cap')) # allows using variables from chunk in figure caption
+```
+
+```{r intall-data-package, eval=FALSE}
+
+# note: set_wd() only impacts this code chunk
+if (.Platform$OS.type == 'unix') {
+  setwd("/Volumes/networks")
+} else {
+  setwd("N:")
+}
+devtools::install_git(file.path('cavd', 'Studies', 'cvd856', 'pdata', 'Schief856.git'),
+                      git = 'external', 
+                      lib = my_data_package_lib)
+```
+
+```{r word-pdf-options}
+
+output_type <- get_output_type()
+
+kable_warnings <- set_kable_warnings(output_type)
+pandoc_markup <- set_pandoc_markup(output_type)
+```
+
+```{r table-formatting, include=FALSE}
+
+options(knitr.kable.NA = '') # NA's will be blank in tables
+
+set_flextable_defaults(font.size = 8,
+                       theme_fun = "theme_box")
+
+# custom kable function for consistent table formatting
+make_visc_table <- function(df, 
+                            caption, 
+                            caption.short = NA, 
+                            fontsize = 7, 
+                            digits = 3, 
+                            cols.to.collapse = NA, 
+                            longtable = FALSE, 
+                            latex_options = c("HOLD_position", "repeat_header"),
+                            cwidth = 0.75) {
+  
+  if (output_type == 'latex') {
+    
+    tab <- df %>% 
+      kable(format = output_type, 
+            longtable = longtable, 
+            booktabs = TRUE,
+            linesep = "", 
+            escape = FALSE,
+            caption = caption,
+            caption.short = ifelse(is.na(caption.short), caption, caption.short),
+            digits = digits) %>%
+      kable_styling(latex_options = latex_options, 
+                    # add "scale_down" above if desired, will overwrite fontsize
+                    font_size = fontsize)
+    
+    if (!any(is.na(cols.to.collapse))) {
+      tab <- tab %>% 
+        collapse_rows(columns = cols.to.collapse, valign = 'middle', latex_hline = "full")
+    }
+    
+  } else {
+    
+    tab <- df %>% 
+      flextable(cwidth = cwidth,
+                cheight = 0.2) %>% 
+      set_caption(caption = caption,
+                  # extra space above table caption so that tables don't get too close
+                  fp_p = officer::fp_par(padding.top=30, padding.bottom=3)) 
+    
+    if (longtable == F) {
+      # keep table on one page in word doc
+      tab <- tab %>% paginate(init = T, hdr_ftr = T)
+    }
+      
+      if (!any(is.na(cols.to.collapse))) {
+        tab <- tab %>% merge_v(j=cols.to.collapse)
+      }
+  
+  }
+  
+  tab
+  
+}
+```
+
+```{r figure-formatting, include=FALSE}
+
+visc_figure_theme <- theme_bw() + 
+  theme(
+    #
+    legend.position = "bottom", 
+    legend.box = 'vertical',
+    legend.text = element_text(size = 8),
+    legend.margin = margin(-0.2, 0, 0, -0.4, unit="cm"),
+    #
+    plot.margin = unit(c(.1,.1,.1,.1), "mm"),
+    #
+    axis.title.y = element_text(size = 9),
+    axis.title.x = element_text(size = 9),
+    #
+    axis.text.y = element_text(size = 8),
+    axis.text.x = element_text(size = 6.5, angle = 30, vjust = 1, hjust = 1),
+    #
+    strip.text.x = element_text(size = 7),
+    strip.text.y = element_text(size = 7),
+    #
+    panel.grid.minor = element_blank()
+    )
+
+theme_set(visc_figure_theme)
+
+# colors and shapes: synced with NAb report from August 2023
+
+treatment_colors <- c(
+  `Baseline` = "#E69F00",
+  `Core` = "#EF8636",
+  `eOD` = "#56B4E9",
+  `eOD → eOD` = colorspace::darken("#91FCC0", amount = 0.2), # "#009E73"
+  `eOD -> eOD` = colorspace::darken("#91FCC0", amount = 0.2), # "#009E73"
+  `eOD → Core` = "#E377C2",
+  `eOD -> Core` = "#E377C2",
+  `eOD → eOD → Core` = "#2078B4",
+  `eOD -> eOD -> Core` = "#2078B4"
+)
+
+nonresponder_color <- "#8F8F8F"
+
+shape_map <- c("Baseline" = 5, 
+               "Baseline (Upper Limit)" = 0,
+               "No Detectable Response" = 2, 
+               "No Response Call" = 4, # temporary: remove when ready
+               "Detectable Response" = 19)
+```
+
+```{r data-io, message=F, warning=F}
+
+networks_path_schief856 <- '/Volumes/networks/cavd/VDCs/Schief/Schief_856-G002'
+trials_path_schief856 <- '/Volumes/trials/cavd/obj1/cvd856'
+trx_path <- file.path(networks_path_schief856,
+                      'Group_TRX_Visit_Map', 
+                      'Schief856_TRX_File_for_Stats_v8.0_18Jun2024.xlsx')
+adata_folder <- '/Volumes/trials/cavd/obj1/cvd856/combined_flow_seq_adata/'
+
+trx_info <- read_xlsx(trx_path, sheet = 'TRX_File')
+
+visit_info <- read_xlsx(trx_path, sheet = 'Visit_Map') %>%
+  mutate(
+    Week = Time_Point_Weeks,
+    Visit = paste0('V', Visit_Code),
+    Week_Visit = paste0(
+      'Wk', round_away_0(Time_Point_Weeks, digits = 1, trailing_zeros = FALSE),
+      ' (', Visit, ')') %>% fct_inorder(),
+    Visit_Type = str_replace(Visit_Type, 'eukapherisis', 'eukapheresis') # fix typo in [L/l]eukapheresis
+  )
+
+pubid_path <- system.file("extdata",
+                          "Schief856_G002_pubids_enrolled_only.xlsx",
+                          package = "Schief856")
+pubid_info <- read_xlsx(pubid_path) %>% select(ptid, pubid = pubID)
+
+bcell_adata_long <- read_csv(
+  file.path(adata_folder, 'cvd856_bcell_adata_long_2024-03-28.csv')
+) %>% 
+  mutate(Week_Label = factor(Week_Label, 
+                             levels =  c('Baseline', paste('Week', c(4, 8, 16, 24)))),
+         Treatment = str_replace_all(Treatment, ',', ' →'),
+         Group_Treatment = paste0('Group ', Group, ': ', Treatment),
+         `Probe Set` = case_when(`Probe Set` == 'eODGT8' ~ 'eOD-GT8',
+                                 `Probe Set` == 'Cg28v2' ~ 'Core-g28v2',
+                                 .default = NA))
+
+# wide format
+bcell_adata <- bcell_adata_long %>%
+  select(-Baseline, -`Response Call`, -use_upper_limit, -use_lower_limit) %>%
+  pivot_wider(names_from = 'Endpoint', values_from = 'Magnitude')
+```
+
+\pagebreak
+
+```{r statistical-methods, child="statistical-methods.Rmd"}
+```
+
+```{r functions-to-plot-response-rate-and-magnitude}
+
+plot_response_rates <- function(plot_df_summary, probe_set) {
+    
+    rr_plot <- plot_df_summary %>%
+      ggplot(aes(x = factor(Pooled_Treatment), 
+                 y = mean_response_rate, 
+                 ymin = lower_response_rate, 
+                 ymax = upper_response_rate,
+                 color = factor(Pooled_Treatment),
+                 group = Week_Label)) +
+      facet_wrap(~Week_Label, nrow = 1, drop = FALSE, scales='fixed') +
+      geom_linerange(na.rm = T) +
+      geom_point(na.rm = T) +
+      coord_cartesian(ylim = c(0,1)) +
+      scale_y_continuous("Detectable \n response rate",
+                         breaks = c(0.0, 0.25, 0.5, 0.75, 1),
+                         labels = c("0%","25%","50%","75%","100%")) +
+      scale_x_discrete("", labels = function(s) str_replace_all(s, '→', '->')) +
+      scale_color_manual('', values = treatment_colors) +
+      theme(axis.text.x = element_blank(),
+            axis.ticks.x = element_blank(),
+            plot.margin = unit(c(.1,.1,0,.1), "mm"),
+            legend.position = "none") 
+    
+    if (probe_set == 'eOD-GT8') {
+      rr_plot <- rr_plot + facet_wrap(~Week_Label, nrow = 1, drop = FALSE, scales='free_x')
+    } else if (probe_set == 'Core-g28v2') {
+      rr_plot <- rr_plot + facet_wrap(~Week_Label, nrow = 1, drop = FALSE, scales='fixed')
+    }
+  
+  return(rr_plot)
+  
+}
+
+
+plot_response_magnitudes <- function(plot_df, endpoint, probe_set) {
+  
+  lower_limit <- 0.0001
+  min_magnitude_observed <- min(plot_df$Magnitude, na.rm=T)
+  max_magnitude_observed <- max(plot_df$Magnitude, na.rm=T)
+  magnitude_breaks <- 10^seq(floor(log10(min_magnitude_observed)), 
+                             ceiling(log10(max_magnitude_observed)), 
+                             by = 1)
+  
+  magnitude_alpha <- 0.7
+  point_size <- 1.25
+  magnitude_jitter_width <- 0.25
+  
+  magnitude_plot_base <- plot_df %>%
+    ggplot(aes(x = factor(Pooled_Treatment), 
+               y = pmax(Magnitude, lower_limit),
+               color = factor(Pooled_Treatment))) +
+    scale_color_manual(name = "", values = treatment_colors) +
+    scale_x_discrete("", labels = function(s) str_replace_all(s, '→', '->')) +
+    scale_y_log10(endpoint %>% strwrap(width=0.6*nchar(endpoint)) %>% paste(collapse=' \n '),
+                  limits = c(min(magnitude_breaks), 2*max(magnitude_breaks)),
+                  breaks = magnitude_breaks,
+                  labels = function(x) { ifelse(x == lower_limit, 
+                                                paste0("<=", format(lower_limit, scientific = F), "%"), 
+                                                format(x, scientific = F, drop0trailing = T)) },
+                  expand = c(0.05, 0.15)) +
+    theme(plot.margin = unit(c(.1,.1,.1,.1), "mm"),
+          legend.position = "none")
+  
+  if (probe_set == 'eOD-GT8') {
+      magnitude_plot_base <- magnitude_plot_base + 
+        facet_wrap(~Week_Label, nrow = 1, drop = FALSE, scales='free_x')
+    } else if (probe_set == 'Core-g28v2') {
+      magnitude_plot_base <- magnitude_plot_base + 
+        facet_wrap(~Week_Label, nrow = 1, drop = FALSE, scales='fixed')
+    }
+  
+  return(magnitude_plot_base)
+  
+}
+
+
+plot_response_kinetics <- function(plot_df, endpoint) {
+  
+  lower_limit <- 0.0001
+  min_magnitude_observed <- min(plot_df$Magnitude, na.rm=T)
+  max_magnitude_observed <- max(plot_df$Magnitude, na.rm=T)
+  magnitude_breaks <- 10^seq(floor(log10(min_magnitude_observed)), 
+                             ceiling(log10(max_magnitude_observed)), 
+                             by = 1)
+  
+  point_size <- 1.25
+  kinetics_jitter_width <- 0
+  
+  kinetics_plot_base <- plot_df %>%
+    mutate(Group_Treatment = str_replace_all(Group_Treatment, '→', '->'),
+           Pooled_Treatment = str_replace_all(Pooled_Treatment, '→', '->')) %>%
+    ggplot(aes(x = Weeks, pmax(Magnitude, lower_limit), group = PubID)) +
+    scale_color_manual(name = "", values = treatment_colors) +
+    scale_x_continuous(breaks = unique(plot_df$Weeks) %>% sort(),
+                       labels = levels(plot_df$Week_Label),
+                       name = NULL) +
+    scale_y_log10(endpoint %>% strwrap(width=0.6*nchar(endpoint)) %>% paste(collapse=' \n '),
+                  limits = c(min(magnitude_breaks), max(magnitude_breaks)),
+                  breaks = magnitude_breaks,
+                  labels = function(x) { ifelse(x == lower_limit, 
+                                                paste0("<=", format(lower_limit, scientific = F), "%"), 
+                                                format(x, scientific = F, drop0trailing = T)) },
+                  expand = c(0.05, 0.15)) +
+    theme(strip.text.x = element_text(size = 6),
+          axis.text.x = element_text(size = 6.5, angle = 45, vjust = 1, hjust = 1),
+          legend.margin = margin(t=5, r=5, b=5, l=-70, unit='pt')) +
+    guides(color = guide_legend(order = 2), shape = guide_legend(order = 1))
+  
+  return(kinetics_plot_base)
+  
+}
+
+
+plot_responses <- function(endpoint, include_response_rate = T,
+                           probe_set='eOD-GT8', sample_type='PBMC') {
+  
+  # parameters used in plots
+  lower_limit <- 0.0001
+  magnitude_alpha <- 0.7
+  kinetics_alpha <- 0.5
+  point_size <- 1.25
+  magnitude_jitter_width <- 0.25
+  kinetics_jitter_width <- 0
+  
+  plot_df_individual <- bcell_adata_long_pooled %>%
+    filter(Endpoint == endpoint, 
+           `Sample Type` == sample_type,
+           `Probe Set` == probe_set) %>%
+    mutate(Weeks = as.numeric(Weeks),
+           shape_type = case_when(is_baseline & (use_upper_limit == T ) ~ 'Baseline (Upper Limit)',
+                                  is_baseline ~ 'Baseline',
+                                  `Response Call` == F ~ 'No Detectable Response',
+                                  `Response Call` == T ~ 'Detectable Response',
+                                  .default = 'No Response Call')) %>%
+    mutate(Magnitude = ifelse(Magnitude < lower_limit, lower_limit, Magnitude))
+  
+  plot_df_summary <- bcell_adata_long_summary %>%
+      filter(Endpoint == endpoint,
+             `Sample Type` == sample_type,
+             `Probe Set` == probe_set) %>%
+      mutate(Weeks = as.numeric(Weeks),
+             stat_info = ifelse(magnitude_median == lower_limit,
+                                expression('' <= '1:10'^6),
+                                formatC(magnitude_median, digits=2, format='g')) %>% as.list()) %>%
+      ungroup()
+  
+  ### make response rate plot, if needed
+  
+  if (include_response_rate) {
+    rr_plot <- plot_response_rates(plot_df_summary, probe_set)
+  }
+  
+  ### make response magnitude plot
+  
+  magnitude_text_height_ratio <- 1 + 0.15 * log10(max(plot_df_individual$Magnitude) / max(min(plot_df_individual$Magnitude), lower_limit))
+  magnitude_plot_base <- plot_response_magnitudes(plot_df_individual, endpoint, probe_set) +
+    geom_boxplot(data = plot_df_individual, fill = NA, lwd = .5, outlier.colour = NA, na.rm=T) +
+    geom_text(data = plot_df_summary,
+              aes(label = stat_info, y = magnitude_max * magnitude_text_height_ratio),
+              vjust = 0, hjust = "center",
+              color = "black", size = 1.8, parse = TRUE)
+  
+  if (include_response_rate) {
+    
+    magnitude_plot <- magnitude_plot_base +
+      scale_shape_manual(name = "", values = shape_map, na.value = 4) +
+      geom_jitter(aes(shape = factor(shape_type)),
+                 height = 0, width = magnitude_jitter_width,
+                 alpha = magnitude_alpha, size = point_size, na.rm = T) +
+      theme(strip.background = element_blank(), # drop panel labels because already in response rate plot
+            strip.text.x = element_blank())
+    
+  } else {
+    
+     magnitude_plot <- magnitude_plot_base +
+      geom_jitter(height = 0, width = magnitude_jitter_width,
+                  alpha = magnitude_alpha, size = point_size, na.rm = T)
+    
+  }
+  
+  ### make response kinetics plot
+  
+  kinetics_plot_base <- plot_df_individual %>%
+    # filter(!str_detect(Pooled_Treatment, "Groups 1 and 3")) %>%
+    plot_response_kinetics(endpoint)
+  
+  if (probe_set == 'Core-g28v2') {
+    
+    kinetics_plot_base <- kinetics_plot_base + 
+      facet_wrap(~factor(Group_Treatment), nrow = 1, drop = FALSE, scales = 'fixed') +
+      geom_line(alpha = 0.6*kinetics_alpha, na.rm = T)
+    
+  } else {
+    
+    kinetics_plot_base <- kinetics_plot_base + 
+      geom_line(alpha = 0.6*kinetics_alpha, na.rm = T)
+    
+  }
+  
+  if (include_response_rate) {
+    
+    kinetics_plot <- kinetics_plot_base +
+      scale_shape_manual(name = "", values = shape_map, na.value = 4) +
+      geom_jitter(aes(shape = factor(shape_type), color = Pooled_Treatment), 
+                 height = 0, width = kinetics_jitter_width,
+                 alpha = kinetics_alpha, size = point_size, na.rm = T)
+  } else { 
+    
+    kinetics_plot <- kinetics_plot_base + 
+      geom_jitter(aes(color = Pooled_Treatment),
+                  height = 0, width = kinetics_jitter_width,
+                  alpha = kinetics_alpha, size = point_size, na.rm = T)
+  }
+  
+  ### combine all plots and format
+  
+  if (include_response_rate) {
+    
+    combined_plot <- (rr_plot / magnitude_plot / kinetics_plot) + 
+      plot_layout(heights = c(1, 1.5, 1.2))
+   
+  } else { 
+    
+    combined_plot <- (magnitude_plot / kinetics_plot) + plot_layout(heights = c(1.5, 1.2))
+  }
+  
+  return(combined_plot)
+  
+}
+
+response_plot_description_with_rr <- "Detectable response rates are shown in the first row of plots (mean and 95 percent Wilson confidence interval). Response magnitudes are shown in the second row of plots: each marker represents one participant, and the boxplots indicate the median and interquartile range among participants (the median is also noted in text above the boxplot). Response magnitudes over time (i.e., kinetics) are shown in the third row of plots, with each line representing a single participant."
+
+response_plot_description_without_rr <- "Response magnitudes are shown in the first row of plots: each marker represents one participant, and the boxplots indicate the median and interquartile range among participants (the median is also noted in text above the boxplot). Response magnitudes over time (i.e., kinetics) are shown in the second row of plots, with each line representing a single participant."
+```
+
+```{r functions-for-response-rate-tables}
+
+make_rr_table_group_comparisons <- function(endpoint, sample_type='PBMC', probe_set='eOD-GT8') {
+  
+  caption_short <- paste0(endpoint, ' (', probe_set, " sorts): response rate by group")
+  caption <- paste0(endpoint, ' (', probe_set, 
+                    " sorts): differences in response rates between groups. ", 
+                   "Hypothesis testing was done using Barnard’s exact test ", 
+                   "(two-sided, $\\alpha = 0.05$) and p-values less than 0.05 are highlighted. ",
+                   "P-values were not computed for insufficient sample sizes (less than three in either group), or if observed response rates were identical.")
+  
+  rr_table_df <- rr_test_results_across_groups %>%
+    filter(Endpoint == endpoint, 
+           `Sample Type` == sample_type,
+           `Probe Set` == probe_set) %>%
+    select(`Time Point` = Week_Label, Comparison, ResponseStats,`P-value` = ResponseTest) %>% 
+    arrange(`Time Point`, Comparison) 
+  
+  if (nrow(rr_table_df) > 0) {
+    
+    if (output_type == 'latex') {
+      
+      rr_table_df %>%
+        mutate(ResponseStats = gsub('= ', '= \\\\textbf\\{', ResponseStats)) %>%
+        mutate(ResponseStats = gsub('\\% \\(', '\\%\\} \\(', ResponseStats)) %>%
+        rename(`Response Rates (95\\% Wilson CI)` = ResponseStats) %>%
+        make_visc_table(caption = caption, caption.short = caption_short) %>%
+        column_spec(1, width = '0.6in') %>%
+        collapse_rows(columns = 1, valign = 'middle', latex_hline = "full") %>%
+        cat()
+      
+    } else {
+      
+      rr_table_df %>%
+        mutate(ResponseStats = ResponseStats %>% str_replace_all('\\\\%', '%')) %>% 
+        rename(`Response Rates (95% Wilson CI)` = ResponseStats) %>%
+        make_visc_table(caption = caption, caption.short = caption_short) %>%
+        width(3, 2) %>%
+        knit_print() %>%
+        cat()
+      
+    }
+  }
+}
+
+make_rr_table_timepoint_comparisons <- function(endpoint, sample_type='PBMC', probe_set='eOD-GT8') {
+  
+  caption_short <- paste0(endpoint, ' (', probe_set, " sorts): response rate by time")
+  caption <- paste0(endpoint, ' (', probe_set, 
+                    " sorts): differences in response rates over time, within groups. ", 
+                   "Hypothesis testing was done using McNemar's test for paired data ", 
+                   "(two-sided, $\\alpha = 0.05$) and p-values less than 0.05 are highlighted. ",
+                   "P-values were not computed for insufficient sample sizes (less than three at either time point), or if response rates were identical.")
+  
+  df_rr <- rr_test_results_across_time %>%
+    filter(Endpoint == endpoint, 
+           `Sample Type` == sample_type,
+           `Probe Set` == probe_set) %>%
+    arrange(Pooled_Treatment, Comparison) %>% 
+    select(Treatment = Pooled_Treatment,
+           `Week Comparison` = Comparison, 
+           ResponseStats, 
+           `P-value` = ResponseTest) 
+  
+  if (output_type == 'latex') {
+    
+    # bold the key values
+    df_rr <- df_rr %>%
+      mutate(ResponseStats= gsub('= ', '= \\\\textbf\\{', ResponseStats)) %>%
+      mutate(ResponseStats = gsub('\\% \\(', '\\%\\} \\(', ResponseStats)) %>%
+      rename(`Response Rates (95\\% Wilson CI)` = ResponseStats)
+    
+  } else {
+     df_rr <- df_rr %>%
+       mutate(ResponseStats = ResponseStats %>% str_replace_all('\\\\%', '%')) %>% 
+       rename(`Response Rates (95% Wilson CI)` = ResponseStats)
+  }
+  
+  tab_rr <- df_rr %>% 
+    make_visc_table(caption = caption,
+                    caption.short = caption_short,
+                    cols.to.collapse = 1)
+  
+  if (output_type == 'latex') { 
+    
+    cat(tab_rr) 
+    
+  } else { 
+    
+    tab_rr %>%
+      width(2, 1) %>%
+      width(3, 5) %>%
+      knit_print() %>%
+      cat()
+    
+  }
+  
+}
+```
+
+```{r functions-for-magnitude-tables}
+
+make_magnitude_table_group_comparisons <- function(endpoint, sample_type='PBMC', probe_set='eOD-GT8') {
+  
+  caption_short <- paste0(endpoint, ' (', probe_set, " sorts): magnitude by group")
+  caption <- paste0(endpoint, ' (', probe_set, 
+                    " sorts): differences in response magnitudes between groups. ",
+                   "Hypothesis testing was done using the Wilcoxon rank-sum test ",
+                   "(two-sided, $\\alpha = 0.05$) and p-values less than 0.05 are highlighted. ",
+                   "P-values are not computed for insufficient sample sizes (less than three in either group).")
+  
+  mag_comp_df <- magnitude_test_results_across_groups %>%
+    filter(Endpoint == endpoint, 
+           `Sample Type` == sample_type,
+           `Probe Set` == probe_set) %>%
+    select(`Time Point` = Week_Label,
+           Comparison,
+           `Sample Sizes` = SampleSizes,
+           `Median (Range)`, 
+           `P-value` = MagnitudeTest) %>% 
+    arrange(`Time Point`, Comparison) 
+  
+  if (probe_set == "Core-g28v2") {
+    mag_comp_df <- mag_comp_df %>%
+      filter(!(Comparison %in% c('eOD → eOD (Group 1) vs. eOD → eOD (Groups 1 and 3)',
+                                 'eOD → eOD → Core (Group 3) vs. eOD → eOD (Groups 1 and 3)')),
+             !((`Time Point` == 'Week 16') & (Comparison == 'eOD → eOD (Group 1) vs. eOD → eOD → Core (Group 3)')))
+  }
+  
+  if (output_type == 'latex') {
+    
+    mag_comp_df %>%
+      mutate(`Median (Range)` = gsub('^', '\\\\textbf\\{', `Median (Range)`)) %>% # bold the key values
+      mutate(`Median (Range)` = gsub('vs. ', 'vs. \\\\textbf\\{', `Median (Range)`)) %>% # bold the key values
+      mutate(`Median (Range)` = gsub(' \\[', '\\} \\[', `Median (Range)`)) %>% # bold the key values
+      make_visc_table(caption = caption, caption.short = caption_short) %>%
+      collapse_rows(columns = 1, valign = 'middle', latex_hline = "full") %>%
+      cat()
+    
+  } else {
+    
+    mag_comp_df %>%
+      make_visc_table(caption = caption, caption.short = caption_short) %>%
+      width(4, 1.3) %>%
+      knit_print() %>%
+      cat()
+    
+  }
+  
+}
+
+
+make_magnitude_table_timepoint_comparisons <- function(endpoint, sample_type='PBMC', probe_set='eOD-GT8') {
+  
+  caption_short <- paste0(endpoint, ' (', probe_set, " sorts): magnitude by time")
+  caption <- paste0(endpoint, ' (', probe_set, 
+                    " sorts): differences in response magnitudes over time, within each group. ",
+                   "Hypothesis testing was done using the Wilcoxon signed-rank test for paired data ", 
+                   "(two-sided, $\\alpha = 0.05$) and p-values less than 0.05 are highlighted. ",
+                   "P-values are not computed for insufficient sample sizes (less than three paired data points).")
+  
+  df_mag_time <- magnitude_test_results_across_time %>%
+    filter(Endpoint == endpoint, 
+           `Sample Type` == sample_type,
+           `Probe Set` == probe_set) %>%
+    arrange(Pooled_Treatment, Comparison) %>% 
+    select(Treatment = Pooled_Treatment,
+           `Week Comparison` = Comparison, 
+           `Number of Pairs` = SampleSizes,
+            `Median (Range)` = Median_Min_Max, 
+           `P-value` = MagnitudeTest)
+  
+  if (output_type == 'latex') {
+    
+    df_mag_time %>%
+      mutate(`Median (Range)` = gsub('^', '\\\\textbf\\{', `Median (Range)`)) %>%
+      mutate(`Median (Range)` = gsub('vs. ', 'vs. \\\\textbf\\{', `Median (Range)`)) %>%
+      mutate(`Median (Range)` = gsub(' \\[', '\\} \\[', `Median (Range)`)) %>%
+      make_visc_table(caption = caption, caption.short = caption_short) %>%
+      column_spec(2, width = '0.6in') %>%
+      column_spec(3, width = '0.5in') %>%
+      collapse_rows(columns = 1, valign = 'middle', latex_hline = "full") %>%
+      cat()
+    
+  } else {
+    
+    df_mag_time %>%
+      make_visc_table(caption = caption, caption.short = caption_short) %>% 
+      width(2, 1) %>%
+      width(4, 4.1) %>%
+      width(5, 0.9) %>%
+      knit_print() %>%
+      cat()
+    
+  }
+  
+}
+```
+
+```{r prep-for-iteration-over-endpoints}
+
+sample_type <- 'PBMC'
+
+endpoints_with_response_rate <- c('Percent of B cells that are VRC01-class',
+                                  'Percent of IgG B cells that are VRC01-class')
+
+endpointss_without_response_rate <- c('Percent of antigen-specific IgG B cells that are VRC01-class',
+                                      'Percent of CD4bs-specific IgG B cells that are VRC01-class',
+                                      'Percent of IgG B cells that are antigen-specific',
+                                      'Percent of IgG B cells that are CD4bs-specific',
+                                      'Percent of antigen-specific IgG B cells that are CD4bs-specific')
+
+endpoint_list <- c(endpoints_with_response_rate, endpointss_without_response_rate)
+
+
+insert_fig_subchunk <- function(fig, fig_chunk_name, fig_caption_short, fig_caption_long) {
+  
+  fig_deparsed <- paste0(deparse(function(){fig}), collapse = '')
+  fig_sub_chunk <- paste0(
+    "\n```{r fig-", fig_chunk_name, ', ', 
+    "fig.scap='", fig_caption_short, "', ",
+    "fig.cap='", fig_caption_long, "', warning=FALSE, message=FALSE}", # need to hide warnings because of arrows in axis labels
+    "\n(", fig_deparsed, ")()", "\n```\n")
+  cat(knit(text = knit_expand(text = fig_sub_chunk), quiet = TRUE))
+  
+}
+
+```
+
+\newpage
+
+# Figures and Tables: eOD-GT8 Immunogen
+
+```{r make-eOD-GT8-figures-and-tables, results='asis'}
+
+for (endpoint in endpoint_list) {
+  
+  cat('##', endpoint, ' (eOD-GT8 sorts) \n') # section title
+  
+  include_response_rate = (endpoint %in% endpoints_with_response_rate)
+  
+  ### main figure
+  fig_caption_short <- paste(endpoint, "(eOD-GT8 sorts)")
+  if (include_response_rate) {
+    fig_caption_long <- paste(endpoint, "(eOD-GT8 sorts).", response_plot_description_with_rr)
+  } else {
+    fig_caption_long <- paste(endpoint, "(eOD-GT8 sorts).", response_plot_description_without_rr)
+  }
+  fig <- plot_responses(endpoint, include_response_rate, 'eOD-GT8', 'PBMC')
+  fig_chunk_name <- paste0(gsub(' ', '-', endpoint), '-eOD-GT8')
+  insert_fig_subchunk(fig, fig_chunk_name, fig_caption_short, fig_caption_long)
+  
+  cat("\n\n\\pagebreak\n")
+  
+  ### tables
+  # note: no group comparisons because we are pooling groups such that there is only one
+  
+  if (include_response_rate) {
+    
+    make_rr_table_timepoint_comparisons(endpoint, 'PBMC', 'eOD-GT8')
+    
+  }
+  
+  make_magnitude_table_timepoint_comparisons(endpoint, 'PBMC', 'eOD-GT8')
+  
+  cat("\n\n\\pagebreak\n")
+  
+}
+```
+
+# Figures and Tables: Core-g28v2 Immunogen
+
+```{r make-Core-g28v2-figures-and-tables, results='asis'}
+
+for (endpoint in endpoint_list) {
+  
+  cat('##', endpoint, ' (Core-g28v2 sorts) \n') # section title
+  
+  include_response_rate = (endpoint %in% endpoints_with_response_rate)
+  
+  ### main figure
+  fig_caption_short <- paste(endpoint, "(Core-g28v2 sorts)")
+  if (include_response_rate) {
+    fig_caption_long <- paste(endpoint, "(Core-g28v2 sorts).", response_plot_description_with_rr)
+  } else {
+    fig_caption_long <- paste(endpoint, "(Core-g28v2 sorts).", response_plot_description_without_rr)
+  }
+  fig <- plot_responses(endpoint, include_response_rate, 'Core-g28v2', 'PBMC')
+  fig_chunk_name <- paste0(gsub(' ', '-', endpoint), '-Core-g28v2')
+  insert_fig_subchunk(fig, fig_chunk_name, fig_caption_short, fig_caption_long)
+  
+  cat("\n\n\\pagebreak\n")
+  
+  ### tables
+  
+  if (include_response_rate) {
+    
+    make_rr_table_group_comparisons(endpoint, 'PBMC', 'Core-g28v2')
+    
+    cat('\n')
+    
+    make_rr_table_timepoint_comparisons(endpoint, 'PBMC', 'Core-g28v2')
+    
+    cat("\n")
+    
+  }
+  
+  tab <- make_magnitude_table_group_comparisons(endpoint, 'PBMC', 'Core-g28v2')
+  
+  cat('\n')
+  
+  tab <- make_magnitude_table_timepoint_comparisons(endpoint, 'PBMC', 'Core-g28v2')
+  
+  cat("\n\n\\pagebreak\n")
+  
+}
+```
+
+# Additional tables for manuscript
+
+```{r get-exclusions}
+
+# get set of data (sorts/seq) that was excluded from adata, due to protocol deviations
+# (will be used to annotate tables)
+
+df_protocol_deviations <- read_xlsx(
+  file.path(networks_path_schief856, 'Group_TRX_Visit_Map', '20231103 G002_Protocol Deviations_forImmunoOOWvisits_27Oct2023.xlsx'),
+  sheet = 'G002 IP Not Admin'
+)
+
+df_exclude <- df_protocol_deviations %>%
+  select(Group = `2. Study Group`, PTID = `Subject ID`, `Dose #`) %>%
+  mutate(Exclude_Weeks = case_when(`Dose #` == '2 (eOD)' ~ 'Week 16, Week 24',
+                                   `Dose #` == '3 (Core)' ~ 'Week 24',
+                                   .default = NA),
+         Group = str_replace(Group, 'Group', '') %>% as.numeric(),
+         PTID = str_replace_all(PTID, '-', '')
+  ) %>%
+  separate_longer_delim(Exclude_Weeks, ', ') %>%
+  select(-`Dose #`) %>%
+  rename(Week_Label = Exclude_Weeks) %>%
+  distinct() %>%
+  arrange(Group, PTID, Week_Label) %>%
+  mutate(is_excluded = T)
+```
+
+## Sequence counts
+
+```{r tab-total-sequence-counts, results="asis", warning=kable_warnings}
+
+count_view <- bcell_adata %>%
+  filter(`Sample Type` == 'PBMC') %>% 
+  mutate(PubID = PubID %>% str_replace('G002-', ''),
+         has_flow_data = !is.na(`Percent of IgG B cells that are antigen-specific`)) %>%
+  mutate(`Number of sequenced B cells` = ifelse(has_flow_data & is.na(`Number of sequenced B cells`),
+                                                'No Seq', as.character(`Number of sequenced B cells`))) %>% 
+  select(Group, Treatment, PubID, PTID, `Probe Set`, Week_Label, `Number of sequenced B cells`) %>%
+  # pivot wide and then back to long to include implicit missing values
+  pivot_wider(id_cols = c(Group, Treatment, PubID, PTID),
+              names_from = c(`Probe Set`, Week_Label), names_sep = '_',
+              values_from = `Number of sequenced B cells`, values_fill = NA) %>%
+  pivot_longer(cols = 5:14,
+               names_to = c('Probe Set', 'Week_Label'), names_sep = '_',
+               values_to = 'Number of sequenced B cells') %>%
+  mutate(Week_Label = factor(Week_Label, levels = c('Baseline', 'Week 4', 'Week 8', 'Week 16', 'Week 24'))) %>%
+  merge(df_exclude, all.x=T) %>%
+  mutate(Group = paste0('Group ', Group, ': ', Treatment)) %>% select(-Treatment) %>%
+  # annotations to overwrite EXPECTED missing sequence counts
+  mutate(table_annotation = case_when(
+    
+    `Number of sequenced B cells` == 'No Seq' ~ 'No Seq',
+    
+    # no sort with this probe set, group, time point
+    (Group == 'Group 1: eOD → eOD') & (`Probe Set` == 'Core-g28v2') & (Week_Label %in% c('Baseline', 'Week 4', 'Week 8')) ~ '-',
+    (Group == 'Group 2: eOD → Core') & (`Probe Set` == 'Core-g28v2') & (Week_Label %in% c('Baseline', 'Week 4')) ~ '-',
+     (Group == 'Group 2: eOD → Core') & (`Probe Set` == 'eOD-GT8') & (Week_Label %in% c('Week 16', 'Week 24')) ~ '-',
+    (Group == 'Group 3: eOD → eOD → Core') & (`Probe Set` == 'Core-g28v2') & (Week_Label %in% c('Baseline', 'Week 4', 'Week 8')) ~ '-',
+    (Group == 'Group 3: eOD → eOD → Core') & (`Probe Set` == 'eOD-GT8') & (Week_Label == 'Week 24') ~ '-',
+    (Group == 'Group 4: Core') & ((`Probe Set` == 'eOD-GT8') | (Week_Label %in% c('Week 16', 'Week 24'))) ~ '-',
+    
+    is_excluded ~ 'Excluded',
+    
+    is.na(`Number of sequenced B cells`) ~ 'No Sort',
+    
+    .default = NA
+    
+  )) %>%
+  mutate(`Number of sequenced B cells` = ifelse(is.na(table_annotation),
+                                                as.character(`Number of sequenced B cells`),
+                                                table_annotation)) %>%
+  select(-PTID, -table_annotation, -is_excluded) %>%
+  pivot_wider(id_cols = c(Group, PubID),
+              names_from = c(`Probe Set`, Week_Label), 
+              names_sep = ' ', names_sort = T,
+              values_from = `Number of sequenced B cells`,
+              values_fill = NA) %>%
+  arrange(Group, PubID) %>%
+  # add total row
+  bind_rows(summarise(.,
+                      PubID = "Total Obs.",
+                      across(c(starts_with('eOD-GT8'), starts_with('Core-g28v2')), 
+                             function(x) { sum(!(x %in% c('-', 'No Seq', 'Excluded', 'No Sort', NA))) %>% as.character() } )
+                      ))
+
+table_footnote <- c(
+  '-: The given probe set (eOD-GT8 or Core-g28v2) was not used for this treatment group and time point due to the vaccination schedule',
+  'Excluded: Samples that were either not collected, or were excluded from analysis, due to protocol deviations (i.e., missed vaccine doses and/or study discontinuation)', 
+  'No Seq: Samples for which flow cytometry data was available, but no sequencing data was available',
+  'No Sort: Samples for which no flow cytometry or sequencing data was available'
+)
+
+count_view %>%
+  select(Group, PubID, 
+         c(`eOD-GT8 Baseline`, `eOD-GT8 Week 4`, `eOD-GT8 Week 8`, `eOD-GT8 Week 16`, `eOD-GT8 Week 24`),
+         c(`Core-g28v2 Baseline`, `Core-g28v2 Week 4`, `Core-g28v2 Week 8`, `Core-g28v2 Week 16`, `Core-g28v2 Week 24`)) %>%
+  kable(
+    col.names = c('Group', 'ID', rep(c('Wk -5', 'Wk 4', 'Wk 7.5/8', 'Wk 15.5/16', 'Wk 24'), 2)),
+    align = c('l', 'c', rep('r', 10)),
+    format = output_type, longtable = F, booktabs = T,
+    linesep = "", escape = F,
+    caption = 'Number of paired heavy and light chain sequences included in analysis (PBMCs)',
+  ) %>%
+  column_spec(1, width = '0.7cm') %>%
+  column_spec(2, border_right = T) %>%
+  column_spec(7, border_right = T) %>%
+  column_spec(12, border_right = T) %>%
+  kable_styling(font_size = 5.8,
+                latex_options = c("hold_position", "repeat_header"))  %>%
+  add_header_above(header = c(" " = 2,  
+                              "eOD-GT8-specific B Cells Sequenced" = 5,
+                              "Core-g28v2-specific B Cells Sequenced" = 5)) %>%
+  collapse_rows(1, latex_hline = 'custom', custom_latex_hline=1) %>%
+  row_spec(nrow(count_view), bold = T) %>%
+ kableExtra::footnote(general = table_footnote)
+```
+
+```{r tab-igg-sequence-counts, results="asis", warning=kable_warnings}
+
+igg_count_view <- bcell_adata %>%
+  filter(`Sample Type` == 'PBMC') %>% 
+  mutate(PubID = PubID %>% str_replace('G002-', ''),
+         has_flow_data = !is.na(`Percent of IgG B cells that are antigen-specific`)) %>%
+  mutate(`Number of sequenced IgG B cells` = ifelse(has_flow_data & is.na(`Number of sequenced IgG B cells`),
+                                                    'No Seq', as.character(`Number of sequenced IgG B cells`))) %>% 
+  select(Group, Treatment, PubID, PTID, `Probe Set`, Week_Label, `Number of sequenced IgG B cells`) %>%
+  # pivot wide and then back to long to include implicit missing values
+  pivot_wider(id_cols = c(Group, Treatment, PubID, PTID),
+              names_from = c(`Probe Set`, Week_Label), names_sep = '_',
+              values_from = `Number of sequenced IgG B cells`, values_fill = NA) %>%
+  pivot_longer(cols = 5:14,
+               names_to = c('Probe Set', 'Week_Label'), names_sep = '_',
+               values_to = 'Number of sequenced IgG B cells') %>%
+  mutate(Week_Label = factor(Week_Label, levels = c('Baseline', 'Week 4', 'Week 8', 'Week 16', 'Week 24'))) %>%
+  merge(df_exclude, all.x=T) %>%
+  mutate(Group = paste0('Group ', Group, ': ', Treatment)) %>% select(-Treatment) %>%
+  # annotations to overwrite EXPECTED missing sequence counts
+  mutate(table_annotation = case_when(
+    
+    `Number of sequenced IgG B cells` == 'No Seq' ~ 'No Seq',
+    
+    # no sort with this probe set, group, time point
+    (Group == 'Group 1: eOD → eOD') & (`Probe Set` == 'Core-g28v2') & (Week_Label %in% c('Baseline', 'Week 4', 'Week 8')) ~ '-',
+    (Group == 'Group 2: eOD → Core') & (`Probe Set` == 'Core-g28v2') & (Week_Label %in% c('Baseline', 'Week 4')) ~ '-',
+     (Group == 'Group 2: eOD → Core') & (`Probe Set` == 'eOD-GT8') & (Week_Label %in% c('Week 16', 'Week 24')) ~ '-',
+    (Group == 'Group 3: eOD → eOD → Core') & (`Probe Set` == 'Core-g28v2') & (Week_Label %in% c('Baseline', 'Week 4', 'Week 8')) ~ '-',
+    (Group == 'Group 3: eOD → eOD → Core') & (`Probe Set` == 'eOD-GT8') & (Week_Label == 'Week 24') ~ '-',
+    (Group == 'Group 4: Core') & ((`Probe Set` == 'eOD-GT8') | (Week_Label %in% c('Week 16', 'Week 24'))) ~ '-',
+    
+    is_excluded ~ 'Excluded',
+    
+    is.na(`Number of sequenced IgG B cells`) ~ 'No Sort',
+    
+    .default = NA
+    
+  )) %>%
+  mutate(`Number of sequenced IgG B cells` = ifelse(is.na(table_annotation),
+                                                as.character(`Number of sequenced IgG B cells`),
+                                                table_annotation)) %>%
+  select(-PTID, -table_annotation, -is_excluded) %>%
+  pivot_wider(id_cols = c(Group, PubID),
+              names_from = c(`Probe Set`, Week_Label), 
+              names_sep = ' ', names_sort = T,
+              values_from = `Number of sequenced IgG B cells`,
+              values_fill = NA) %>%
+  arrange(Group, PubID) %>%
+  # add total row
+  bind_rows(summarise(.,
+                      PubID = "Total Obs.",
+                      across(c(starts_with('eOD-GT8'), starts_with('Core-g28v2')), 
+                             function(x) { sum(!(x %in% c('-', 'No Seq', 'Excluded', 'No Sort', NA))) %>% as.character() } )
+                      ))
+
+table_footnote <- c(
+  '-: The given probe set (eOD-GT8 or Core-g28v2) was not used for this treatment group and time point due to the vaccination schedule',
+  'Excluded: Samples that were either not collected, or were excluded from analysis, due to protocol deviations (i.e., missed vaccine doses and/or study discontinuation)', 
+  'No Seq: Samples for which flow cytometry data was available, but no sequencing data was available',
+  'No Sort: Samples for which no flow cytometry or sequencing data was available'
+)
+
+igg_count_view %>%
+  select(Group, PubID, 
+         c(`eOD-GT8 Baseline`, `eOD-GT8 Week 4`, `eOD-GT8 Week 8`, `eOD-GT8 Week 16`, `eOD-GT8 Week 24`),
+         c(`Core-g28v2 Baseline`, `Core-g28v2 Week 4`, `Core-g28v2 Week 8`, `Core-g28v2 Week 16`, `Core-g28v2 Week 24`)) %>%
+  kable(
+    col.names = c('Group', 'ID', rep(c('Wk -5', 'Wk 4', 'Wk 7.5/8', 'Wk 15.5/16', 'Wk 24'), 2)),
+    align = c('l', 'c', rep('r', 10)),
+    format = output_type, longtable = F, booktabs = T,
+    linesep = "", escape = F,
+    caption = 'Number of paired heavy and light chain IgG sequences included in analysis (PBMCs)',
+  ) %>%
+  column_spec(1, width = '0.7cm') %>%
+  column_spec(2, border_right = T) %>%
+  column_spec(7, border_right = T) %>%
+  column_spec(12, border_right = T) %>%
+  kable_styling(font_size = 5.8,
+                latex_options = c("hold_position", "repeat_header"))  %>%
+  add_header_above(header = c(" " = 2,  
+                              "eOD-GT8-specific IgG B Cells Sequenced" = 5,
+                              "Core-g28v2-specific IgG B Cells Sequenced" = 5)) %>%
+  collapse_rows(1, latex_hline = 'custom', custom_latex_hline=1) %>%
+  row_spec(nrow(count_view), bold = T) %>%
+ kableExtra::footnote(general = table_footnote)
+```
+
+\clearpage
+
+## IGHV1-2 genotype and detection of VRC01-class B cells
+
+```{r genotype-table}
+
+df_genotype <- bcell_adata %>%
+  filter(`Sample Type` == 'PBMC') %>% 
+  mutate(PubID = PubID %>% str_replace('G002-', ''),
+         has_flow_data = !is.na(`Percent of IgG B cells that are antigen-specific`)) %>%
+  select(Group, Treatment, Genotype, PubID, PTID, `Probe Set`, Week_Label, has_flow_data,
+         n_vrc01_class = `Number of sequenced VRC01-class B cells`) %>%
+  mutate(has_vrc01_class = case_when((n_vrc01_class > 0) ~ 'Yes', 
+                                     (n_vrc01_class == 0) ~ cell_spec('No', background='yellow'),
+                                     is.na(n_vrc01_class) & has_flow_data ~ cell_spec('No Seq', background='orange'),
+                                     .default = NA)) %>%
+  select(-n_vrc01_class, -has_flow_data) %>%
+  # pivot wide and then back to long to include implicit missing values
+  pivot_wider(id_cols = c(Group, Treatment, Genotype, PubID, PTID),
+              names_from = c(`Probe Set`, Week_Label), names_sep = '_',
+              values_from = has_vrc01_class, values_fill = NA) %>%
+  pivot_longer(cols = 6:15,
+               names_to = c('Probe Set', 'Week_Label'), names_sep = '_',
+               values_to = 'has_vrc01_class') %>%
+  mutate(Week_Label = factor(Week_Label, levels = c('Baseline', 'Week 4', 'Week 8', 'Week 16', 'Week 24'))) %>%
+  merge(df_exclude, all.x=T) %>%
+  mutate(Group = paste0('Group ', Group, ': ', Treatment)) %>% select(-Treatment) %>%
+  # annotations to overwrite EXPECTED missing sequence counts
+  mutate(table_annotation = case_when(
+    
+    str_detect(has_vrc01_class, 'No Seq') ~ has_vrc01_class,
+    
+    is_excluded ~ 'Excluded',
+    
+    # no sort with this probe set, group, time point
+    (Group == 'Group 1: eOD → eOD') & (`Probe Set` == 'Core-g28v2') & (Week_Label %in% c('Baseline', 'Week 4', 'Week 8')) ~ '-',
+    (Group == 'Group 2: eOD → Core') & (`Probe Set` == 'Core-g28v2') & (Week_Label %in% c('Baseline', 'Week 4')) ~ '-',
+     (Group == 'Group 2: eOD → Core') & (`Probe Set` == 'eOD-GT8') & (Week_Label %in% c('Week 16', 'Week 24')) ~ '-',
+    (Group == 'Group 3: eOD → eOD → Core') & (`Probe Set` == 'Core-g28v2') & (Week_Label %in% c('Baseline', 'Week 4', 'Week 8')) ~ '-',
+    (Group == 'Group 3: eOD → eOD → Core') & (`Probe Set` == 'eOD-GT8') & (Week_Label == 'Week 24') ~ '-',
+    (Group == 'Group 4: Core') & ((`Probe Set` == 'eOD-GT8') | (Week_Label %in% c('Week 16', 'Week 24'))) ~ '-',
+    
+    is.na(has_vrc01_class) ~ 'No Sort',
+    
+    .default = NA
+    
+  )) %>%
+  mutate(has_vrc01_class = ifelse(is.na(table_annotation), has_vrc01_class, table_annotation)) %>%
+  select(-PTID, -table_annotation, -is_excluded) %>%
+  rename(ID = PubID) %>%
+  pivot_wider(names_from = c(`Probe Set`, Week_Label), names_sep = ' ', names_sort = T,
+              values_from = has_vrc01_class) %>%
+  arrange(Group, Genotype, ID) %>%
+  # formatting columns
+  mutate(Genotype = Genotype %>% str_replace_all('\\*', '') %>% str_replace(' ', '/')) %>%
+  mutate(Genotype = ifelse(str_detect(Genotype, '/'), Genotype, paste0(Genotype, '/', Genotype))) %>%
+  mutate(Genotype = cell_spec(Genotype, background=ifelse(Genotype %in% c('05/05', '06/06', '05/06'), 'red', 'white'))) %>%
+  mutate(ID = ID %>% str_replace('G002-', '')) %>%
+  # add total rows
+  bind_rows(summarise(.,
+                      Group = 'Total',
+                      across(c(starts_with('Core-g28v2'), starts_with('eOD-GT8')),
+                             function(x) { paste(sum(str_detect(x, 'Yes'), na.rm=T), '/', 
+                                                 sum(!is.na(x) & !(str_detect(x, 'No Seq') | str_detect(x, '-') | 
+                                                                     str_detect(x, 'No Sort') | str_detect(x, 'Excluded') ))) } ),
+                      .groups = 'drop'))
+
+df_genotype %>%
+  select(Group, Genotype, ID, 
+         c(`eOD-GT8 Baseline`, `eOD-GT8 Week 4`, `eOD-GT8 Week 8`, `eOD-GT8 Week 16`, `eOD-GT8 Week 24`),
+         c(`Core-g28v2 Baseline`, `Core-g28v2 Week 4`, `Core-g28v2 Week 8`, `Core-g28v2 Week 16`, `Core-g28v2 Week 24`)) %>%
+  kable(
+    col.names = c('Group', 'Genotype', 'ID', rep(c('Wk -5', 'Wk 4', 'Wk 7.5/8', 'Wk 15.5/16', 'Wk 24'), 2)),
+    align = c('l', 'l', 'c', rep('c', 10)),
+    format = output_type, longtable = F, booktabs = T,
+    linesep = "", escape = F,
+    caption = 'IGHV1-2 genotype and detection of VRC01-class B cells in PBMCs',
+  ) %>%
+  kable_styling(font_size = 5.8,
+                latex_options = c("hold_position", "repeat_header"),
+                )  %>%
+  column_spec(1, border_right = T, width = '1.4cm') %>%
+  column_spec(3, border_right = T) %>%
+  column_spec(c(8, 13), border_right = T) %>% 
+  collapse_rows(1, latex_hline = 'custom', custom_latex_hline=1) %>%
+  add_header_above(header = c(" " = 3,  
+                              "VRC01-class eOD-GT8-specific B Cells Detected" = 5,
+                              "VRC01-class Core-g28v2-specific B Cells Detected" = 5)) %>%
+  row_spec(nrow(df_genotype), bold = T) %>%
+  kableExtra::footnote(general = table_footnote)
+```
+
+```{r genotype-table-igg-only}
+
+df_genotype <- bcell_adata %>%
+  filter(`Sample Type` == 'PBMC') %>% 
+  mutate(PubID = PubID %>% str_replace('G002-', ''),
+         has_flow_data = !is.na(`Percent of IgG B cells that are antigen-specific`)) %>%
+  select(Group, Treatment, Genotype, PubID, PTID, `Probe Set`, Week_Label, has_flow_data,
+         n_vrc01_class = `Number of sequenced VRC01-class IgG B cells`) %>%
+  mutate(has_vrc01_class = case_when((n_vrc01_class > 0) ~ 'Yes', 
+                                     (n_vrc01_class == 0) ~ cell_spec('No', background='yellow'),
+                                     is.na(n_vrc01_class) & has_flow_data ~ cell_spec('No Seq', background='orange'),
+                                     .default = NA)) %>%
+  select(-n_vrc01_class, -has_flow_data) %>%
+  # pivot wide and then back to long to include implicit missing values
+  pivot_wider(id_cols = c(Group, Treatment, Genotype, PubID, PTID),
+              names_from = c(`Probe Set`, Week_Label), names_sep = '_',
+              values_from = has_vrc01_class, values_fill = NA) %>%
+  pivot_longer(cols = 6:15,
+               names_to = c('Probe Set', 'Week_Label'), names_sep = '_',
+               values_to = 'has_vrc01_class') %>%
+  mutate(Week_Label = factor(Week_Label, levels = c('Baseline', 'Week 4', 'Week 8', 'Week 16', 'Week 24'))) %>%
+  merge(df_exclude, all.x=T) %>%
+  mutate(Group = paste0('Group ', Group, ': ', Treatment)) %>% select(-Treatment) %>%
+  # annotations to overwrite EXPECTED missing sequence counts
+  mutate(table_annotation = case_when(
+    
+    str_detect(has_vrc01_class, 'No Seq') ~ has_vrc01_class,
+    
+    is_excluded ~ 'Excluded',
+    
+    # no sort with this probe set, group, time point
+    (Group == 'Group 1: eOD → eOD') & (`Probe Set` == 'Core-g28v2') & (Week_Label %in% c('Baseline', 'Week 4', 'Week 8')) ~ '-',
+    (Group == 'Group 2: eOD → Core') & (`Probe Set` == 'Core-g28v2') & (Week_Label %in% c('Baseline', 'Week 4')) ~ '-',
+     (Group == 'Group 2: eOD → Core') & (`Probe Set` == 'eOD-GT8') & (Week_Label %in% c('Week 16', 'Week 24')) ~ '-',
+    (Group == 'Group 3: eOD → eOD → Core') & (`Probe Set` == 'Core-g28v2') & (Week_Label %in% c('Baseline', 'Week 4', 'Week 8')) ~ '-',
+    (Group == 'Group 3: eOD → eOD → Core') & (`Probe Set` == 'eOD-GT8') & (Week_Label == 'Week 24') ~ '-',
+    (Group == 'Group 4: Core') & ((`Probe Set` == 'eOD-GT8') | (Week_Label %in% c('Week 16', 'Week 24'))) ~ '-',
+    
+    is.na(has_vrc01_class) ~ 'No Sort',
+    
+    .default = NA
+    
+  )) %>%
+  mutate(has_vrc01_class = ifelse(is.na(table_annotation), has_vrc01_class, table_annotation)) %>%
+  select(-PTID, -table_annotation, -is_excluded) %>%
+  rename(ID = PubID) %>%
+  pivot_wider(names_from = c(`Probe Set`, Week_Label), names_sep = ' ', names_sort = T,
+              values_from = has_vrc01_class) %>%
+  arrange(Group, Genotype, ID) %>%
+  # formatting columns
+  mutate(Genotype = Genotype %>% str_replace_all('\\*', '') %>% str_replace(' ', '/')) %>%
+  mutate(Genotype = ifelse(str_detect(Genotype, '/'), Genotype, paste0(Genotype, '/', Genotype))) %>%
+  mutate(Genotype = cell_spec(Genotype, background=ifelse(Genotype %in% c('05/05', '06/06', '05/06'), 'red', 'white'))) %>%
+  mutate(ID = ID %>% str_replace('G002-', '')) %>%
+  # add total rows
+  bind_rows(summarise(.,
+                      Group = 'Total',
+                      across(c(starts_with('Core-g28v2'), starts_with('eOD-GT8')),
+                             function(x) { paste(sum(str_detect(x, 'Yes'), na.rm=T), '/', 
+                                                 sum(!is.na(x) & !(str_detect(x, 'No Seq') | str_detect(x, '-') | 
+                                                                     str_detect(x, 'No Sort') | str_detect(x, 'Excluded') ))) } ),
+                      .groups = 'drop'))
+
+df_genotype %>%
+  select(Group, Genotype, ID, 
+         c(`eOD-GT8 Baseline`, `eOD-GT8 Week 4`, `eOD-GT8 Week 8`, `eOD-GT8 Week 16`, `eOD-GT8 Week 24`),
+         c(`Core-g28v2 Baseline`, `Core-g28v2 Week 4`, `Core-g28v2 Week 8`, `Core-g28v2 Week 16`, `Core-g28v2 Week 24`)) %>%
+  kable(
+    col.names = c('Group', 'Genotype', 'ID', rep(c('Wk -5', 'Wk 4', 'Wk 7.5/8', 'Wk 15.5/16', 'Wk 24'), 2)),
+    align = c('l', 'l', 'c', rep('c', 10)),
+    format = output_type, longtable = F, booktabs = T,
+    linesep = "", escape = F,
+    caption = 'IGHV1-2 genotype and detection of VRC01-class IgG B cells in PBMCs',
+  ) %>%
+  kable_styling(font_size = 5.8,
+                latex_options = c("hold_position", "repeat_header"),
+                )  %>%
+  column_spec(1, border_right = T, width = '1.4cm') %>%
+  column_spec(3, border_right = T) %>%
+  column_spec(c(8, 13), border_right = T) %>% 
+  collapse_rows(1, latex_hline = 'custom', custom_latex_hline=1) %>%
+  add_header_above(header = c(" " = 3,  
+                              "VRC01-class eOD-GT8-specific IgG B Cells Detected" = 5,
+                              "VRC01-class Core-g28v2-specific IgG B Cells Detected" = 5)) %>%
+  row_spec(nrow(df_genotype), bold = T) %>%
+  kableExtra::footnote(general = table_footnote)
+```
+
+\clearpage
+
+# Reproducibility: software session and package version information
+
+```{r Software-Session-Information, results='asis'}
+
+# load in rmarkdown to capture version number
+if (any(installed.packages()[,1] == 'rmarkdown')) suppressWarnings(library(rmarkdown))
+
+my_session_info <- VISCfunctions::get_session_info()
+
+if (output_type == 'latex') {
+  my_session_info$platform_table <- my_session_info$platform_table %>%
+    mutate(value = str_replace_all(value, '_', '\\\\_')) # fix latex issue with rendering underscores
+}
+
+my_session_info$platform_table %>%
+  make_visc_table(caption = "Reproducibility software session information",
+                  fontsize = 8,
+                  cwidth = 3.25)
+```
+
+```{r Software-Package-Version-Information, results="asis", warning=F}
+
+pkgs_tbl <- my_session_info$packages_table %>%
+  separate(source, into = c("source1", "source2"), sep = "@") %>%
+  mutate(
+    source = if_else(
+      is.na(source2),
+      source1,
+      paste0(source1, "@", str_sub(source2, 1, 7), ")") # truncates git hashes
+    )
+  ) %>%
+  select(-source1, -source2)
+
+pkgs_tbl %>%
+  make_visc_table(caption = "Reproducibility software package version information",
+                  fontsize = 8,
+                  cwidth = 1.5)
+```
