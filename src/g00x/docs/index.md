@@ -33,7 +33,7 @@ This is the code for the G00x pipelines including G002 and G003. It is an all-in
 
 <!-- use a href so you can use _blank to open new tab -->
 
-**Source Code**: <a href="https://github.com/schieflab/g00x" target="_blank">https://github.com/schieflab/g00x</a>
+**Source Code**: <a href="https://github.com/schieflab//G002-and-G003" target="_blank">https://github.com/schieflab//G002-and-G003</a>
 
 ---
 
@@ -55,10 +55,10 @@ To install G00x package, use the following
 
 ```console
 clone the repository
-$ git clone https://github.com/schieflab/g00x
+$ git clone https://github.com/schieflab//G002-and-G003
 
-change into g00x
-$ cd g00x
+change into /G002-and-G003
+$ cd /G002-and-G003
 
 create an environment
 $ conda create -n g00x python==3.10.6 poetry==1.3.1 -y

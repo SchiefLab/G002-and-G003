@@ -126,10 +126,10 @@ This installation assumes that `git` and `conda` are in your path.
 
 ```
 # clone the repository
-git clone https://github.com/SchiefLab/G00x.git
+git clone https://github.com/SchiefLab/G002-and-G003.git
 
 # change directory
-cd G00x
+cd G002-and-G003
 
 # this will create a conda environment called g00x and install the package
 ./install.sh
