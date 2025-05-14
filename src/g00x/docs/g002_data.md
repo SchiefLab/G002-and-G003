@@ -15,7 +15,6 @@
   - [Local Machine Setup](#local-machine-setup)
     - [Mounting Box](#mounting-box)
     - [Rclone](#rclone)
-    - [Mounting Box](#mounting-box-1)
     - [Mounting Globus](#mounting-globus)
 
 # Summary
@@ -32,7 +31,7 @@ We store our data on [AWS S3 Buckets](https://aws.amazon.com/s3/). We have two b
 
 ### Obtaining AWS credentials.
 
-To get AWS credentials, you can either email [Jordan](mailto:jwillis@scripps.edu) or [Troy](mailto:tsincomb@iavi.org) to get access.
+To get AWS credentials, you can either email [Troy](mailto:tsincomb@iavi.org) to get access.
 
 There are two scenarios for access.
 

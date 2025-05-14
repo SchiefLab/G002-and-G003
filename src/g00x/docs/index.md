@@ -101,64 +101,47 @@ Commands:
 
 </div>
 
-## **G002 where to go**
+
+## G002 where to go
+
+📊 [**G002 Data**](g002_data.md)  
+Transfer and use the raw data ➡️ [Take me!](g002_data.md)
 
 ---
 
-<!-- <div class="grid cards" markdown> -->
-
-:octicons-database-24:{ .lg .middle } [**G002 Data**](g002_data.md)
-
-Transfer and use the raw data [:octicons-arrow-right-24: Take me!](g002_data.md)
+✅ [**G002 Validation**](g002_validation.md)  
+Validate your data structures ➡️ [Take me!](g002_validation.md)
 
 ---
 
-:heavy_check_mark:{ .lg .middle } [**G002 Validation**](g002_validation.md)
-
-Validate your data structures [:octicons-arrow-right-24: Take me!](g002_validation.md)
-
----
-
-:material-beaker:{ .lg .middle } [**G002 Pipeline**](g002_pipeline.md)
-
-Use the G002 flow and sequencing pipeline [:octicons-arrow-right-24: Take me!](g002_pipeline.md)
+🧪 [**G002 Pipeline**](g002_pipeline.md)  
+Use the G002 flow and sequencing pipeline ➡️ [Take me!](g002_pipeline.md)
 
 ---
 
-:material-magnify:{ .lg .middle } [**G002 Analysis**](g002_analysis.md)
+🔍 [**G002 Analysis**](g002_analysis.md)  
+Analyze the dataframes and make figures ➡️ [Take me!](g002_analysis.md)
 
-Analyze the dataframes and make figures[:octicons-arrow-right-24: Take me!](g002_analysis.md)
+## G003 where to go
 
-<!-- </div> -->
-
-## **G003 where to go**
-
----
-
-<!-- <div class="grid cards" markdown> -->
-
-:octicons-database-24:{ .lg .middle } [**G003 Data**](g003_data.md)
-
-Transfer and use the raw data [:octicons-arrow-right-24: Take me!](g003_data.md)
+📊 [**G003 Data**](g003_data.md)  
+Transfer and use the raw data ➡️ [Take me!](g003_data.md)
 
 ---
 
-:heavy_check_mark:{ .lg .middle } [**G003 Validation**](g003_validation.md)
-
-Validate your data structures [:octicons-arrow-right-24: Take me!](g003_validation.md)
-
----
-
-:material-beaker:{ .lg .middle } [**G003 Pipeline**](g002_pipeline.md)
-
-Use the G003 flow and sequencing pipeline [:octicons-arrow-right-24: Take me!](g003_pipeline.md)
+✅ [**G003 Validation**](g003_validation.md)  
+Validate your data structures ➡️ [Take me!](g003_validation.md)
 
 ---
 
-:material-magnify:{ .lg .middle } [**G003 Analysis**](g003_analysis.md)
+🧪 [**G003 Pipeline**](g003_pipeline.md)  
+Use the G003 flow and sequencing pipeline ➡️ [Take me!](g003_pipeline.md)
 
-Analyze the dataframes and make figures[:octicons-arrow-right-24: Take me!](g003_analysis.md)
-<!-- </div> -->
+---
+
+🔍 [**G003 Analysis**](g003_analysis.md)  
+Analyze the dataframes and make figures ➡️ [Take me!](g003_analysis.md)
+---
 
 <!-- ## Current G002 samples
 
