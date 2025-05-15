@@ -15,6 +15,9 @@
     <a href="https://doi.org/10.5281/zenodo.15284778">
     <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.15284778.svg"
         alt="zenodo link"></a>
+    <a href="https://app.netlify.com/projects/g00x/deploys">
+    <img src="https://api.netlify.com/api/v1/badges/0cfc5010-68e1-4002-a9bd-237baf1b320b/deploy-status"
+        alt="Netlify Status"></a>
 </div>
 
 <h1 align="center" style="font-size: 1.8em">
@@ -130,10 +133,10 @@ This installation assumes that `git` and `conda` are in your path.
 
 ```
 # clone the repository
-git clone https://github.com/SchiefLab/G00x.git
+git clone https://github.com/SchiefLab/G002-and-G003.git
 
 # change directory
-cd G00x
+cd G002-and-G003
 
 # this will create a conda environment called g00x and install the package
 ./install.sh

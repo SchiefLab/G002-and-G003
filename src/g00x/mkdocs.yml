@@ -1,7 +1,7 @@
 site_name: "G00x"
 site_description: "G00x: A generalized pipeline for analyzing germline-targeting clinical trials"
 site_url: https://g00x.schieflab.com/
-og_image: https://repository-images.githubusercontent.com/313568721/5adf0900-c0d7-11eb-921d-36288bd44b7c
+#og_image: https://repository-images.githubusercontent.com/313568721/5adf0900-c0d7-11eb-921d-36288bd44b7c
 theme:
   name: material
   custom_dir: docs/overrides
@@ -56,8 +56,8 @@ markdown_extensions: #
       base_path: docs/
   - pymdownx.details
   - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
+      emoji_index: !!python/name:pymdownx.emoji.twemoji
+      emoji_generator: !!python/name:pymdownx.emoji.to_svg
 
 nav: # this is how we layout the documents
   - Introduction: index.md
