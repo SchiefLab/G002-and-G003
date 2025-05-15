@@ -1,0 +1,89 @@
+"panel","y_label","weeks","comp","p.value","fdr"
+"A","Percent antigen-specific among IgG^{+}",-5,"G001 vs. G002",3.93398209782907e-09,1.0327329555277e-08
+"A","Percent antigen-specific among IgG^{+}",-5,"G002 vs. G003",5.16366477763851e-09,1.0327329555277e-08
+"A","Percent antigen-specific among IgG^{+}",4,"G001 vs. G002",5.15490584618571e-14,2.06196233847428e-13
+"A","Percent antigen-specific among IgG^{+}",4,"G002 vs. G003",NA,NA
+"A","Percent antigen-specific among IgG^{+}",8,"G001 vs. G002",1.03169765636031e-21,8.25358125088251e-21
+"A","Percent antigen-specific among IgG^{+}",8,"G002 vs. G003",0.00474526201510709,0.00542315658869381
+"A","Percent antigen-specific among IgG^{+}",10,"G002 vs. G003",NA,NA
+"A","Percent antigen-specific among IgG^{+}",16,"G001 vs. G002",0.000349048081718239,0.000558476930749182
+"A","Percent antigen-specific among IgG^{+}",16,"G002 vs. G003",0.0115611423124792,0.0115611423124792
+"A","Percent antigen-specific among IgG^{+}",21,"G001 vs. G002",NA,NA
+"A","Percent antigen-specific among IgG^{+}",21,"G002 vs. G003",0.00271208562587491,0.00361611416783321
+"B","Percent epitope-specific (KO^-Ag^{++}) among IgG^{+}",-5,"G001 vs. G002",4.08572327833378e-08,8.17144655666757e-08
+"B","Percent epitope-specific (KO^-Ag^{++}) among IgG^{+}",-5,"G002 vs. G003",3.93668335809311e-08,8.17144655666757e-08
+"B","Percent epitope-specific (KO^-Ag^{++}) among IgG^{+}",4,"G001 vs. G002",4.82556594094698e-14,1.93022637637879e-13
+"B","Percent epitope-specific (KO^-Ag^{++}) among IgG^{+}",4,"G002 vs. G003",NA,NA
+"B","Percent epitope-specific (KO^-Ag^{++}) among IgG^{+}",8,"G001 vs. G002",1.41479127140587e-21,1.1318330171247e-20
+"B","Percent epitope-specific (KO^-Ag^{++}) among IgG^{+}",8,"G002 vs. G003",0.0213933887651284,0.0285245183535045
+"B","Percent epitope-specific (KO^-Ag^{++}) among IgG^{+}",10,"G002 vs. G003",NA,NA
+"B","Percent epitope-specific (KO^-Ag^{++}) among IgG^{+}",16,"G001 vs. G002",2.03223851327965e-05,3.25158162124744e-05
+"B","Percent epitope-specific (KO^-Ag^{++}) among IgG^{+}",16,"G002 vs. G003",0.554404438945471,0.554404438945471
+"B","Percent epitope-specific (KO^-Ag^{++}) among IgG^{+}",21,"G001 vs. G002",NA,NA
+"B","Percent epitope-specific (KO^-Ag^{++}) among IgG^{+}",21,"G002 vs. G003",0.31226814921426,0.356877884816297
+"C","Percent IgG^{+}KO^- among Ag^{++}",-5,"G001 vs. G002",0.37423968888392,0.427702501581623
+"C","Percent IgG^{+}KO^- among Ag^{++}",-5,"G002 vs. G003",0.00777354617803703,0.0155470923560741
+"C","Percent IgG^{+}KO^- among Ag^{++}",4,"G001 vs. G002",0.0903675269615083,0.144588043138413
+"C","Percent IgG^{+}KO^- among Ag^{++}",4,"G002 vs. G003",NA,NA
+"C","Percent IgG^{+}KO^- among Ag^{++}",8,"G001 vs. G002",0.139778806646563,0.186371742195417
+"C","Percent IgG^{+}KO^- among Ag^{++}",8,"G002 vs. G003",0.00291943282856162,0.00778515420949766
+"C","Percent IgG^{+}KO^- among Ag^{++}",10,"G002 vs. G003",NA,NA
+"C","Percent IgG^{+}KO^- among Ag^{++}",16,"G001 vs. G002",0.617968485321498,0.617968485321498
+"C","Percent IgG^{+}KO^- among Ag^{++}",16,"G002 vs. G003",6.04265226704312e-07,2.59874913380079e-06
+"C","Percent IgG^{+}KO^- among Ag^{++}",21,"G001 vs. G002",NA,NA
+"C","Percent IgG^{+}KO^- among Ag^{++}",21,"G002 vs. G003",6.49687283450198e-07,2.59874913380079e-06
+"D","Number of IGHG sequences that are VRC01-class",-5,"G001 vs. G002",0.32655780733083,0.65311561466166
+"D","Number of IGHG sequences that are VRC01-class",-5,"G002 vs. G003",0.775096962195985,0.775096962195985
+"D","Number of IGHG sequences that are VRC01-class",4,"G001 vs. G002",3.87793881218639e-08,1.03411701658304e-07
+"D","Number of IGHG sequences that are VRC01-class",4,"G002 vs. G003",NA,NA
+"D","Number of IGHG sequences that are VRC01-class",8,"G001 vs. G002",6.94091373374828e-10,5.55273098699862e-09
+"D","Number of IGHG sequences that are VRC01-class",8,"G002 vs. G003",0.431109718329256,0.68977554932681
+"D","Number of IGHG sequences that are VRC01-class",10,"G002 vs. G003",NA,NA
+"D","Number of IGHG sequences that are VRC01-class",16,"G001 vs. G002",1.84971971151025e-09,7.39887884604101e-09
+"D","Number of IGHG sequences that are VRC01-class",16,"G002 vs. G003",0.688070088451452,0.775096962195985
+"D","Number of IGHG sequences that are VRC01-class",21,"G001 vs. G002",NA,NA
+"D","Number of IGHG sequences that are VRC01-class",21,"G002 vs. G003",0.76966377914859,0.775096962195985
+"E","Percent of VRC01-class sequences among IgG",-5,"G001 vs. G002",0.648484848484848,0.648484848484848
+"E","Percent of VRC01-class sequences among IgG",-5,"G002 vs. G003",0.5,0.571428571428571
+"E","Percent of VRC01-class sequences among IgG",4,"G001 vs. G002",4.17768634522231e-09,1.67107453808892e-08
+"E","Percent of VRC01-class sequences among IgG",4,"G002 vs. G003",NA,NA
+"E","Percent of VRC01-class sequences among IgG",8,"G001 vs. G002",2.08576858811254e-12,1.66861487049003e-11
+"E","Percent of VRC01-class sequences among IgG",8,"G002 vs. G003",0.0427173527188171,0.0683477643501074
+"E","Percent of VRC01-class sequences among IgG",10,"G002 vs. G003",NA,NA
+"E","Percent of VRC01-class sequences among IgG",16,"G001 vs. G002",1.59262605501201e-06,4.24700281336535e-06
+"E","Percent of VRC01-class sequences among IgG",16,"G002 vs. G003",0.137650720038948,0.183534293385263
+"E","Percent of VRC01-class sequences among IgG",21,"G001 vs. G002",NA,NA
+"E","Percent of VRC01-class sequences among IgG",21,"G002 vs. G003",0.0414383226740206,0.0683477643501074
+"F","Percent of IGHG sequences that are VRC01-class",-5,"G001 vs. G002",0.294186288800238,0.392248385066984
+"F","Percent of IGHG sequences that are VRC01-class",-5,"G002 vs. G003",0.25,0.392248385066984
+"F","Percent of IGHG sequences that are VRC01-class",4,"G001 vs. G002",0.00029207535854341,0.00116830143417364
+"F","Percent of IGHG sequences that are VRC01-class",4,"G002 vs. G003",NA,NA
+"F","Percent of IGHG sequences that are VRC01-class",8,"G001 vs. G002",0.391479669896948,0.447405337025083
+"F","Percent of IGHG sequences that are VRC01-class",8,"G002 vs. G003",0.99339122394026,0.99339122394026
+"F","Percent of IGHG sequences that are VRC01-class",10,"G002 vs. G003",NA,NA
+"F","Percent of IGHG sequences that are VRC01-class",16,"G001 vs. G002",0.000181377865302583,0.00116830143417364
+"F","Percent of IGHG sequences that are VRC01-class",16,"G002 vs. G003",0.0563147233674035,0.150172595646409
+"F","Percent of IGHG sequences that are VRC01-class",21,"G001 vs. G002",NA,NA
+"F","Percent of IGHG sequences that are VRC01-class",21,"G002 vs. G003",0.102800298667845,0.20560059733569
+"G","Percent VRC01-class among eOD-specific IgG+ memory BCR sequences",-5,"G001 vs. G002",0.163636363636364,0.327272727272727
+"G","Percent VRC01-class among eOD-specific IgG+ memory BCR sequences",-5,"G002 vs. G003",0.25,0.336322772779937
+"G","Percent VRC01-class among eOD-specific IgG+ memory BCR sequences",4,"G001 vs. G002",0.00720165468107846,0.0288066187243138
+"G","Percent VRC01-class among eOD-specific IgG+ memory BCR sequences",4,"G002 vs. G003",NA,NA
+"G","Percent VRC01-class among eOD-specific IgG+ memory BCR sequences",8,"G001 vs. G002",0.816318377745478,0.816318377745478
+"G","Percent VRC01-class among eOD-specific IgG+ memory BCR sequences",8,"G002 vs. G003",0.523000795647657,0.597715195025893
+"G","Percent VRC01-class among eOD-specific IgG+ memory BCR sequences",10,"G002 vs. G003",NA,NA
+"G","Percent VRC01-class among eOD-specific IgG+ memory BCR sequences",16,"G001 vs. G002",0.000508840676699425,0.0040707254135954
+"G","Percent VRC01-class among eOD-specific IgG+ memory BCR sequences",16,"G002 vs. G003",0.252242079584953,0.336322772779937
+"G","Percent VRC01-class among eOD-specific IgG+ memory BCR sequences",21,"G001 vs. G002",NA,NA
+"G","Percent VRC01-class among eOD-specific IgG+ memory BCR sequences",21,"G002 vs. G003",0.113825007794586,0.303533354118897
+"H","%VRC01-classresponders",-5,"G002 vs. G001",1,1
+"H","%VRC01-classresponders",-5,"G002 vs. G003",1,1
+"H","%VRC01-classresponders",4,"G002 vs. G001",0.722931141147,1
+"H","%VRC01-classresponders",4,"G002 vs. G003",NA,NA
+"H","%VRC01-classresponders",8,"G002 vs. G001",0.430948204272,1
+"H","%VRC01-classresponders",8,"G002 vs. G003",0.201597639686,1
+"H","%VRC01-classresponders",10,"G002 vs. G003",NA,NA
+"H","%VRC01-classresponders",16,"G002 vs. G001",0.911117236144,1
+"H","%VRC01-classresponders",16,"G002 vs. G003",0.919553362988,1
+"H","%VRC01-classresponders",21,"G002 vs. G001",NA,NA
+"H","%VRC01-classresponders",21,"G002 vs. G003",0.598357828076,1

@@ -1,0 +1,11 @@
+"comp","SampleSizes","summary","p.value","is.paired","weeks","outcome_name","fdr"
+"eOD->eOD at wk16 vs. eOD->eOD at wk16","26","84.6114 [0.0000, 94.5946] vs. 36.9592 [0.0000, 66.0839]",8.34465026855469e-07,TRUE,16,"VRC01-class among CD4bs-specific IgG B cells",4.17232513427734e-06
+"eOD->core at wk16 vs. eOD->eOD at wk16","16 vs. 28","82.6923 [25.0000, 96.6667] vs. 35.9251 [0.0000, 66.0839]",3.3123310725006e-05,FALSE,16,"VRC01-class among CD4bs-specific IgG B cells",8.28082768125151e-05
+"eOD->eOD at wk24 vs. eOD->eOD at wk24","13","87.6623 [0.0000, 95.6322] vs. 47.5884 [0.0000, 72.2520]",0.00048828125,TRUE,24,"VRC01-class among CD4bs-specific IgG B cells",0.000813802083333333
+"eOD->core at wk24 vs. eOD->eOD at wk24","17 vs. 13","84.9265 [28.7356, 94.9474] vs. 47.5884 [0.0000, 72.2520]",0.00086857156217213,FALSE,24,"VRC01-class among CD4bs-specific IgG B cells",0.00108571445271516
+"eOD->eOD->core at wk24 vs. eOD->eOD at wk24","13 vs. 13","77.6892 [0.0000, 88.4615] vs. 47.5884 [0.0000, 72.2520]",0.0163500182681768,FALSE,24,"VRC01-class among CD4bs-specific IgG B cells",0.0163500182681768
+"eOD->eOD at wk16 vs. eOD->eOD at wk16","26","71.2676 [0.0000, 93.4711] vs. 10.5157 [0.0000, 24.4443]",1.19209289550781e-07,TRUE,16,"VRC01-class among antigen-specific IgG B cells",1.98682149251302e-07
+"eOD->core at wk16 vs. eOD->eOD at wk16","16 vs. 28","66.7521 [13.9326, 85.6346] vs. 10.3760 [0.0000, 24.4443]",3.28042099920519e-09,FALSE,16,"VRC01-class among antigen-specific IgG B cells",1.64021049960259e-08
+"eOD->eOD at wk24 vs. eOD->eOD at wk24","13","84.7690 [0.0000, 94.8271] vs. 11.4011 [0.0000, 20.4216]",0.00048828125,TRUE,24,"VRC01-class among antigen-specific IgG B cells",0.0006103515625
+"eOD->core at wk24 vs. eOD->eOD at wk24","17 vs. 13","69.4342 [18.7120, 83.6671] vs. 11.4011 [0.0000, 20.4216]",1.16900614020475e-07,FALSE,24,"VRC01-class among antigen-specific IgG B cells",1.98682149251302e-07
+"eOD->eOD->core at wk24 vs. eOD->eOD at wk24","13 vs. 13","58.0350 [0.0000, 83.5470] vs. 11.4011 [0.0000, 20.4216]",0.00154394938753533,FALSE,24,"VRC01-class among antigen-specific IgG B cells",0.00154394938753533

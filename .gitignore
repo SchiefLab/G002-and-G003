@@ -43,8 +43,13 @@ final_df.feather
 src/g002_figures/data/g002/Icon*
 src/g002_figures/data/g002/final_df.*
 *.feather
-*.csv
 src/g002_figures/data/g002/*
+
+# files not needed
+figA_percent_bcr_nonvrc01_light.csv
+figA_percent_bcr_vrc01_light.csv
+*_seqs.csv
 
 Icon*
 G00X-plots-test/
+G00X-plots/Sup-Metrics/S39/figE_seqs.csv
