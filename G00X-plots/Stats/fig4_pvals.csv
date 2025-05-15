@@ -1,0 +1,41 @@
+"panel","y_label","weeks","comp","p.value","fdr"
+"A","Percent antigen-specific among IgG^{+}",8,"eOD vs. core",0.00189538404641379,0.00947692023206897
+"A","Percent antigen-specific among IgG^{+}",16,"eOD->eOD vs. eOD->core",0.0650498796858067,0.162624699214517
+"A","Percent antigen-specific among IgG^{+}",24,"eOD->eOD vs. eOD->core",0.362669592522035,0.604449320870058
+"A","Percent antigen-specific among IgG^{+}",24,"eOD->eOD vs. eOD->eOD->core",0.613869776743649,0.613869776743649
+"A","Percent antigen-specific among IgG^{+}",24,"eOD->core vs. eOD->eOD->core",0.563403411076417,0.613869776743649
+"B","Percent epitope-specific (KO^-Ag^{++}) among IgG^{+}",8,"eOD vs. core",0.00851767098906687,0.0425883549453343
+"B","Percent epitope-specific (KO^-Ag^{++}) among IgG^{+}",16,"eOD->eOD vs. eOD->core",0.220590229076168,0.551475572690419
+"B","Percent epitope-specific (KO^-Ag^{++}) among IgG^{+}",24,"eOD->eOD vs. eOD->core",0.563403411076417,0.704254263845521
+"B","Percent epitope-specific (KO^-Ag^{++}) among IgG^{+}",24,"eOD->eOD vs. eOD->eOD->core",0.840250947060747,0.840250947060747
+"B","Percent epitope-specific (KO^-Ag^{++}) among IgG^{+}",24,"eOD->core vs. eOD->eOD->core",0.535769241527941,0.704254263845521
+"C","Percent IgG^{+}KO^- among Ag^{++}",8,"eOD vs. core",0.287780551510529,0.359725689388161
+"C","Percent IgG^{+}KO^- among Ag^{++}",16,"eOD->eOD vs. eOD->core",0.00101635065514664,0.00508175327573321
+"C","Percent IgG^{+}KO^- among Ag^{++}",24,"eOD->eOD vs. eOD->core",0.00521194707575202,0.01302986768938
+"C","Percent IgG^{+}KO^- among Ag^{++}",24,"eOD->eOD vs. eOD->eOD->core",0.0338276637886276,0.0563794396477126
+"C","Percent IgG^{+}KO^- among Ag^{++}",24,"eOD->core vs. eOD->eOD->core",0.710590185274948,0.710590185274948
+"D","Number of IGHG sequences that are VRC01-class",8,"eOD vs. core",0.00128600127508424,0.00643000637542122
+"D","Number of IGHG sequences that are VRC01-class",16,"eOD->eOD vs. eOD->core",0.795573955037013,0.795573955037013
+"D","Number of IGHG sequences that are VRC01-class",24,"eOD->eOD vs. eOD->core",0.408285381118964,0.795573955037013
+"D","Number of IGHG sequences that are VRC01-class",24,"eOD->eOD vs. eOD->eOD->core",0.504693585750644,0.795573955037013
+"D","Number of IGHG sequences that are VRC01-class",24,"eOD->core vs. eOD->eOD->core",0.721976076864199,0.795573955037013
+"E","Percent of VRC01-class sequences among IgG",8,"eOD vs. core",0.000412796697626419,0.00206398348813209
+"E","Percent of VRC01-class sequences among IgG",16,"eOD->eOD vs. eOD->core",0.753671832006273,0.92633767622326
+"E","Percent of VRC01-class sequences among IgG",24,"eOD->eOD vs. eOD->core",0.878821626395208,0.92633767622326
+"E","Percent of VRC01-class sequences among IgG",24,"eOD->eOD vs. eOD->eOD->core",0.880111946204287,0.92633767622326
+"E","Percent of VRC01-class sequences among IgG",24,"eOD->core vs. eOD->eOD->core",0.92633767622326,0.92633767622326
+"F","Response y",8,"eOD vs. core",0.0360974189394,0.180487094697
+"F","Response y",16,"eOD->eOD vs. eOD->core",0.142165707008,0.236942845013333
+"F","Response y",24,"eOD->eOD vs. eOD->core",0.334723858794,0.4184048234925
+"F","Response y",24,"eOD->eOD vs. eOD->eOD->core",0.675632925334,0.675632925334
+"F","Response y",24,"eOD->core vs. eOD->eOD->core",0.118193814943,0.236942845013333
+"G","Percent of IGHG sequences that are VRC01-class",8,"eOD vs. core",0.000204203753900693,0.00102101876950346
+"G","Percent of IGHG sequences that are VRC01-class",16,"eOD->eOD vs. eOD->core",0.845970481347749,0.845970481347749
+"G","Percent of IGHG sequences that are VRC01-class",24,"eOD->eOD vs. eOD->core",0.300325810361319,0.375407262951649
+"G","Percent of IGHG sequences that are VRC01-class",24,"eOD->eOD vs. eOD->eOD->core",0.0182459401201725,0.0456148503004313
+"G","Percent of IGHG sequences that are VRC01-class",24,"eOD->core vs. eOD->eOD->core",0.078752762636919,0.131254604394865
+"H","Percent VRC01-class among Core-specific IgG+ memory BCR sequences",8,"eOD vs. core",0.000205693452476764,0.00102846726238382
+"H","Percent VRC01-class among Core-specific IgG+ memory BCR sequences",16,"eOD->eOD vs. eOD->core",0.228424799560176,0.241205319827698
+"H","Percent VRC01-class among Core-specific IgG+ memory BCR sequences",24,"eOD->eOD vs. eOD->core",0.0279480142969451,0.0465800238282418
+"H","Percent VRC01-class among Core-specific IgG+ memory BCR sequences",24,"eOD->eOD vs. eOD->eOD->core",0.0102921072106055,0.0257302680265138
+"H","Percent VRC01-class among Core-specific IgG+ memory BCR sequences",24,"eOD->core vs. eOD->eOD->core",0.241205319827698,0.241205319827698

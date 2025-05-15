@@ -1356,6 +1356,7 @@ def plot_cp_frequency(data: Data, img_outpath: Path, metric_outdir: Path) -> Non
     seq = data.get_g002_sequences_boost_plus().query("is_vrc01_class==True").query("top_c_call=='IGHG'")
     seq["weeks"] = seq["weeks"].astype(int)
     seq = seq.query("weeks!=4")
+    # breakpoint()
 
     fig, axes = plt.subplots(4, 2, figsize=(10, 14))
 
@@ -1484,28 +1485,10 @@ def plot_cp_frequency(data: Data, img_outpath: Path, metric_outdir: Path) -> Non
         ha="right",
         rotation_mode="anchor",
     )
-    # custom_lines = []
-    # pal = {
-    #     8: "gold",
-    #     16: "#E377C2",
-    #     24: "#2078B4",
-    # }
-    # for x in pal:
-    #     custom_lines.append(
-    #         Patch(facecolor=pal[x], edgecolor="black", linewidth=1, label=x)
-    #     )
+
     ax.yaxis.set_major_formatter(mtick.PercentFormatter(1, decimals=0))
     ax.set_ylim(0, 1.05)
-    # ax.legend(
-    #     custom_lines,
-    #     ["wk " + i._label for i in custom_lines],
-    #     loc="upper center",
-    #     frameon=False,
-    #     handlelength=0.8,
-    #     ncol=3,
-    #     bbox_to_anchor=(0.5, -0.3),
-    #     labelspacing=0.1,
-    # )
+
     letter = "H"
     stem = (
         f"fig{letter}"
@@ -1513,6 +1496,7 @@ def plot_cp_frequency(data: Data, img_outpath: Path, metric_outdir: Path) -> Non
             " ", "_"
         )
     )
+
     ax, medians4, df = plot(
         calc_clonality(seq[seq["fraction_of_cottrell_gt_hcdr2_n"] > 0]),
         "clonality",
@@ -1634,6 +1618,7 @@ def plot_cp_frequency(data: Data, img_outpath: Path, metric_outdir: Path) -> Non
         bbox_to_anchor=(0.5, -0.65),
     )
     plt.tight_layout()
+    # breakpoint()
     fig.savefig(img_outpath, dpi=700)
 
 

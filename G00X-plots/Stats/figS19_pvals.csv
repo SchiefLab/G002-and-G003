@@ -1,0 +1,13 @@
+"panel","y_label","comp","p.value","fdr"
+"A","percentage_of_antigen++","G001 vs. G002",0.0185433761285154,NA
+"B","percentage_of_epitope_specific","G001 vs. G002",0.0630128385546342,NA
+"C","Percent of IgG+ B cells detected as VRC01-class (missing seq to 0)","G001 vs. G002",0.0752560133365087,NA
+"D","v_mutation_aa_heavy","G001 vs. G002",0.306030303935785,NA
+"E","percentage_of_antigen++","G001 vs. G003",0.0206682206682207,0.0413364413364413
+"E","percentage_of_antigen++","G002 vs. G003",0.16052836052836,0.16052836052836
+"F","percentage_of_epitope_specific","G001 vs. G003",0.00699300699300699,0.013986013986014
+"F","percentage_of_epitope_specific","G002 vs. G003",0.16052836052836,0.16052836052836
+"G","Percent of IgG+ B cells detected as VRC01-class (missing seq to 0)","G001 vs. G003",0.685714285714286,0.685714285714286
+"G","Percent of IgG+ B cells detected as VRC01-class (missing seq to 0)","G002 vs. G003",0.685714285714286,0.685714285714286
+"H","v_mutation_aa_heavy","G001 vs. G003",0.191266986878869,0.306492165041584
+"H","v_mutation_aa_heavy","G002 vs. G003",0.306492165041584,0.306492165041584

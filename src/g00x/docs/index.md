@@ -1,3 +1,6 @@
+<div align="center">
+<img src="poster.png" style="margin:0.5em;width:75%;height:75%">
+</div>
 <h1 align="center">
   <br>
   G00x - Generalizable Germline-Targeting Clinical Trial Pipeline
@@ -13,16 +16,12 @@
     <a href="https://github.com/pre-commit/pre-commit">
     <img src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white"
         alt="pre commit">
-    <!-- <br>
-    <a href="https://github.com/SchiefLab/G00x/actions/workflows/sequence.yml/badge.svg">
-    <img src="https://github.com/SchiefLab/G00x/actions/workflows/sequence.yml/badge.svg"
-         alt="Sequence">
-    <a href="https://github.com/SchiefLab/G00x/actions/workflows/pyright.yml/badge.svg">
-    <img src="https://github.com/SchiefLab/G00x/actions/workflows/pyright.yml/badge.svg"
-         alt="Static Type Checking">
-    <a href="https://github.com/SchiefLab/G00x/actions/workflows/flow.yml/badge.svg">
-    <img src="https://github.com/SchiefLab/G00x/actions/workflows/flow.yml/badge.svg"
-         alt="Flow workflow"> -->
+    <a href="https://doi.org/10.5281/zenodo.15284778">
+    <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.15284778.svg"
+        alt="zenodo link"></a>
+    <a href="https://app.netlify.com/projects/g00x/deploys">
+    <img src="https://api.netlify.com/api/v1/badges/0cfc5010-68e1-4002-a9bd-237baf1b320b/deploy-status"
+        alt="Netlify Status"></a>
 </div>
 
 ## About
@@ -33,7 +32,7 @@ This is the code for the G00x pipelines including G002 and G003. It is an all-in
 
 <!-- use a href so you can use _blank to open new tab -->
 
-**Source Code**: <a href="https://github.com/schieflab/g00x" target="_blank">https://github.com/schieflab/g00x</a>
+**Source Code**: <a href="https://github.com/schieflab/G002-and-G003" target="_blank">https://github.com/schieflab/G002-and-G003</a>
 
 ---
 
@@ -55,10 +54,10 @@ To install G00x package, use the following
 
 ```console
 clone the repository
-$ git clone https://github.com/schieflab/g00x
+$ git clone https://github.com/schieflab/G002-and-G003
 
-change into g00x
-$ cd g00x
+change into G002-and-G003
+$ cd G002-and-G003
 
 create an environment
 $ conda create -n g00x python==3.10.6 poetry==1.3.1 -y
@@ -101,64 +100,116 @@ Commands:
 
 </div>
 
-## **G002 where to go**
+## Installation Guide: Cell Ranger 7.0 and bcl2fastq
+G00x requires `cellranger 7.0.1` to be installed from the 10x website. Please check that your system meets the [system requirements](https://www.10xgenomics.com/support/software/cell-ranger/downloads/cr-system-requirements). The installation instructions for Cell Ranger are on the [10x website](https://www.10xgenomics.com/support/software/cell-ranger/downloads#download-links), then add the cellranger binary to your PATH. 
 
 ---
 
-<!-- <div class="grid cards" markdown> -->
+### 1. Install Cell Ranger 7.0.1
 
-:octicons-database-24:{ .lg .middle } [**G002 Data**](g002_data.md)
+1. Download and Extract
 
-Transfer and use the raw data [:octicons-arrow-right-24: Take me!](g002_data.md)
+```bash
+cd ~/apps  # Or any directory in your PATH
+wget link to cellranger-7.0.1.tar.gz on 10x website
+tar -xzvf cellranger-7.0.1.tar.gz
+```
 
----
+2.  Add to PATH
 
-:heavy_check_mark:{ .lg .middle } [**G002 Validation**](g002_validation.md)
+Edit your shell config file (`~/.bashrc`, `~/.zshrc`, etc.):
 
-Validate your data structures [:octicons-arrow-right-24: Take me!](g002_validation.md)
+```bash
+export PATH=/apps/cellranger:$PATH
+```
 
----
+Then reload:
 
-:material-beaker:{ .lg .middle } [**G002 Pipeline**](g002_pipeline.md)
+```bash
+source ~/.bashrc
+# or
+source ~/.zshrc
+```
 
-Use the G002 flow and sequencing pipeline [:octicons-arrow-right-24: Take me!](g002_pipeline.md)
+3. Confirm Installation
 
----
-
-:material-magnify:{ .lg .middle } [**G002 Analysis**](g002_analysis.md)
-
-Analyze the dataframes and make figures[:octicons-arrow-right-24: Take me!](g002_analysis.md)
-
-<!-- </div> -->
-
-## **G003 where to go**
-
----
-
-<!-- <div class="grid cards" markdown> -->
-
-:octicons-database-24:{ .lg .middle } [**G003 Data**](g003_data.md)
-
-Transfer and use the raw data [:octicons-arrow-right-24: Take me!](g003_data.md)
+```bash
+cellranger --version
+# Should return something like: cellranger 7.0.1
+```
 
 ---
 
-:heavy_check_mark:{ .lg .middle } [**G003 Validation**](g003_validation.md)
+###  2. Install bcl2fastq
 
-Validate your data structures [:octicons-arrow-right-24: Take me!](g003_validation.md)
+1. Download from Illumina (login required):  
+   [Illumina bcl2fastq Download](https://support.illumina.com/sequencing/sequencing_software/bcl2fastq-conversion-software/downloads.html)
+
+2. Install:
+
+```bash
+unzip bcl2fastq2-2.20.0.422-Linux-x86_64.zip
+cd bcl2fastq2-2.20.0.422
+./install
+```
+
+3. Add to PATH:
+
+```bash
+export PATH=/usr/local/bcl2fastq/bin:$PATH
+```
+
+4. Confirm Installation
+
+```bash
+bcl2fastq --version
+# Should return version info like: bcl2fastq v2.20.0.422
+```
+
+After installation, both tools can be used in your G00x pipeline. The Pipeline will detect them in the path, but you can also specify the path to the tools when running the pipeline
 
 ---
 
-:material-beaker:{ .lg .middle } [**G003 Pipeline**](g002_pipeline.md)
+## G002 where to go
 
-Use the G003 flow and sequencing pipeline [:octicons-arrow-right-24: Take me!](g003_pipeline.md)
+📊 [**G002 Data**](g002_data.md)
+Transfer and use the raw data ➡️ [Take me!](g002_data.md)
 
 ---
 
-:material-magnify:{ .lg .middle } [**G003 Analysis**](g003_analysis.md)
+✅ [**G002 Validation**](g002_validation.md)
+Validate your data structures ➡️ [Take me!](g002_validation.md)
 
-Analyze the dataframes and make figures[:octicons-arrow-right-24: Take me!](g003_analysis.md)
-<!-- </div> -->
+---
+
+🧪 [**G002 Pipeline**](g002_pipeline.md)
+Use the G002 flow and sequencing pipeline ➡️ [Take me!](g002_pipeline.md)
+
+---
+
+🔍 [**G002 Analysis**](g002_analysis.md)
+Analyze the dataframes and make figures ➡️ [Take me!](g002_analysis.md)
+
+## G003 where to go
+
+📊 [**G003 Data**](g003_data.md)
+Transfer and use the raw data ➡️ [Take me!](g003_data.md)
+
+---
+
+✅ [**G003 Validation**](g003_validation.md)
+Validate your data structures ➡️ [Take me!](g003_validation.md)
+
+---
+
+🧪 [**G003 Pipeline**](g003_pipeline.md)
+Use the G003 flow and sequencing pipeline ➡️ [Take me!](g003_pipeline.md)
+
+---
+
+🔍 [**G003 Analysis**](g003_analysis.md)
+Analyze the dataframes and make figures ➡️ [Take me!](g003_analysis.md)
+---
 
 <!-- ## Current G002 samples
 

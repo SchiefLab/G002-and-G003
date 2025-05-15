@@ -1,0 +1,56 @@
+---
+title: "Table S68"
+date: "`r Sys.Date()`"
+output: pdf_document
+header-includes:
+    - \usepackage{caption}
+---
+
+\captionsetup[table]{labelformat=empty}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+options(knitr.kable.NA = '')
+
+library(tidyverse)
+library(VISCfunctions)
+library(kableExtra)
+
+# csv files are saved here
+STATS = '~/Repo/Schief856_G002/data/dropbox/Stats.codebase'
+```
+
+\clearpage
+
+```{r comp}
+dat4 = read.csv(file.path(STATS, 'fig4eOD_pvals.csv'))
+dat4$figure = paste0('Fig. 4', dat4$panel)
+dat4 = dat4[, c('figure', 'summary', 'p.value')]
+dat6 = read.csv(file.path(STATS, 'SPR_eOD_pvalues.csv'))
+dat6$figure = sprintf('Fig. 6%s (%s)', dat6$panel, dat6$set)
+dat6$summary = sprintf('%0.4f [%0.4f, %0.4f]', 1/dat6$est, 1/dat6$uci, 1/dat6$lci) # reporting 1/x rather than x
+dat6 = dat6[, c('figure', 'summary', 'p.value')]
+
+dat = rbind(dat4, dat6)
+dat$fdr = p.adjust(dat$p.value, 'fdr')
+
+dat = dat %>%
+  mutate(p.value = VISCfunctions::pretty_pvalues(p.value, digits = 4, sig_alpha=0.05, missing_char='NA', background = "yellow"),
+         fdr  = VISCfunctions::pretty_pvalues(fdr, digits = 4, sig_alpha=0.2, missing_char='NA', background = "yellow"))
+
+kbl(dat,
+    format = "latex",
+    escape = FALSE,
+    longtable = FALSE,
+    booktabs = TRUE,
+    linesep = '',
+    row.names = FALSE,
+    col.names = c('Figure','Summary','P Value', 'FDR'),
+    caption="Table S68. Comparison of independent groups eOD at week 8 (group 2) versus eOD->eOD at week 16 (groups 1 and 3).") %>%
+  column_spec(1, border_right = TRUE) %>%
+  kable_styling(
+    font_size = 8,
+    latex_options = c("hold_position", "repeat_header")
+    )
+
+```

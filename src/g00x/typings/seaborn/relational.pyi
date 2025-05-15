@@ -8,6 +8,7 @@ __all__ = ["relplot", "scatterplot", "lineplot"]
 _relational_narrative = ...
 _relational_docs = ...
 _param_docs = ...
+
 class _RelationalPlotter(VectorPlotter):
     wide_structure = ...
     sort = ...
@@ -15,36 +16,113 @@ class _RelationalPlotter(VectorPlotter):
         """Add labeled artists to represent the different plot semantics."""
         ...
 
-
-
 class _LinePlotter(_RelationalPlotter):
     _legend_attributes = ...
     _legend_func = ...
-    def __init__(self, *, data=..., variables=..., estimator=..., n_boot=..., seed=..., errorbar=..., sort=..., orient=..., err_style=..., err_kws=..., legend=...) -> None:
-        ...
-
-    def plot(self, ax, kws): # -> None:
+    def __init__(
+        self,
+        *,
+        data=...,
+        variables=...,
+        estimator=...,
+        n_boot=...,
+        seed=...,
+        errorbar=...,
+        sort=...,
+        orient=...,
+        err_style=...,
+        err_kws=...,
+        legend=...
+    ) -> None: ...
+    def plot(self, ax, kws):  # -> None:
         """Draw the plot onto an axes, passing matplotlib kwargs."""
         ...
-
-
 
 class _ScatterPlotter(_RelationalPlotter):
     _legend_attributes = ...
     _legend_func = ...
-    def __init__(self, *, data=..., variables=..., legend=...) -> None:
+    def __init__(self, *, data=..., variables=..., legend=...) -> None: ...
+    def plot(self, ax, kws):  # -> None:
         ...
 
-    def plot(self, ax, kws): # -> None:
-        ...
-
-
-
-def lineplot(data=..., *, x=..., y=..., hue=..., size=..., style=..., units=..., palette=..., hue_order=..., hue_norm=..., sizes=..., size_order=..., size_norm=..., dashes=..., markers=..., style_order=..., estimator=..., errorbar=..., n_boot=..., seed=..., orient=..., sort=..., err_style=..., err_kws=..., legend=..., ci=..., ax=..., **kwargs):
-    ...
-
-def scatterplot(data=..., *, x=..., y=..., hue=..., size=..., style=..., palette=..., hue_order=..., hue_norm=..., sizes=..., size_order=..., size_norm=..., markers=..., style_order=..., legend=..., ax=..., **kwargs):
-    ...
-
-def relplot(data=..., *, x=..., y=..., hue=..., size=..., style=..., units=..., row=..., col=..., col_wrap=..., row_order=..., col_order=..., palette=..., hue_order=..., hue_norm=..., sizes=..., size_order=..., size_norm=..., markers=..., dashes=..., style_order=..., legend=..., kind=..., height=..., aspect=..., facet_kws=..., **kwargs):
-    ...
+def lineplot(
+    data=...,
+    *,
+    x=...,
+    y=...,
+    hue=...,
+    size=...,
+    style=...,
+    units=...,
+    palette=...,
+    hue_order=...,
+    hue_norm=...,
+    sizes=...,
+    size_order=...,
+    size_norm=...,
+    dashes=...,
+    markers=...,
+    style_order=...,
+    estimator=...,
+    errorbar=...,
+    n_boot=...,
+    seed=...,
+    orient=...,
+    sort=...,
+    err_style=...,
+    err_kws=...,
+    legend=...,
+    ci=...,
+    ax=...,
+    **kwargs
+): ...
+def scatterplot(
+    data=...,
+    *,
+    x=...,
+    y=...,
+    hue=...,
+    size=...,
+    style=...,
+    palette=...,
+    hue_order=...,
+    hue_norm=...,
+    sizes=...,
+    size_order=...,
+    size_norm=...,
+    markers=...,
+    style_order=...,
+    legend=...,
+    ax=...,
+    **kwargs
+): ...
+def relplot(
+    data=...,
+    *,
+    x=...,
+    y=...,
+    hue=...,
+    size=...,
+    style=...,
+    units=...,
+    row=...,
+    col=...,
+    col_wrap=...,
+    row_order=...,
+    col_order=...,
+    palette=...,
+    hue_order=...,
+    hue_norm=...,
+    sizes=...,
+    size_order=...,
+    size_norm=...,
+    markers=...,
+    dashes=...,
+    style_order=...,
+    legend=...,
+    kind=...,
+    height=...,
+    aspect=...,
+    facet_kws=...,
+    **kwargs
+): ...

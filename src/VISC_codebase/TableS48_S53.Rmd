@@ -1,0 +1,112 @@
+---
+title: "Tables S48 and S53"
+date: "`r Sys.Date()`"
+output: pdf_document
+header-includes:
+    - \usepackage{caption}
+---
+
+\captionsetup[table]{labelformat=empty}
+
+
+\clearpage
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(tidyverse)
+library(VISCfunctions)
+library(kableExtra)
+
+# csv files are saved here
+STATS = '~/Repo/Schief856_G002/data/dropbox/Stats.codebase'
+```
+
+
+
+
+```{r comp_table_data}
+
+## get Alt 19 panels to restrict comparisons to n>3 methodology data points
+# create panel map between figures 2 and 3 and S19
+# list names are figure 2 or 3 panels and value is S19 panels
+panel_map = list(
+  'Fig. 2A' = c('A', 'G'),
+  'Fig. 2B' = c('B', 'H'),
+  'Fig. 2C' = c('C', 'I'),
+  'Fig. 2E' = c('D', 'J'),
+  'Fig. 3A' = c('E', 'K'),
+  'Fig. 3B' = c('F', 'L')
+)
+alt19 = read.csv(file.path(STATS, 'figS19_alt_pvals.csv'))
+alt19$main_panel = NA
+for( i in 1:length(panel_map) ) {
+  alt19$main_panel[which(alt19$panel %in% panel_map[[i]])] = names(panel_map)[i]
+}
+alt19$panel = NULL
+alt19$panel = alt19$main_panel
+alt19 = alt19 %>% dplyr::select(comp, panel, n)
+
+# read in pvals and restrict to panels/comparisons where method n > 3
+dat = read.csv(file.path(STATS, 'simulations_pvals_g00X.csv'))
+dat$order = 1:nrow(dat)
+dat = merge(dat, alt19)
+dat = dat[order(dat$order),]
+dat = subset(dat, n>3)
+dat = dat %>%
+  group_by(panel) %>%
+  mutate(fdr2 = p.adjust(p.value, 'fdr')) %>%
+  ungroup()
+
+# remove Fig. 2C data
+dat = subset(dat, panel != 'Fig. 2C')
+
+# check for changes
+stopifnot(sum((dat$fdr <= 0.2) != (dat$fdr2 <= 0.2)) == 0)
+dat$fdr = dat$fdr2
+dat$fdr2 = NULL
+
+dat$p.value = pretty_pvalues(dat$p.value, digits = 4, sig_alpha=0.05, missing_char='NA', background = "yellow")
+dat$fdr = pretty_pvalues(dat$fdr, digits = 4, sig_alpha=0.2, missing_char='NA', background = "yellow")
+dat$size = sprintf('%d vs. %d', dat$n1, dat$n2)
+dat$d = sprintf('%0.4f', dat$d)
+dat$lci = sprintf('%0.4f', dat$lci)
+dat$uci = sprintf('%0.4f', dat$uci)
+dat = dat[order(dat$panel, dat$comp, dat$week), ]
+dat$comp[which((dat$comp[-1] == dat$comp[-length(dat$comp)]) & (dat$panel[-1] == dat$panel[-length(dat$panel)])) + 1] ='\\hfill'
+
+```
+
+\clearpage
+
+```{r comp_table_fig2}
+tdat = dat %>% filter(grepl('Fig. 2E', panel))
+
+kbl(tdat %>% select(comp, week, size, d, lci, uci, p.value, fdr),
+    format = "latex",
+    escape = FALSE,
+    longtable = TRUE,
+    booktabs = TRUE,
+    row.names = FALSE,
+    col.names = c('Comparison', 'Week', 'Sample Sizes', 'Difference', 'LCI', 'UCI', 'P-value', 'FDR'),
+    caption="Table S48. Comparisons for Fig. 2E. Difference is the mean fold-change adjusted for the difference in methods used across trials.  UCI and LCI give the 95\\% CI about the difference.") %>%
+  kable_styling() %>%
+  pack_rows(index=table(tdat$panel), hline_before = TRUE, hline_after = TRUE, escape=TRUE)
+```
+
+\clearpage
+
+```{r comp_table_fig3}
+tdat = dat %>% filter(grepl('Fig. 3', panel))
+
+kbl(tdat %>% select(comp, week, size, d, lci, uci, p.value, fdr),
+    format = "latex",
+    escape = FALSE,
+    longtable = TRUE,
+    booktabs = TRUE,
+    row.names = FALSE,
+    col.names = c('Comparison', 'Week', 'Sample Sizes', 'Difference', 'LCI', 'UCI', 'P-value', 'FDR'),
+    caption="Table S53. Comparisons for figure 3 (panels A and B). Difference is the mean difference of Group 2 versus Group 1 adjusted for the difference in methods used across trials.  UCI and LCI give the 95\\% CI about the difference.") %>%
+  kable_styling() %>%
+  pack_rows(index=table(tdat$panel), hline_before = TRUE, hline_after = TRUE, escape=TRUE)
+```

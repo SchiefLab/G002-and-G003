@@ -66,7 +66,7 @@ Where each field is defined as:
 | timpoint    | The timepoint of the sequencing                               |
 | sorted_date | The date it was sorted `YYMMDD` format                        |
 | cells       | The number of cells in the GEM reaction                       |
-| hto         | The hashtag number e.g. `HT01`                                |
+| hto         | The hashtag number e.g. `HT01` |
 | vdj_index   | The index used for the VDJ library                            |
 | cso_index   | The index used for the hashtag library                        |
 | pool_number | The pool number of the gem reaction                           |
@@ -75,7 +75,7 @@ Where each field is defined as:
 
 !!! info run_id
 
-    Often the VDJ and CSO library will be on the same flow-cell id.
+ Often, the VDJ and CSO library will be on the same flow-cell ID.
 
 ### Sorting
 
@@ -115,15 +115,15 @@ Notice each file name has the following format, e.g. `SortHCT019a_221107_M1_PubI
 
 | Field       | Definition                               |
 | :---------- | :--------------------------------------- |
-| Sort        | The sort name e.g. `SortHCT019a`         |
+| Sort        | The sort name e.g. `SortHCT019a` |
 | Date        | The date the sort was performed `YYMMDD` |
-| Machine     | The machine number e.g. `M1`             |
+| Machine     | The machine number e.g. `M1` |
 | ptid        | The participant id                       |
-| Visit       | The visit number e.g. `V08`              |
-| sort_probe  | The sort probe e.g. `eODGT8`             |
-| sample_type | The sample type e.g. `PBMC`              |
-| software    | The software used e.g. `Chorus`          |
-| type        | The type of file e.g. `Summary`          |
-| tube_number | The tube number e.g. `T1`                |
-| pool_number | The pool number e.g. `P1`                |
-| file_subset | The file subset e.g. `a`                 |
+| Visit       | The visit number e.g. `V08` |
+| sort_probe  | The sort probe e.g. `eODGT8` |
+| sample_type | The sample type e.g. `PBMC` |
+| software    | The software used e.g. `Chorus` |
+| type        | The type of file e.g. `Summary` |
+| tube_number | The tube number e.g. `T1` |
+| pool_number | The pool number e.g. `P1` |
+| file_subset | The file subset e.g. `a` |

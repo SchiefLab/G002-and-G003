@@ -153,7 +153,8 @@ class DataPaths(BaseModel):
     g001_sequences: Path = data_base_path / Path("g001/mutational_analysis.feather")
     g001_clustered_sequences: Path = data_base_path / Path("g001/cluster_df_w_len.feather")
     g001_flow_and_seq: Path = data_base_path / Path("g001/flow_and_seq.csv")
-    g002_flow_and_seq: Path = data_base_path / Path("g002/flow_and_sequencing_long_names_complete.feather")
+    # g002_flow_and_seq: Path = data_base_path / Path("g002/flow_and_sequencing_long_names_complete.feather")
+    g002_flow_and_seq: Path = data_base_path / Path("g002/flow_and_sequencing_long_names_complete.csv")
     g002_flow_and_seq_gates: Path = data_base_path / Path("g002/flow_and_sequencing_long_form.feather")
     g002_sequences: Path = data_base_path / Path("g002/final_df_complete.feather")
     # g002_sequences: Path = data_base_path / Path("g002/final_df_jan24.feather")
@@ -368,7 +369,8 @@ class Data:
         return flow_and_seq
 
     def get_filtered_g002_flow_and_seq(self) -> pd.DataFrame:
-        df = pd.read_feather(self.paths.g002_flow_and_seq)
+        # df = pd.read_feather(self.paths.g002_flow_and_seq)
+        df = pd.read_csv(self.paths.g002_flow_and_seq)
 
         df["weeks"] = df["weeks"].astype(int)
         pubids_filter = [
@@ -440,6 +442,8 @@ class Data:
         hcdr2_range = range(52, 58)
 
         def find_hcdr2_sets(mutations):
+            # if isinstance(mutations, float):
+            #     return 0
             hcdr2_mutations = 0
             for x in mutations:
                 digit = int(re.findall(r"\d+", x)[0])
@@ -934,6 +938,8 @@ class Data:
         hcdr2_range = range(52, 58)
 
         def find_hcdr2_sets(mutations):
+            # if isinstance(mutations, float):
+            #     return 0
             hcdr2_mutations = 0
             for x in mutations:
                 digit = int(re.findall(r"\d+", x)[0])
@@ -1070,6 +1076,8 @@ class Data:
         hcdr2_range = range(52, 58)
 
         def find_hcdr2_sets(mutations):
+            # if isinstance(mutations, float):
+            #     return 0
             hcdr2_mutations = 0
             for x in mutations:
                 digit = int(re.findall(r"\d+", x)[0])
@@ -1317,6 +1325,8 @@ class Data:
         hcdr2_range = range(52, 58)
 
         def find_hcdr2_sets(mutations):
+            # if isinstance(mutations, float):
+            #     return 0
             hcdr2_mutations = 0
             for x in mutations:
                 digit = int(re.findall(r"\d+", x)[0])

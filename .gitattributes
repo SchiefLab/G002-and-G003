@@ -1,3 +1,4 @@
 .gz filter=lfs diff=lfs merge=lfs -text
 *.csv.gz filter=lfs diff=lfs merge=lfs -text
 src/g00x_figures/data/g002/final_df.csv.gz filter=lfs diff=lfs merge=lfs -text
+**/*.feather filter=lfs diff=lfs merge=lfs -text
