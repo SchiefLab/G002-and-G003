@@ -58,7 +58,7 @@
 
 This repository serves two major purposes.
 
-First, this repository contains the data for the publication “Vaccination with mRNA-encoded nanoparticles drives early maturation of HIV bnAb precursors in humans”, Willis, Prabhakaran, Muthui, Naidoo, Sincomb, Wu, Cottrell, Landais, deCamp, et al., Science, 2025. This publication reports the safety and immunogenicity data from the clinical trials IAVI G002 (in the United States) and IAVI G003 (in Rwanda and South Africa). The data in the repository includes:
+First, this repository contains the data for the publication “Vaccination with mRNA-encoded nanoparticles drives early maturation of HIV bnAb precursors in humans”, Willis, Prabhakaran, Muthui, Naidoo, Sincomb, Wu, Cottrell, Landais, deCamp, et al., Science, 2025 (https://doi.org/10.1126/science.adr8382). This publication reports the safety and immunogenicity data from the clinical trials IAVI G002 (in the United States) and IAVI G003 (in Rwanda and South Africa). The data in the repository includes:
   - Antigen- and epitope-specific memory B cell frequencies (FACS data)
   - 10x-based sequencing data from epitope-specific memory B cells
   - Frequencies of VRC01-class bnAb precursor memory B cells
