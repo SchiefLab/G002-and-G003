@@ -5,6 +5,7 @@ command = """
               mkdocs-git-revision-date-plugin==0.3.2 \
               mkdocs-redirects==1.2.0 \
               mkdocs-include==1.0.0 \
+              mdx-include==1.4.2 \
   && python -m mkdocs build
 """
 publish = "site"
