@@ -55,7 +55,7 @@ To install G00x package, use the following
 
 ```console
 clone the repository
-$ git clone https://github.com/schieflab//G002-and-G003
+$ git clone https://github.com/schieflab/G002-and-G003
 
 change into /G002-and-G003
 $ cd /G002-and-G003
