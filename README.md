@@ -426,7 +426,6 @@ g00x plot sup-figures  #TODO: Update later
 
 ```bash
 g00x plot comparison-tables
-g00x plot sup-tables
 ```
 
 # Issues

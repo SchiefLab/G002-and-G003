@@ -26,6 +26,7 @@ packages = [
     { include = "g00x", from = "src" },
     { include = "g00x_figures", from = "src" },
     { include = "VISC_codebase", from = "src" },
+    { include = "visc_g002_bcell", from = "src" },
     { include = "g00x_client", from = "src" }
 ]
 

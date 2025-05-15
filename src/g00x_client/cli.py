@@ -13,7 +13,7 @@ def main():
 # Supplementary Comparison Tables
 figures.add_command(comparison_tables, name="comparison-tables")
 # Supplementary Tables
-# TODO:
+# TODO: hardcode paths to internal VISC data; will have to rely on PDF already generated
 # Main Figures
 main.add_command(figures, name="plot")
 # Pipeline
