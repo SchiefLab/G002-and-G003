@@ -442,8 +442,8 @@ class Data:
         hcdr2_range = range(52, 58)
 
         def find_hcdr2_sets(mutations):
-            if isinstance(mutations, float):
-                return 0
+            # if isinstance(mutations, float):
+            #     return 0
             hcdr2_mutations = 0
             for x in mutations:
                 digit = int(re.findall(r"\d+", x)[0])
@@ -1076,8 +1076,8 @@ class Data:
         hcdr2_range = range(52, 58)
 
         def find_hcdr2_sets(mutations):
-            if isinstance(mutations, float):
-                return 0
+            # if isinstance(mutations, float):
+            #     return 0
             hcdr2_mutations = 0
             for x in mutations:
                 digit = int(re.findall(r"\d+", x)[0])
@@ -1325,8 +1325,8 @@ class Data:
         hcdr2_range = range(52, 58)
 
         def find_hcdr2_sets(mutations):
-            if isinstance(mutations, float):
-                return 0
+            # if isinstance(mutations, float):
+            #     return 0
             hcdr2_mutations = 0
             for x in mutations:
                 digit = int(re.findall(r"\d+", x)[0])
