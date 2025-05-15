@@ -16,9 +16,7 @@ def find_cellranger() -> str | None:
         logger.info("Cellranger found at: %s", which_cellranger)
         return which_cellranger
     else:
-        raise FileNotFoundError(
-            "Cellranger not found in path. Please have Cellranger in path"
-        )
+        raise FileNotFoundError("Cellranger not found in path. Please have Cellranger in path")
 
 
 def find_bcl2fastq() -> str | None:
@@ -27,43 +25,29 @@ def find_bcl2fastq() -> str | None:
         logger.info("bcl2fastq found at: %s", which_bcl2fastq)
         return which_bcl2fastq
     else:
-        raise FileNotFoundError(
-            "bcl2fastq not found in path. Please have bcl2fastq in path"
-        )
+        raise FileNotFoundError("bcl2fastq not found in path. Please have bcl2fastq in path")
 
 
 class DataPaths(BaseModel):
     data_base_path: Path = Path(__file__).parent / Path("data")
-    g001_sequences: Path = data_base_path / Path(
-        "g001/mutational_analysis.feather"
-    )
+    g001_sequences: Path = data_base_path / Path("g001/mutational_analysis.feather")
     g001_flow_and_seq: Path = data_base_path / Path("g001/flow_and_seq.csv")
     g002_pbmc_gates: Path = data_base_path / Path("pbmc_gates.json")
     g002_lfna_gates: Path = data_base_path / Path("lfna_gates.json")
     g003_pbmc_gates: Path = data_base_path / Path("pbmc_gates_g003.json")
-    g002_frequency_measures: Path = data_base_path / Path(
-        "frequency_measures.json"
-    )
-    g003_frequency_measures: Path = data_base_path / Path(
-        "frequency_measures_g003.json"
-    )
+    g002_frequency_measures: Path = data_base_path / Path("frequency_measures.json")
+    g003_frequency_measures: Path = data_base_path / Path("frequency_measures_g003.json")
     g002_pub_ids_path: Path = data_base_path / Path("g002_pubids.xlsx")
     # g003_pub_ids_path: Path = data_base_path / Path("g003/g003_pubids.xlsx")
     hto_gates: Path = data_base_path / Path("hto_gates.csv")
     g003_hto_gates: Path = data_base_path / Path("g003_hto_gates.csv")
     vdj_reference: Path = data_base_path / Path("vdj_reference")
-    vh12_reference_mabs_path: Path = data_base_path / Path(
-        "vrc1-2_mabs_extended_airr.feather"
-    )
+    vh12_reference_mabs_path: Path = data_base_path / Path("vrc1-2_mabs_extended_airr.feather")
     cotrell_focus_path: Path = data_base_path / Path("cottrell.json")
     personalized_vh12: Path = data_base_path / Path("personalize.csv")
     g003_personalized_vh12: Path = data_base_path / Path("g003/genotype.csv")
-    g003_visit_id_2_week: Path = data_base_path / Path(
-        "g003/visit_id2week.json"
-    )
-    g003_ptid_prefix_2_group: Path = data_base_path / Path(
-        "g003/ptid2group.json"
-    )
+    g003_visit_id_2_week: Path = data_base_path / Path("g003/visit_id2week.json")
+    g003_ptid_prefix_2_group: Path = data_base_path / Path("g003/ptid2group.json")
 
     @validator(
         "*",
@@ -126,9 +110,7 @@ class Data:
 
     def get_g003_hto_gates(self) -> pd.DataFrame:
         """Get the HTO gates for the G003 CSO part of the pipeline"""
-        return pd.read_csv(self.data_paths.g003_hto_gates).set_index(
-            "biolegend_name"
-        )
+        return pd.read_csv(self.data_paths.g003_hto_gates).set_index("biolegend_name")
 
     def set_cellranger_path(self, path: str) -> None:
         """set path to cellranger if user specifies"""
@@ -145,9 +127,7 @@ class Data:
 
     def get_human_genome_ref(self) -> str:
         if not self.genome_reference:
-            self.genome_reference = Path(
-                "/usr/local/cellranger-6.1.2/refdata-gex-GRCh38-2020-A"
-            )
+            self.genome_reference = Path("/usr/local/cellranger-6.1.2/refdata-gex-GRCh38-2020-A")
         if not self.genome_reference.exists():
             raise FileNotFoundError(
                 f"Genome reference not found {self.genome_reference}, set with flags --genome-reference"
@@ -180,12 +160,10 @@ class Data:
 
         # correct VISC by adding G002
         # order_id["ptid"] = "G002" + order_id["ptid"].astype(str)
-        order_id['ptid'] = order_id['pubID']
-        
+        order_id["ptid"] = order_id["pubID"]
+
         # turn into lookup map
-        lookup_ids = dict(
-            zip(order_id["ptid"].to_list(), order_id["pubID"].to_list())
-        )
+        lookup_ids = dict(zip(order_id["ptid"].to_list(), order_id["pubID"].to_list()))
         return lookup_ids
 
     # def get_g003_pubids_lookup(self) -> dict[str, str]:
@@ -196,7 +174,7 @@ class Data:
     #     # correct VISC by adding G003
     #     # df["ptid"] = "G003-" + df["ptid"].str[:2] + "-" + df["ptid"].str[2:]
     #     df['ptid'] = df['pubID']
-        
+
     #     # turn into lookup map
     #     lookup_ids = df.set_index("ptid").to_dict()["pubID"]
     #     return lookup_ids
@@ -319,12 +297,8 @@ class Data:
 
     def get_g003_visit_id_2_week(self) -> dict[str, int]:
         """Get the visit id to week mapping"""
-        return json.load(
-            open(self.data_paths.g003_visit_id_2_week, encoding="utf-8")
-        )
+        return json.load(open(self.data_paths.g003_visit_id_2_week, encoding="utf-8"))
 
     def get_g003_ptid_prefix_2_group(self) -> dict[str, str]:
         """Get the ptid to group mapping"""
-        return json.load(
-            open(self.data_paths.g003_ptid_prefix_2_group, encoding="utf-8")
-        )
+        return json.load(open(self.data_paths.g003_ptid_prefix_2_group, encoding="utf-8"))

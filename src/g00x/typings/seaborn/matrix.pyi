@@ -6,19 +6,56 @@ from .axisgrid import Grid
 
 """Functions to visualize matrices of data."""
 __all__ = ["heatmap", "clustermap"]
+
 class _HeatMapper:
     """Draw a heatmap plot of a matrix with nice labels and colormaps."""
-    def __init__(self, data, vmin, vmax, cmap, center, robust, annot, fmt, annot_kws, cbar, cbar_kws, xticklabels=..., yticklabels=..., mask=...) -> None:
+
+    def __init__(
+        self,
+        data,
+        vmin,
+        vmax,
+        cmap,
+        center,
+        robust,
+        annot,
+        fmt,
+        annot_kws,
+        cbar,
+        cbar_kws,
+        xticklabels=...,
+        yticklabels=...,
+        mask=...,
+    ) -> None:
         """Initialize the plotting object."""
         ...
-
-    def plot(self, ax, cax, kws): # -> None:
+    def plot(self, ax, cax, kws):  # -> None:
         """Draw the heatmap on the provided Axes."""
         ...
 
-
-
-def heatmap(data, *, vmin=..., vmax=..., cmap=..., center=..., robust=..., annot=..., fmt=..., annot_kws=..., linewidths=..., linecolor=..., cbar=..., cbar_kws=..., cbar_ax=..., square=..., xticklabels=..., yticklabels=..., mask=..., ax=..., **kwargs):
+def heatmap(
+    data,
+    *,
+    vmin=...,
+    vmax=...,
+    cmap=...,
+    center=...,
+    robust=...,
+    annot=...,
+    fmt=...,
+    annot_kws=...,
+    linewidths=...,
+    linecolor=...,
+    cbar=...,
+    cbar_kws=...,
+    cbar_ax=...,
+    square=...,
+    xticklabels=...,
+    yticklabels=...,
+    mask=...,
+    ax=...,
+    **kwargs
+):
     """Plot rectangular data as a color-encoded matrix.
 
     This is an Axes-level function and will draw the heatmap into the
@@ -103,6 +140,7 @@ def heatmap(data, *, vmin=..., vmax=..., cmap=..., center=..., robust=..., annot
 
 class _DendrogramPlotter:
     """Object for drawing tree of similarities between data rows/columns"""
+
     def __init__(self, data, linkage, metric, method, axis, label, rotate) -> None:
         """Plot a dendrogram of the relationships between the columns of data
 
@@ -112,11 +150,8 @@ class _DendrogramPlotter:
             Rectangular data
         """
         ...
-
     @property
-    def calculated_linkage(self):
-        ...
-
+    def calculated_linkage(self): ...
     def calculate_dendrogram(self):
         """Calculates a dendrogram based on the linkage matrix
 
@@ -131,13 +166,11 @@ class _DendrogramPlotter:
             "reordered_ind" which indicates the re-ordering of the matrix
         """
         ...
-
     @property
     def reordered_ind(self):
         """Indices of the matrix, reordered by the dendrogram"""
         ...
-
-    def plot(self, ax, tree_kws): # -> Self@_DendrogramPlotter:
+    def plot(self, ax, tree_kws):  # -> Self@_DendrogramPlotter:
         """Plots a dendrogram of the similarities between data on the axes
 
         Parameters
@@ -148,9 +181,9 @@ class _DendrogramPlotter:
         """
         ...
 
-
-
-def dendrogram(data, *, linkage=..., axis=..., label=..., metric=..., method=..., rotate=..., tree_kws=..., ax=...): # -> _DendrogramPlotter:
+def dendrogram(
+    data, *, linkage=..., axis=..., label=..., metric=..., method=..., rotate=..., tree_kws=..., ax=...
+):  # -> _DendrogramPlotter:
     """Draw a tree diagram of relationships within a matrix
 
     Parameters
@@ -191,14 +224,25 @@ def dendrogram(data, *, linkage=..., axis=..., label=..., metric=..., method=...
     ...
 
 class ClusterGrid(Grid):
-    def __init__(self, data, pivot_kws=..., z_score=..., standard_scale=..., figsize=..., row_colors=..., col_colors=..., mask=..., dendrogram_ratio=..., colors_ratio=..., cbar_pos=...) -> None:
+    def __init__(
+        self,
+        data,
+        pivot_kws=...,
+        z_score=...,
+        standard_scale=...,
+        figsize=...,
+        row_colors=...,
+        col_colors=...,
+        mask=...,
+        dendrogram_ratio=...,
+        colors_ratio=...,
+        cbar_pos=...,
+    ) -> None:
         """Grid object for organizing clustered heatmap input on to axes"""
         ...
-
     def format_data(self, data, pivot_kws, z_score=..., standard_scale=...):
         """Extract variables from data or use directly."""
         ...
-
     @staticmethod
     def z_score(data2d, axis=...):
         """Standarize the mean and variance of the data axis
@@ -218,7 +262,6 @@ class ClusterGrid(Grid):
             specified axis.
         """
         ...
-
     @staticmethod
     def standard_scale(data2d, axis=...):
         """Divide the data by the difference between the max and min
@@ -239,13 +282,11 @@ class ClusterGrid(Grid):
 
         """
         ...
-
-    def dim_ratios(self, colors, dendrogram_ratio, colors_ratio): # -> list[Unknown]:
+    def dim_ratios(self, colors, dendrogram_ratio, colors_ratio):  # -> list[Unknown]:
         """Get the proportions of the figure taken up by each axes."""
         ...
-
     @staticmethod
-    def color_list_to_matrix_and_cmap(colors, ind, axis=...): # -> tuple[ndarray[Any, dtype[Any]], Unknown]:
+    def color_list_to_matrix_and_cmap(colors, ind, axis=...):  # -> tuple[ndarray[Any, dtype[Any]], Unknown]:
         """Turns a list of colors into a numpy matrix and matplotlib colormap
 
         These arguments can now be plotted using heatmap(matrix, cmap)
@@ -269,11 +310,11 @@ class ClusterGrid(Grid):
 
         """
         ...
-
-    def plot_dendrograms(self, row_cluster, col_cluster, metric, method, row_linkage, col_linkage, tree_kws): # -> None:
+    def plot_dendrograms(
+        self, row_cluster, col_cluster, metric, method, row_linkage, col_linkage, tree_kws
+    ):  # -> None:
         ...
-
-    def plot_colors(self, xind, yind, **kws): # -> None:
+    def plot_colors(self, xind, yind, **kws):  # -> None:
         """Plots color labels between the dendrogram and the heatmap
 
         Parameters
@@ -283,16 +324,36 @@ class ClusterGrid(Grid):
 
         """
         ...
-
-    def plot_matrix(self, colorbar_kws, xind, yind, **kws): # -> None:
+    def plot_matrix(self, colorbar_kws, xind, yind, **kws):  # -> None:
+        ...
+    def plot(
+        self, metric, method, colorbar_kws, row_cluster, col_cluster, row_linkage, col_linkage, tree_kws, **kws
+    ):  # -> Self@ClusterGrid:
         ...
 
-    def plot(self, metric, method, colorbar_kws, row_cluster, col_cluster, row_linkage, col_linkage, tree_kws, **kws): # -> Self@ClusterGrid:
-        ...
-
-
-
-def clustermap(data, *, pivot_kws=..., method=..., metric=..., z_score=..., standard_scale=..., figsize=..., cbar_kws=..., row_cluster=..., col_cluster=..., row_linkage=..., col_linkage=..., row_colors=..., col_colors=..., mask=..., dendrogram_ratio=..., colors_ratio=..., cbar_pos=..., tree_kws=..., **kwargs): # -> ClusterGrid:
+def clustermap(
+    data,
+    *,
+    pivot_kws=...,
+    method=...,
+    metric=...,
+    z_score=...,
+    standard_scale=...,
+    figsize=...,
+    cbar_kws=...,
+    row_cluster=...,
+    col_cluster=...,
+    row_linkage=...,
+    col_linkage=...,
+    row_colors=...,
+    col_colors=...,
+    mask=...,
+    dendrogram_ratio=...,
+    colors_ratio=...,
+    cbar_pos=...,
+    tree_kws=...,
+    **kwargs
+):  # -> ClusterGrid:
     """
     Plot a matrix dataset as a hierarchically-clustered heatmap.
 

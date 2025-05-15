@@ -1,0 +1,65 @@
+---
+title: "Tables S54 and S56"
+date: "`r Sys.Date()`"
+geometry: "left=0.5in, right=0.5in, top=0.5in, bottom=0.25in"
+output: pdf_document
+header-includes:
+    - \usepackage{caption}
+---
+
+\captionsetup[table]{labelformat=empty}
+
+
+\clearpage
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(tidyverse)
+library(VISCfunctions)
+library(kableExtra)
+
+# csv files are saved here
+STATS = '~/Repo/Schief856_G002/data/dropbox/Stats.codebase'
+```
+
+```{r figure3alt}
+dat = read.csv(file.path(STATS, 'fig3_alt_pvals.csv'))
+dat$p.value = pretty_pvalues(dat$p.value, digits = 4, sig_alpha=0.05, missing_char='NA', background = "yellow")
+dat$fdr = pretty_pvalues(dat$fdr, digits = 4, sig_alpha=0.2, missing_char='NA', background = "yellow")
+dat$comp = gsub('->', '$\\\\rightarrow$', dat$comp)
+dat$comp[which(dat$comp[-1] == dat$comp[-length(dat$comp)] & dat$panel[-1] == dat$panel[-length(dat$panel)]) + 1] ='\\hfill'
+
+kbl(dat %>% dplyr::select(comp, weeks, SampleSizes, summary, p.value, fdr) %>% ungroup(),
+    format = "latex",
+    escape = FALSE,
+    longtable = TRUE,
+    booktabs = TRUE,
+    row.names = FALSE,
+    col.names = c('Comparison', 'Week', 'Sample Sizes', 'Median (Range)', 'P-value', 'FDR'),
+    caption="Table S54.  Testing between groups was done using the Wilcoxon rank-sum test for unpaired data. No adjustment was made for the difference in methods for measuring outcomes across tirals.
+    P values less than 0.05 and Q values less than 0.2 are highlighted.") %>%
+  kable_styling(font_size = 7.5) %>%
+  pack_rows(index=table(dat$panel), hline_before = TRUE, hline_after = TRUE, escape=TRUE)
+```
+
+\clearpage
+
+```{r figure3alt_time}
+dat = read.csv(file.path(STATS, 'fig3_alt_time_pvals.csv'))
+dat$p.value = pretty_pvalues(dat$p.value, digits = 4, sig_alpha=0.05, missing_char='NA', background = "yellow")
+dat$fdr = pretty_pvalues(dat$fdr, digits = 4, sig_alpha=0.2, missing_char='NA', background = "yellow")
+dat$trial[which(dat$trial[-1] == dat$trial[-length(dat$trial)] & dat$panel[-1] == dat$panel[-length(dat$panel)]) + 1] ='\\hfill'
+
+kbl(dat %>% dplyr::select(trial, comp, SampleSizes, summary, p.value, fdr) %>% ungroup(),
+    format = "latex",
+    escape = FALSE,
+    longtable = TRUE,
+    booktabs = TRUE,
+    row.names = FALSE,
+    col.names = c('Trial', 'Comparison', 'Sample Sizes', 'Median (Range)', 'P-value', 'FDR'),
+    caption="Table S56.  Testing between groups was done using the Wilcoxon signed-rank test for paired data.
+    P values less than 0.05 and Q values less than 0.2 are highlighted.") %>%
+  kable_styling(font_size = 7.5) %>%
+  pack_rows(index=table(dat$panel), hline_before = TRUE, hline_after = TRUE, escape=TRUE)
+```

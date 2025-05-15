@@ -23,13 +23,11 @@ from seaborn._marks.base import Mark
 from seaborn._stats.base import Stat
 
 """The classes for specifying and compiling a declarative visualization."""
-if TYPE_CHECKING:
-    ...
-if sys.version_info >= (3, 8):
-    ...
-else:
-    ...
+if TYPE_CHECKING: ...
+if sys.version_info >= (3, 8): ...
+else: ...
 default = ...
+
 class Layer(TypedDict, total=False):
     mark: Mark
     stat: Stat | None
@@ -41,13 +39,11 @@ class Layer(TypedDict, total=False):
     legend: bool
     ...
 
-
 class FacetSpec(TypedDict, total=False):
     variables: dict[str, VariableSpec]
     structure: dict[str, list[str]]
     wrap: int | None
     ...
-
 
 class PairSpec(TypedDict, total=False):
     variables: dict[str, VariableSpec]
@@ -55,7 +51,6 @@ class PairSpec(TypedDict, total=False):
     cross: bool
     wrap: int | None
     ...
-
 
 @contextmanager
 def theme_context(params: dict[str, Any]) -> Generator:
@@ -108,6 +103,7 @@ class Plot:
     the plot without rendering it to access the lower-level representation.
 
     """
+
     _data: PlotData
     _layers: list[Layer]
     _scales: dict[str, Scale]
@@ -120,12 +116,8 @@ class Plot:
     _figure_spec: dict[str, Any]
     _subplot_spec: dict[str, Any]
     _layout_spec: dict[str, Any]
-    def __init__(self, *args: DataSource | VariableSpec, data: DataSource = ..., **variables: VariableSpec) -> None:
-        ...
-
-    def __add__(self, other):
-        ...
-
+    def __init__(self, *args: DataSource | VariableSpec, data: DataSource = ..., **variables: VariableSpec) -> None: ...
+    def __add__(self, other): ...
     def on(self, target: Axes | SubFigure | Figure) -> Plot:
         """
         Provide existing Matplotlib figure or axes for drawing the plot.
@@ -149,8 +141,15 @@ class Plot:
 
         """
         ...
-
-    def add(self, mark: Mark, *transforms: Stat | Mark, orient: str | None = ..., legend: bool = ..., data: DataSource = ..., **variables: VariableSpec) -> Plot:
+    def add(
+        self,
+        mark: Mark,
+        *transforms: Stat | Mark,
+        orient: str | None = ...,
+        legend: bool = ...,
+        data: DataSource = ...,
+        **variables: VariableSpec
+    ) -> Plot:
         """
         Specify a layer of the visualization in terms of mark and data transform(s).
 
@@ -186,8 +185,9 @@ class Plot:
 
         """
         ...
-
-    def pair(self, x: VariableSpecList = ..., y: VariableSpecList = ..., wrap: int | None = ..., cross: bool = ...) -> Plot:
+    def pair(
+        self, x: VariableSpecList = ..., y: VariableSpecList = ..., wrap: int | None = ..., cross: bool = ...
+    ) -> Plot:
         """
         Produce subplots by pairing multiple `x` and/or `y` variables.
 
@@ -209,8 +209,13 @@ class Plot:
 
         """
         ...
-
-    def facet(self, col: VariableSpec = ..., row: VariableSpec = ..., order: OrderSpec | dict[str, OrderSpec] = ..., wrap: int | None = ...) -> Plot:
+    def facet(
+        self,
+        col: VariableSpec = ...,
+        row: VariableSpec = ...,
+        order: OrderSpec | dict[str, OrderSpec] = ...,
+        wrap: int | None = ...,
+    ) -> Plot:
         """
         Produce subplots with conditional subsets of the data.
 
@@ -231,7 +236,6 @@ class Plot:
 
         """
         ...
-
     def scale(self, **scales: Scale) -> Plot:
         """
         Specify mappings from data units to visual properties.
@@ -256,7 +260,6 @@ class Plot:
 
         """
         ...
-
     def share(self, **shares: bool | str) -> Plot:
         """
         Control sharing of axis limits and ticks across subplots.
@@ -273,7 +276,6 @@ class Plot:
 
         """
         ...
-
     def limit(self, **limits: tuple[Any, Any]) -> Plot:
         """
         Control the range of visible data.
@@ -292,7 +294,6 @@ class Plot:
 
         """
         ...
-
     def label(self, *, title=..., **variables: str | Callable[[str], str]) -> Plot:
         """
         Control the labels and titles for axes, legends, and subplots.
@@ -316,7 +317,6 @@ class Plot:
 
         """
         ...
-
     def layout(self, *, size: tuple[float, float] | Default = ..., engine: str | None | Default = ...) -> Plot:
         """
         Control the figure size and layout.
@@ -342,7 +342,6 @@ class Plot:
 
         """
         ...
-
     def theme(self, *args: dict[str, Any]) -> Plot:
         """
         Control the default appearance of elements in the plot.
@@ -364,7 +363,6 @@ class Plot:
 
         """
         ...
-
     def save(self, loc, **kwargs) -> Plot:
         """
         Compile the plot and write it to a buffer or file on disk.
@@ -379,7 +377,6 @@ class Plot:
 
         """
         ...
-
     def show(self, **kwargs) -> None:
         """
         Compile the plot and display it by hooking into pyplot.
@@ -393,14 +390,11 @@ class Plot:
 
         """
         ...
-
     def plot(self, pyplot: bool = ...) -> Plotter:
         """
         Compile the plot spec and return the Plotter object.
         """
         ...
-
-
 
 class Plotter:
     """
@@ -409,15 +403,12 @@ class Plotter:
     This class is not intended to be instantiated directly by users.
 
     """
+
     _data: PlotData
     _layers: list[Layer]
     _figure: Figure
-    def __init__(self, pyplot: bool, theme: dict[str, Any]) -> None:
-        ...
-
-    def save(self, loc, **kwargs) -> Plotter:
-        ...
-
+    def __init__(self, pyplot: bool, theme: dict[str, Any]) -> None: ...
+    def save(self, loc, **kwargs) -> Plotter: ...
     def show(self, **kwargs) -> None:
         """
         Display the plot by hooking into pyplot.

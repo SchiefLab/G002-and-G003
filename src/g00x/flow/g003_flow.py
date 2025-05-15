@@ -39,16 +39,16 @@ def pull_flow_from_validation(
         relative_file_path = file_path.relative_to(home)  # type: ignore
 
         if len(model.visit_id) < 3:
-            model.visit_id = 'V0' + model.visit_id[-1]
-        
+            model.visit_id = "V0" + model.visit_id[-1]
+
         record_template = {
             "run_purpose": model.run_purpose,
             "run_date": model.run_date,
             "sort_id": model.sort_id,
             "ptid": model.ptid,
-            "pubID": model.ptid, # ptid2pubid[model.ptid] if not model.ptid.startswith('G001') else model.ptid,
-            "group": ptid_prefix2group[model.ptid.split("-")[1]] if not model.ptid.startswith('G001') else 0,
-            "weeks": visit_id2week[model.visit_id] if not model.ptid.startswith('G001') else model.visit_id,
+            "pubID": model.ptid,  # ptid2pubid[model.ptid] if not model.ptid.startswith('G001') else model.ptid,
+            "group": ptid_prefix2group[model.ptid.split("-")[1]] if not model.ptid.startswith("G001") else 0,
+            "weeks": visit_id2week[model.visit_id] if not model.ptid.startswith("G001") else model.visit_id,
             "visit_id": model.visit_id,
             "probe_set": model.probe_set,
             "sample_type": model.sample_type,

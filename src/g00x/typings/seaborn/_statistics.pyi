@@ -28,8 +28,10 @@ The classes should behave roughly in the style of scikit-learn.
   class instantiation.
 
 """
+
 class KDE:
     """Univariate and bivariate kernel density estimator."""
+
     def __init__(self, *, bw_method=..., bw_adjust=..., gridsize=..., cut=..., clip=..., cumulative=...) -> None:
         """Initialize the estimator with its parameters.
 
@@ -54,19 +56,20 @@ class KDE:
 
         """
         ...
-
-    def define_support(self, x1, x2=..., weights=..., cache=...): # -> NDArray[floating[Any]] | tuple[NDArray[floating[Any]], NDArray[floating[Any]]]:
+    def define_support(
+        self, x1, x2=..., weights=..., cache=...
+    ):  # -> NDArray[floating[Any]] | tuple[NDArray[floating[Any]], NDArray[floating[Any]]]:
         """Create the evaluation grid for a given data set."""
         ...
-
-    def __call__(self, x1, x2=..., weights=...): # -> tuple[NDArray[Unknown] | Unknown | Any, NDArray[floating[Any]] | tuple[NDArray[floating[Any]], NDArray[floating[Any]]]] | tuple[NDArray[float64] | Unknown | Any, NDArray[floating[Any]] | tuple[NDArray[floating[Any]], NDArray[floating[Any]]]]:
+    def __call__(
+        self, x1, x2=..., weights=...
+    ):  # -> tuple[NDArray[Unknown] | Unknown | Any, NDArray[floating[Any]] | tuple[NDArray[floating[Any]], NDArray[floating[Any]]]] | tuple[NDArray[float64] | Unknown | Any, NDArray[floating[Any]] | tuple[NDArray[floating[Any]], NDArray[floating[Any]]]]:
         """Fit and evaluate on univariate or bivariate data."""
         ...
 
-
-
 class Histogram:
     """Univariate and bivariate histogram estimator."""
+
     def __init__(self, stat=..., bins=..., binwidth=..., binrange=..., discrete=..., cumulative=...) -> None:
         """Initialize the estimator with its parameters.
 
@@ -99,19 +102,20 @@ class Histogram:
 
         """
         ...
-
-    def define_bin_params(self, x1, x2=..., weights=..., cache=...): # -> dict[str, int | tuple[Any, Any]] | dict[str, NDArray[signedinteger[Any]] | NDArray[Any]] | dict[str, tuple[Unknown, ...]]:
+    def define_bin_params(
+        self, x1, x2=..., weights=..., cache=...
+    ):  # -> dict[str, int | tuple[Any, Any]] | dict[str, NDArray[signedinteger[Any]] | NDArray[Any]] | dict[str, tuple[Unknown, ...]]:
         """Given data, return numpy.histogram parameters to define bins."""
         ...
-
-    def __call__(self, x1, x2=..., weights=...): # -> tuple[Any | ndarray[Unknown, Unknown] | NDArray[float64] | NDArray[Any], NDArray[Any]] | tuple[Any | ndarray[Unknown, Unknown] | NDArray[float64], list[NDArray[floating[Any]]]]:
+    def __call__(
+        self, x1, x2=..., weights=...
+    ):  # -> tuple[Any | ndarray[Unknown, Unknown] | NDArray[float64] | NDArray[Any], NDArray[Any]] | tuple[Any | ndarray[Unknown, Unknown] | NDArray[float64], list[NDArray[floating[Any]]]]:
         """Count the occurrences in each bin, maybe normalize."""
         ...
 
-
-
 class ECDF:
     """Univariate empirical cumulative distribution estimator."""
+
     def __init__(self, stat=..., complementary=...) -> None:
         """Initialize the class with its parameters
 
@@ -124,12 +128,9 @@ class ECDF:
 
         """
         ...
-
-    def __call__(self, x1, x2=..., weights=...): # -> tuple[Any, Any]:
+    def __call__(self, x1, x2=..., weights=...):  # -> tuple[Any, Any]:
         """Return proportion or count of observations below each sorted datapoint."""
         ...
-
-
 
 class EstimateAggregator:
     def __init__(self, estimator, errorbar=..., **boot_kws) -> None:
@@ -149,7 +150,6 @@ class EstimateAggregator:
 
         """
         ...
-
-    def __call__(self, data, var): # -> Series[Unknown]:
+    def __call__(self, data, var):  # -> Series[Unknown]:
         """Aggregate over `var` column of `data` with estimate and error interval."""
         ...

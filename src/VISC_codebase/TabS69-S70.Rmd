@@ -1,0 +1,238 @@
+---
+title: "Generate Tables S69, 70"
+author: "Gabrielle Lemire"
+output: pdf_document
+---
+
+\listoftables
+
+```{r load-libraries, warning = F, include=F}
+output_type <- 'latex'
+library(tidyr)
+library(dplyr)
+library(conflicted)
+library(VISCfunctions)
+library(kableExtra)
+library(knitr)
+library(testthat)
+library(stringr)
+conflict_prefer("filter", "dplyr")
+
+# knitr options
+opts_chunk$set(echo = FALSE,
+               fig.pos = "H")
+```
+
+
+```{r load-raw}
+data <- read.csv(paste0(data_location, "G00X_manuscript_Fig10.csv"))
+```
+
+```{r basic-checks}
+# we have 5 antigens in these data
+expect_equal(data %>%
+               distinct(outcome) %>%
+               nrow(),
+             5)
+
+# we have 9 time points in these data
+expect_equal(data %>%
+               distinct(week) %>%
+               nrow(),
+             9)
+
+# no AUTC or delta AUTC's should be less than 0
+expect_true(min(data$response.magnitude) <= 0)
+
+# all baseline should be NA for response call
+expect_equal(data %>% filter(week == -5) %>% filter(is.na(response.call)) %>% nrow(),
+             data %>% filter(week == -5) %>% nrow())
+
+# no one is missing a response magnitude
+expect_equal(data %>% filter(is.na(response.magnitude)) %>% nrow(),
+             0)
+```
+
+```{r}
+# function to manually parse sample size column
+
+extract_samp_sizes <- function(x) {
+  # Extract the first number after /
+  num1 <- str_extract(x, "(?<=/)\\d+(?=\\s*=)")
+
+  # Extract the second number after /
+  num2 <- str_extract(str_extract(x, "vs\\..*"), "(?<=/)\\d+(?=\\s*=)")
+
+  # Return formatted result
+  samp_size <- paste(num1, "vs.", num2)
+  return(samp_size)
+}
+
+```
+
+
+```{r data-prep}
+# data manipulation
+g002_core <- data %>%
+  # filter for those with matched vaccination schedules to G003
+  filter(pseudogroup == "eOD->eOD" |
+           pseudogroup == "eOD" & week <= 8) %>%
+  # filter for relevant timepoints
+  filter(week %in% c(8, 16)) %>%
+  mutate(Antigen = case_when(outcome == "CD4bs core" ~ "core-g28v2 CD4bs",
+                             .default = outcome)) %>%
+  pivot_longer(cols = c(response.magnitude, response.call),
+               values_to = "endpt_val",
+               names_to = "endpoint") %>%
+  mutate(endpoint = case_when(endpoint == "response.call" ~
+                                "Response Rate (Wilson CI)",
+                              (endpoint == "response.call" &
+                                 Antigen == "core-g28v2 CD4bs") ~
+                                "Diff Bind Response Rate (Wilson CI)",
+                              endpoint == "response.magnitude" ~
+                                "AUTC",
+                              (endpoint == "response.magnitude" &
+                                 Antigen == "core-g28v2 CD4bs") ~
+                                "delta AUTC",
+                              .default = NA)) %>%
+  select(pubid, Antigen, week, endpoint, endpt_val) %>%
+  mutate(Antigen = factor(Antigen,
+                          levels = c("core-g28v2 60mer", "core-g28v2 monomer",
+                                     "core-g28v2-KO11b monomer", "core-g28v2 CD4bs",
+                                     "Lumazine Synthase"))) %>%
+  # change from 0 so log calc doesn't fail
+  mutate(endpt_val = case_when((endpoint %in% c("AUTC", "delta AUTC")) &
+                                 (endpt_val <= 0) ~ .01,
+                              TRUE ~ endpt_val))
+```
+
+
+```{r core-rr-wk-8-16}
+rr_wk_tests_8_16_core <- g002_core %>%
+  filter(endpoint %in% c("Response Rate (Wilson CI)",
+                         "Diff Bind Response Rate (Wilson CI)")) %>%
+  group_by(Antigen) %>%
+  summarise(VISCfunctions::pairwise_test_bin(
+    x = endpt_val,
+    group = week,
+    method = "mcnemar",
+    id = pubid,
+    alternative = "two.sided",
+    num_needed_for_test = 3),
+    .groups = "drop") %>%
+  mutate(`Sample Sizes` = extract_samp_sizes(ResponseStats),
+         Week = Comparison) %>%
+  select(Antigen, Week, `Sample Sizes`,
+         ResponseStats, ResponseTest) %>%
+  rename(`P-value` = ResponseTest) %>%
+  group_by(Antigen) %>%
+  mutate(`FDR` = p.adjust(`P-value`, method = 'fdr'))
+
+
+# note to this is an interim solution given a reproducible example has been documented in VISCfunctions git issues but not resolved yet - https://github.com/FredHutch/VISCfunctions/issues/102
+# the output when changing the order of factors shows up in a different order for Comparison versus ResponseStats
+rr_wk_tests_8_16_core_mod <- rr_wk_tests_8_16_core %>%
+  separate(ResponseStats, c("ResponseStats1", "ResponseStats2"), sep = "vs.") %>%
+  mutate(new_ResponseStats = paste(ResponseStats2, "vs.", ResponseStats1)) %>%
+  select(-c(ResponseStats2, ResponseStats1))
+
+
+rr_wk_pretty_8_16_core <- rr_wk_tests_8_16_core_mod %>%
+  mutate(
+    `P-value` = pretty_pvalues(
+      `P-value`,
+      digits = 4,
+      output_type = 'latex',
+      sig_alpha = .05,
+      background = 'yellow'
+    ),
+      `FDR` = pretty_pvalues(
+      `FDR`,
+      digits = 4,
+      output_type = 'latex',
+      sig_alpha = .2,
+      background = 'yellow'
+    ),
+    Antigen = escape(Antigen))
+
+```
+
+```{r tab-core-mag-wk-8-16}
+# same table but replace data with core antigens
+magnitude_wk_tests_8_16_core <- g002_core %>%
+  filter(endpoint %in% c("AUTC", "delta AUTC")) %>%
+  group_by(Antigen) %>%
+  reframe(VISCfunctions::pairwise_test_cont(
+    x = endpt_val,
+    group = week,
+    id = pubid,
+    paired = TRUE,
+    method = "wilcox",
+    alternative = "two.sided",
+    num_needed_for_test = 3,
+    log10_stats = TRUE)) %>%
+  select(Antigen, Comparison, SampleSizes, Median_Min_Max, MagnitudeTest) %>%
+  rename(`Median (Min, Max)` = Median_Min_Max,
+         `P-value ` = MagnitudeTest,
+         `Sample Sizes` = SampleSizes,
+         Week = Comparison) %>%
+  group_by(Antigen) %>%
+  mutate(`FDR ` = p.adjust(`P-value `, method = 'fdr'))
+
+magnitude_wk_pretty_8_16_core <- magnitude_wk_tests_8_16_core %>%
+  mutate(
+    `P-value ` = pretty_pvalues(
+      `P-value `,
+      digits = 4,
+      output_type = 'latex',
+      sig_alpha = .05,
+      background = 'yellow'
+    ),
+      `FDR ` = pretty_pvalues(
+      `FDR `,
+      digits = 4,
+      output_type = 'latex',
+      sig_alpha = .2,
+      background = 'yellow'
+    ),
+    Antigen = escape(Antigen))
+```
+
+```{r tab-core-mag-wk-8-16}
+
+magnitude_wk_pretty_8_16_core %>%
+  kable(format = output_type,
+        escape = FALSE,
+        booktabs = T,
+        linesep = "",
+        caption = c("Table S69. Comparisons of serum binding antibody response rates to the indicated antigens at week 8 after eOD versus at week 16 after eOD -> eOD."),
+        caption.short = c("Table S69. Two sided Wilcox signed rank tests at a .05 significance level for pairwise comparisons of week 8 and week 16 response magnitudes (AUTC and delta AUTC) for pooled G002 groups for core antigens.")
+        ) %>%
+  kable_styling(
+    font_size = 6,
+    latex_options = c("hold_position",  "basic")
+    ) %>%
+  collapse_rows(1:2, valign = "top", latex_hline = "major")
+
+```
+
+```{r tab-core-rr-wk-8-16}
+
+rr_wk_pretty_8_16_core %>%
+  rename(`Response Rate (CI)` = new_ResponseStats) %>%
+  select(c(Antigen, Week, `Sample Sizes`,
+           `Response Rate (CI)`, `P-value`, FDR)) %>%
+  mutate(across(`Response Rate (CI)`, ~stringr::str_replace_all(.x, '%', '\\\\%'))) %>%
+  kable(format = output_type,
+        escape = FALSE,
+        booktabs = T,
+        linesep = "",
+        caption = c("Table S70. Comparisons of serum binding antibody response magnitudes to the indicated antigens at week 8 after eOD versus at week 16 after eOD->eOD"),
+        caption.short = c("Table S70. Two sided Mcnemar tests at a .05 significance level for pairwise comparisons of week 8 and week 16 response rates for core antigens.")
+        ) %>%
+  kable_styling(
+    font_size = 6,
+    latex_options = c("hold_position",  "basic")
+    ) %>%
+  collapse_rows(1:2, valign = "top", latex_hline = "major")
+```

@@ -11,7 +11,9 @@ from seaborn._core.properties import DashPattern, DashPatternWithOffset, RGBATup
 from seaborn._core.scales import Scale
 
 class Mappable:
-    def __init__(self, val: Any = ..., depend: str | None = ..., rc: str | None = ..., auto: bool = ..., grouping: bool = ...) -> None:
+    def __init__(
+        self, val: Any = ..., depend: str | None = ..., rc: str | None = ..., auto: bool = ..., grouping: bool = ...
+    ) -> None:
         """
         Property that can be mapped from data or set directly, with flexible defaults.
 
@@ -30,42 +32,36 @@ class Mappable:
 
         """
         ...
-
-    def __repr__(self): # -> str:
+    def __repr__(self):  # -> str:
         """Nice formatting for when object appears in Mark init signature."""
         ...
-
     @property
     def depend(self) -> Any:
         """Return the name of the feature to source a default value from."""
         ...
-
     @property
-    def grouping(self) -> bool:
-        ...
-
+    def grouping(self) -> bool: ...
     @property
     def default(self) -> Any:
         """Get the default value for this feature, or access the relevant rcParam."""
         ...
-
-
 
 MappableBool = Union[bool, Mappable]
 MappableString = Union[str, Mappable]
 MappableFloat = Union[float, Mappable]
 MappableColor = Union[str, tuple, Mappable]
 MappableStyle = Union[str, DashPattern, DashPatternWithOffset, Mappable]
+
 @dataclass
 class Mark:
     """Base class for objects that visually represent data."""
+
     artist_kws: dict = ...
 
-
-def resolve_properties(mark: Mark, data: DataFrame, scales: dict[str, Scale]) -> dict[str, Any]:
-    ...
-
-def resolve_color(mark: Mark, data: DataFrame | dict, prefix: str = ..., scales: dict[str, Scale] | None = ...) -> RGBATuple | ndarray:
+def resolve_properties(mark: Mark, data: DataFrame, scales: dict[str, Scale]) -> dict[str, Any]: ...
+def resolve_color(
+    mark: Mark, data: DataFrame | dict, prefix: str = ..., scales: dict[str, Scale] | None = ...
+) -> RGBATuple | ndarray:
     """
     Obtain a default, specified, or mapped value for a color feature.
 
@@ -88,5 +84,4 @@ def resolve_color(mark: Mark, data: DataFrame | dict, prefix: str = ..., scales:
     """
     ...
 
-def document_properties(mark):
-    ...
+def document_properties(mark): ...
