@@ -1,7 +1,7 @@
 import click
 
-from g00x_figures.cli import figures, plot_test
-from VISC_codebase.cli import comparisons, test
+from g00x_figures.cli import figures
+from VISC_codebase.cli import comparisons
 
 
 @click.group()
@@ -10,9 +10,14 @@ def main():
     pass
 
 
+# Supplementary Comparison Tables
+figures.add_command(comparisons, name="comparison-tables")
+# Supplementary Tables
+# TODO:
+# Main Figures
 main.add_command(figures, name="plot")
-main.add_command(comparisons, name="comparisons")
-main.add_command(test, name="test")
+# Pipeline
+# main.add_command(pipeline, name="pipeline")
 
 if __name__ == "__main__":
     # Run the CLI

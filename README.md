@@ -394,29 +394,36 @@ poetry run pytest -sv --log-cli-level DEBUG tests
 
 Main figures as they are displayed in the G002 and G003  paper. Figure 1 is not included as it is manually generated.
 
+You can plot them all at once.
+
 ```bash
-g00x plots fig2
-g00x plots fig3
-g00x plots fig4
-g00x plots fig5
-g00x plots fig6
-g00x plots fig7
+g00x plot main-figures
 ```
 
+Or you can plot them one at a time.
+
+```bash
+g00x plot fig2
+g00x plot fig3
+g00x plot fig4
+g00x plot fig5
+g00x plot fig6
+g00x plot fig7
+```
 
 ## Supplementary Figures
 
 Supplementary figures are in order.
 
 ```bash
-g00x plots suppfigures --all #TODO: Update later
+g00x plot sup-figures  #TODO: Update later
 ```
 
 ## Supplementary Comparison Tables
 
 ```bash
-g00x plots comparison-tables --all
-g00x plots tables --all
+g00x plot comparison-tables
+g00x plot sup-tables
 ```
 
 # Issues

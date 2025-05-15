@@ -103,7 +103,7 @@ from g00x_figures.spr import (
     "--fig",
     "-f",
     default=None,
-    required=True,
+    # required=True,
     type=str,
     help="Figure number",
     show_default=True,

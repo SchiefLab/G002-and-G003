@@ -1,20 +1,43 @@
+import os
 import subprocess
 from pathlib import Path
 
 import click
 
 
+class cd:
+    """Context manager for changing the current working directory"""
+
+    def __init__(self, newPath):
+        self.newPath = os.path.expanduser(newPath)
+
+    def __enter__(self):
+        self.savedPath = os.getcwd()
+        os.chdir(self.newPath)
+
+    def __exit__(self, etype, value, traceback):
+        os.chdir(self.savedPath)
+
+
 def run_r_script(rscript_path: str, sourcedir: str = "../../G00x-plots/") -> None:
     """Run an R script with the given source directory."""
-    rscript = Path(rscript_path)
-    if not rscript.exists():
+    script_dir = Path(__file__).parent
+    rscript_path = script_dir / Path(rscript_path)
+    if not rscript_path.exists():
+        click.echo(f"R script not found: {rscript_path}")
         raise FileNotFoundError(f"R script not found: {rscript_path}")
-    if not rscript.is_file():
+    if not rscript_path.is_file():
+        click.echo(f"R script path is not a file: {rscript_path}")
         raise ValueError(f"R script path is not a file: {rscript_path}")
-    if rscript.suffix.lower() != ".r":
+    if rscript_path.suffix.lower() != ".r":
+        click.echo(f"R script does not have .R extension: {rscript_path}")
         raise ValueError(f"R script does not have .R extension: {rscript_path}")
-    rscript_cmd = f"Rscript {rscript_path} '{sourcedir}'"
-    subprocess.run(rscript_cmd, shell=True, check=True)
+    click.echo(f"Rscript '{rscript_path}' '{sourcedir}'")
+    # Needs to be run from the directory of the script
+    with cd(script_dir):
+        click.echo(Path.cwd())
+        rscript_cmd = f"Rscript '{rscript_path}' '{sourcedir}'"
+        subprocess.run(rscript_cmd, shell=True, check=True)
 
 
 def render_rmarkdown(rmarkdown_path: str, sourcedir: str = "../../G00x-plots/") -> None:
@@ -30,40 +53,24 @@ def render_rmarkdown(rmarkdown_path: str, sourcedir: str = "../../G00x-plots/") 
     subprocess.run(rmarkdown_cmd, shell=True, check=True)
 
 
-# will run the script and then the markdown
-# def run_Rscript(rscript_path: str = None, rmarkdown_path: str = None, sourcedir: str = '../../G00x-plots') -> None:
-#     # Fail if both rscript_path and rmarkdown_path are None
-#     if rscript_path is None and rmarkdown_path is None:
-#         raise ValueError("At least one of rscript_path or rmarkdown_path must be provided")
-
-#     # Run R script if provided
-#     if rscript_path:
-#         run_r_script(rscript_path, sourcedir)
-
-#     # Run R markdown if provided
-#     if rmarkdown_path:
-#         render_rmarkdown(rmarkdown_path, sourcedir)
-
-
 @click.command()
-# @click.argument('rscript_path')
-# @click.argument('rmarkdown_path', required=False)
-# @click.option('--sourcedir', default='../../G00x-plots', show_default=True, help='Path to the source directory for the R script.')
-# def cli(rscript_path, rmarkdown_path, sourcedir):
-#     run_Rscript(rscript_path, rmarkdown_path, sourcedir)
 def cli():
     pass
 
 
-@click.command("comparisons")
+@click.command("comparison-tables")
 @click.option(
-    "--sourcedir", default="../../G00x-plots/", show_default=True, help="Path to the source directory for the R script."
+    "--sourcedir",
+    default=str(Path(__file__).parent.parent.parent / "G00x-plots/"),
+    show_default=True,
+    help="Path to the source directory for the R script.",
 )
-def comparisons(sourcedir):
-    """Run the mk_table_figure2.R script."""
+def comparison_tables(sourcedir):
+    """Run the comparison rcripts."""
     # render_rmarkdown(rmarkdown_path='FigS8_TabS31-34_TabS77.Rmd', sourcedir=sourcedir)
     # render_rmarkdown(rmarkdown_path='Figure_S10.Rmd', sourcedir=sourcedir)
     # render_rmarkdown(rmarkdown_path='TableS35_S36.Rmd', sourcedir=sourcedir)
+    click.echo("Running mk_table_figure2.R")
     run_r_script(rscript_path="mk_table_figure2.R", sourcedir=sourcedir)
     run_r_script(rscript_path="FigureS9.R", sourcedir=sourcedir)
     run_r_script(rscript_path="comparisons_table_S40.R", sourcedir=sourcedir)
@@ -85,14 +92,16 @@ def comparisons(sourcedir):
     run_r_script(rscript_path="comparisons_table_S78.R", sourcedir=sourcedir)
 
 
-@click.command("test")
+@click.command("make-tables")
 @click.option(
     "--sourcedir", default="../../G00x-plots/", show_default=True, help="Path to the source directory for the R script."
 )
-def test(sourcedir):
-    """Run the mk_table_figure2.R script."""
-    # render_rmarkdown(rmarkdown_path='TableS40.Rmd', sourcedir=sourcedir)
-    run_r_script(rscript_path="comparisons_table_S62.R", sourcedir=sourcedir)
+def make_tables(sourcedir):
+    """Run the Rmd scripts."""
+    render_rmarkdown(rmarkdown_path="TableS40.Rmd", sourcedir=sourcedir)
+    render_rmarkdown(rmarkdown_path="FigS8_TabS31-34_TabS77.Rmd", sourcedir=sourcedir)
+    render_rmarkdown(rmarkdown_path="Figure_S10.Rmd", sourcedir=sourcedir)
+    render_rmarkdown(rmarkdown_path="TableS35_S36.Rmd", sourcedir=sourcedir)
 
 
 # Create a click group to include both commands
@@ -103,9 +112,7 @@ def main():
 
 
 main.add_command(cli)
-main.add_command(comparisons)
-main.add_command(test)
-
+main.add_command(comparison_tables)
 
 if __name__ == "__main__":
     main()  # noqa: F403
