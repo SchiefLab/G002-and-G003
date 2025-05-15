@@ -500,7 +500,7 @@ g00x plot comparison-tables
 
 # Issues
 
-Please submit any issues to the [issues page](https://github.com/SchiefLab/G00x/issues) and we are happy to help.
+Please submit any issues to the [issues page](https://github.com/SchiefLab/G002-and-G003/issues) and we are happy to help.
 
 # License
 
