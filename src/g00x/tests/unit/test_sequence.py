@@ -3,7 +3,7 @@ from click.testing import CliRunner
 from conftest import GeneralFixture
 from pandas.testing import assert_frame_equal
 
-from g00x.app import g00x
+from g00x.cli import g00x
 from g00x.data import Data
 from g00x.sequencing.merge import merge_flow_and_sequencing
 from g00x.validations.sequencing_validation import validate_sequencing
