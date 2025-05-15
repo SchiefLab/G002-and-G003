@@ -101,7 +101,7 @@ Commands:
 </div>
 
 ## Installation Guide: Cell Ranger 7.0 and bcl2fastq
-G00x requires `cellranger 7.0.1` to be installed from the 10x website. Please check that you system needs to meet the [system requirements](https://www.10xgenomics.com/support/software/cell-ranger/downloads/cr-system-requirements). The installation instructions for cel are on the [10x website](https://www.10xgenomics.com/support/software/cell-ranger/downloads#download-links), then to add the cellranger binary to your path. 
+G00x requires `cellranger 7.0.1` to be installed from the 10x website. Please check that your system meets the [system requirements](https://www.10xgenomics.com/support/software/cell-ranger/downloads/cr-system-requirements). The installation instructions for Cell Ranger are on the [10x website](https://www.10xgenomics.com/support/software/cell-ranger/downloads#download-links), then add the cellranger binary to your PATH. 
 
 ---
 
