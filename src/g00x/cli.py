@@ -23,7 +23,6 @@ from g00x.tools.path import cd, pathing, pd_expand_path, pd_replace_home_with_ti
 from g00x.validations.flow_validation import ValidateG00X
 from g00x.validations.g003_flow_validation import validate_g003_sorting
 from g00x.validations.g003_sequencing_validation import validate_g003_sequencing
-from g00x_figures.app import cli as plot_cli
 
 
 @click.group("g00x")
@@ -33,9 +32,6 @@ def g00x(ctx: click.Context, logging_level: str | int = 0) -> None:
     logging.basicConfig(level=logging_level)
     ctx.obj = {}
     ctx.obj = {"data": Data(), "params": PlotParameters()}
-
-
-g00x.add_command(plot_cli, name="plot")
 
 
 @g00x.group("g002")
