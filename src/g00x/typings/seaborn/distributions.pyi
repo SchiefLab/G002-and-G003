@@ -8,68 +8,228 @@ from ._oldcore import VectorPlotter
 __all__ = ["displot", "histplot", "kdeplot", "ecdfplot", "rugplot", "distplot"]
 _dist_params = ...
 _param_docs = ...
+
 class _DistributionPlotter(VectorPlotter):
     semantics = ...
     wide_structure = ...
     flat_structure = ...
-    def __init__(self, data=..., variables=...) -> None:
-        ...
-
+    def __init__(self, data=..., variables=...) -> None: ...
     @property
-    def univariate(self): # -> bool:
+    def univariate(self):  # -> bool:
         """Return True if only x or y are used."""
         ...
-
     @property
-    def data_variable(self): # -> str:
+    def data_variable(self):  # -> str:
         """Return the variable with data for univariate plots."""
         ...
-
     @property
-    def has_xy_data(self): # -> bool:
+    def has_xy_data(self):  # -> bool:
         """Return True at least one of x or y is defined."""
         ...
-
-    def plot_univariate_histogram(self, multiple, element, fill, common_norm, common_bins, shrink, kde, kde_kws, color, legend, line_kws, estimate_kws, **plot_kws):
+    def plot_univariate_histogram(
+        self,
+        multiple,
+        element,
+        fill,
+        common_norm,
+        common_bins,
+        shrink,
+        kde,
+        kde_kws,
+        color,
+        legend,
+        line_kws,
+        estimate_kws,
+        **plot_kws
+    ): ...
+    def plot_bivariate_histogram(
+        self,
+        common_bins,
+        common_norm,
+        thresh,
+        pthresh,
+        pmax,
+        color,
+        legend,
+        cbar,
+        cbar_ax,
+        cbar_kws,
+        estimate_kws,
+        **plot_kws
+    ): ...
+    def plot_univariate_density(
+        self, multiple, common_norm, common_grid, warn_singular, fill, color, legend, estimate_kws, **plot_kws
+    ):  # -> None:
         ...
-
-    def plot_bivariate_histogram(self, common_bins, common_norm, thresh, pthresh, pmax, color, legend, cbar, cbar_ax, cbar_kws, estimate_kws, **plot_kws):
+    def plot_bivariate_density(
+        self,
+        common_norm,
+        fill,
+        levels,
+        thresh,
+        color,
+        legend,
+        cbar,
+        warn_singular,
+        cbar_ax,
+        cbar_kws,
+        estimate_kws,
+        **contour_kws
+    ): ...
+    def plot_univariate_ecdf(self, estimate_kws, legend, **plot_kws):  # -> None:
         ...
-
-    def plot_univariate_density(self, multiple, common_norm, common_grid, warn_singular, fill, color, legend, estimate_kws, **plot_kws): # -> None:
+    def plot_rug(self, height, expand_margins, legend, **kws):  # -> None:
         ...
-
-    def plot_bivariate_density(self, common_norm, fill, levels, thresh, color, legend, cbar, warn_singular, cbar_ax, cbar_kws, estimate_kws, **contour_kws):
-        ...
-
-    def plot_univariate_ecdf(self, estimate_kws, legend, **plot_kws): # -> None:
-        ...
-
-    def plot_rug(self, height, expand_margins, legend, **kws): # -> None:
-        ...
-
-
 
 class _DistributionFacetPlotter(_DistributionPlotter):
     semantics = ...
 
-
-def histplot(data=..., *, x=..., y=..., hue=..., weights=..., stat=..., bins=..., binwidth=..., binrange=..., discrete=..., cumulative=..., common_bins=..., common_norm=..., multiple=..., element=..., fill=..., shrink=..., kde=..., kde_kws=..., line_kws=..., thresh=..., pthresh=..., pmax=..., cbar=..., cbar_ax=..., cbar_kws=..., palette=..., hue_order=..., hue_norm=..., color=..., log_scale=..., legend=..., ax=..., **kwargs):
-    ...
-
-def kdeplot(data=..., *, x=..., y=..., hue=..., weights=..., palette=..., hue_order=..., hue_norm=..., color=..., fill=..., multiple=..., common_norm=..., common_grid=..., cumulative=..., bw_method=..., bw_adjust=..., warn_singular=..., log_scale=..., levels=..., thresh=..., gridsize=..., cut=..., clip=..., legend=..., cbar=..., cbar_ax=..., cbar_kws=..., ax=..., **kwargs):
-    ...
-
-def ecdfplot(data=..., *, x=..., y=..., hue=..., weights=..., stat=..., complementary=..., palette=..., hue_order=..., hue_norm=..., log_scale=..., legend=..., ax=..., **kwargs):
-    ...
-
-def rugplot(data=..., *, x=..., y=..., hue=..., height=..., expand_margins=..., palette=..., hue_order=..., hue_norm=..., legend=..., ax=..., **kwargs):
-    ...
-
-def displot(data=..., *, x=..., y=..., hue=..., row=..., col=..., weights=..., kind=..., rug=..., rug_kws=..., log_scale=..., legend=..., palette=..., hue_order=..., hue_norm=..., color=..., col_wrap=..., row_order=..., col_order=..., height=..., aspect=..., facet_kws=..., **kwargs):
-    ...
-
-def distplot(a=..., bins=..., hist=..., kde=..., rug=..., fit=..., hist_kws=..., kde_kws=..., rug_kws=..., fit_kws=..., color=..., vertical=..., norm_hist=..., axlabel=..., label=..., ax=..., x=...):
+def histplot(
+    data=...,
+    *,
+    x=...,
+    y=...,
+    hue=...,
+    weights=...,
+    stat=...,
+    bins=...,
+    binwidth=...,
+    binrange=...,
+    discrete=...,
+    cumulative=...,
+    common_bins=...,
+    common_norm=...,
+    multiple=...,
+    element=...,
+    fill=...,
+    shrink=...,
+    kde=...,
+    kde_kws=...,
+    line_kws=...,
+    thresh=...,
+    pthresh=...,
+    pmax=...,
+    cbar=...,
+    cbar_ax=...,
+    cbar_kws=...,
+    palette=...,
+    hue_order=...,
+    hue_norm=...,
+    color=...,
+    log_scale=...,
+    legend=...,
+    ax=...,
+    **kwargs
+): ...
+def kdeplot(
+    data=...,
+    *,
+    x=...,
+    y=...,
+    hue=...,
+    weights=...,
+    palette=...,
+    hue_order=...,
+    hue_norm=...,
+    color=...,
+    fill=...,
+    multiple=...,
+    common_norm=...,
+    common_grid=...,
+    cumulative=...,
+    bw_method=...,
+    bw_adjust=...,
+    warn_singular=...,
+    log_scale=...,
+    levels=...,
+    thresh=...,
+    gridsize=...,
+    cut=...,
+    clip=...,
+    legend=...,
+    cbar=...,
+    cbar_ax=...,
+    cbar_kws=...,
+    ax=...,
+    **kwargs
+): ...
+def ecdfplot(
+    data=...,
+    *,
+    x=...,
+    y=...,
+    hue=...,
+    weights=...,
+    stat=...,
+    complementary=...,
+    palette=...,
+    hue_order=...,
+    hue_norm=...,
+    log_scale=...,
+    legend=...,
+    ax=...,
+    **kwargs
+): ...
+def rugplot(
+    data=...,
+    *,
+    x=...,
+    y=...,
+    hue=...,
+    height=...,
+    expand_margins=...,
+    palette=...,
+    hue_order=...,
+    hue_norm=...,
+    legend=...,
+    ax=...,
+    **kwargs
+): ...
+def displot(
+    data=...,
+    *,
+    x=...,
+    y=...,
+    hue=...,
+    row=...,
+    col=...,
+    weights=...,
+    kind=...,
+    rug=...,
+    rug_kws=...,
+    log_scale=...,
+    legend=...,
+    palette=...,
+    hue_order=...,
+    hue_norm=...,
+    color=...,
+    col_wrap=...,
+    row_order=...,
+    col_order=...,
+    height=...,
+    aspect=...,
+    facet_kws=...,
+    **kwargs
+): ...
+def distplot(
+    a=...,
+    bins=...,
+    hist=...,
+    kde=...,
+    rug=...,
+    fit=...,
+    hist_kws=...,
+    kde_kws=...,
+    rug_kws=...,
+    fit_kws=...,
+    color=...,
+    vertical=...,
+    norm_hist=...,
+    axlabel=...,
+    label=...,
+    ax=...,
+    x=...,
+):
     """
     DEPRECATED
 

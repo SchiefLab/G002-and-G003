@@ -15,12 +15,11 @@
   - [Local Machine Setup](#local-machine-setup)
     - [Mounting Box](#mounting-box)
     - [Rclone](#rclone)
-    - [Mounting Box](#mounting-box-1)
     - [Mounting Globus](#mounting-globus)
 
 # Summary
 
-AWS s3 buckets contain a stable version of the data. The data is organized by sequencing, sorting and output. To get the data using [Simple Setup](#simple-setup), you need the AWS CLI.
+AWS S3 buckets contain a stable version of the data. The data is organized by sequencing, sorting and output. To get the data using [Simple Setup](#simple-setup), you need the AWS CLI.
 
 If you are a developer and would like the most recent version of the data with syncing functionality, please see [Advanced Setup](#advanced-setup).
 
@@ -32,7 +31,7 @@ We store our data on [AWS S3 Buckets](https://aws.amazon.com/s3/). We have two b
 
 ### Obtaining AWS credentials.
 
-To get AWS credentials, you can either email [Jordan](mailto:jwillis@scripps.edu) or [Troy](mailto:tsincomb@iavi.org) to get access.
+To get AWS credentials, you can email [Troy](mailto:tsincomb@iavi.org) to get access.
 
 There are two scenarios for access.
 
@@ -72,7 +71,7 @@ PRE g002/
 </div>
 !!! info "G002"
 
-    If you are shown the `PRE g002/` output, you have access to the bucket.
+ You have access to the bucket if you are shown the `PRE g002/` output.
 
 ### AWS S3 Copy Specific Files
 
@@ -80,40 +79,40 @@ Below is a way to only copy certain components of the AWS bucket
 
 === "Sorting"
 
-    <div class="termy">
+ <div class="termy">
 
-    ```console
-    $ aws s3 cp --recursive  s3://iavig002westbucket/g002/G002/sorting/ buckets/g002/G002/sorting
-    ---> 100%
-    ```
-    </div>
+ ```console
+ $ aws s3 cp --recursive  s3://iavig002westbucket/g002/G002/sorting/ buckets/g002/G002/sorting
+ ---> 100%
+ ```
+ </div>
 
 === "Sequencing"
 
-    Get all sequencing files
-    <div class="termy">
-    ```console
-    $ aws s3 cp --recursive  s3://iavig002westbucket/g002/G002/sorting/ buckets/g002/G002/sequencing
-    ---> 100%
-    ```
-    </div>
+ Get all sequencing files
+ <div class="termy">
+ ```console
+ $ aws s3 cp --recursive  s3://iavig002westbucket/g002/G002/sorting/ buckets/g002/G002/sequencing
+ ---> 100%
+ ```
+ </div>
 
-    get the sequencing directory excluding large bcl and fastq files
-    <div class="termy">
-    ```console
-    $ aws s3 cp --recursive s3://iavig002westbucket/g002/G002/sequencing ./g002/G002/sequencing --exclude *working_directory/* --exclude *.fastq.gz --exclude *.tif --exclude *.cbcl --exclude *.imf1 --exclude *.filter --exclude *.bin --exclude *Logs/* --exclude *_stdout --exclude *_stderr --exclude *Autofocus/* --exclude *Intensities/*
-    ---> 100%
-    ```
-    </div>
+ get the sequencing directory excluding large bcl and fastq files
+ <div class="termy">
+ ```console
+ $ aws s3 cp --recursive s3://iavig002westbucket/g002/G002/sequencing ./g002/G002/sequencing --exclude *working_directory/* --exclude *.fastq.gz --exclude *.tif --exclude *.cbcl --exclude *.imf1 --exclude *.filter --exclude *.bin --exclude *Logs/* --exclude *_stdout --exclude *_stderr --exclude *Autofocus/* --exclude *Intensities/*
+ ---> 100%
+ ```
+ </div>
 
 === "Output"
 
-    <div class="termy">
-    ```console
-    $ aws s3 cp --recursive  s3://iavig002westbucket/g002/G002/output/ buckets/g002/G002/output
-    ---> 100%
-    ```
-    </div>
+ <div class="termy">
+ ```console
+ $ aws s3 cp --recursive  s3://iavig002westbucket/g002/G002/output/ buckets/g002/G002/output
+ ---> 100%
+ ```
+ </div>
 
 ### AWS S3 Sync All Files
 
@@ -126,19 +125,19 @@ $ aws s3 sync --delete  s3://iavig002westbucket/ buckets/
 
 !!! warning "Warning: Large File"
 
-    The entire bucket will likely be over 2 TB
+ The entire bucket will likely be over 2 TB
 
 !!! warning "--delete"
 
-    The `--delete` flag will delete any files in the destination that are not in the source. This is useful for keeping the destination in sync with the source. If you don't want to delete files, remove the `--delete` flag.
+ The `--delete` flag will delete any files in the destination that are not in the source. This is useful for keeping the destination in sync with the source. If you don't want to delete files, remove the `--delete` flag.
 
 !!! info "Sync"
 
-    The `sync` command can also be used on specific file susbsets, e.g. sorting
+ The `sync` command can also be used on specific file subsets, e.g. sorting.
 
 ## Advanced Setup
 
-For those users that need to mount [Box](https://www.box.com/) or [Globus](https://www.globus.org/), we a have 2 sets of instructions below. The first is for an quick setup if you are using an AWS instance; otherwise for a local machine, we recommend using the second set of instructions.
+For those users that need to mount [Box](https://www.box.com/) or [Globus](https://www.globus.org/), we have two sets of instructions below. The first is for a quick setup if you are using an AWS instance; otherwise, we recommend using the second set of instructions for a local machine.
 
 - The 2 Available Options:
   1. [AWS Instance Quick Setup](#aws-instance-setup)
@@ -147,9 +146,9 @@ For those users that need to mount [Box](https://www.box.com/) or [Globus](https
 
 ## AWS Instance Setup
 
-For this to work you must have all the following completed:
+For this to work, you must have all the following completed:
 
-1. You have a running AWS instance with a home dictory to a user with sudo privileges
+1. You have a running AWS instance with a home directory for a user with sudo privileges
 2. You were invited to the G002 [Box](https://www.box.com/).
 3. You were invited to the G002 [Globus](https://www.globus.org/) collection.
 4. G00x is installed on your AWS instance. If not, follow the instructions [here](index.md)
@@ -162,12 +161,12 @@ This could take 3+ hours, but it will be running in the background using systemd
 
 ```console
 $ g00x g002 box setup
-## click the link and sign into your box account when prompted
+## Click the link and sign into your Box account when prompted
 ```
 
 </div>
 
-To check on the status of the sync, run the following below.
+To check on the status of the sync, run the following:.
 
 
 <div class="termy">
@@ -186,12 +185,12 @@ This could take 1+ hours, but it will be running in the background using systemd
 
 ```console
 $ g00x g002 globus setup
-## click the link and sign into your globus account when prompted
+## Click the link and sign in to your Globus account when prompted
 ```
 
 </div>
 
-To check on the status of the sync, run the following below.
+To check on the status of the sync, run the following.
 
 
 <div class="termy">
@@ -206,15 +205,15 @@ $ g00x g002 globus status
 
 ## Local Machine Setup
 
-!!! warning "DO NOT DO IF YOU ALREADY COMPLETE THE AWS QUICK SETUP"
+!!! Warning "DO NOT DO IF YOU ALREADY COMPLETE THE AWS QUICK SETUP"
 
 ### Mounting Box
 
 ### Rclone
 
-To mount box, we will use a utility called [R clone](https://rclone.org/). R clone is a command line utility that can be used to mount cloud storage. To install R clone, follow the instructions [here](https://rclone.org/install/).
+To mount Box, we will use a utility called [R clone](https://rclone.org/). R clone is a command line utility that can be used to mount cloud storage. To install R clone, follow the instructions [here](https://rclone.org/install/).
 
-Once you install, you can run the following
+Once you install, you can run the following.
 
 <div class="termy">
 
@@ -224,7 +223,7 @@ $ rclone config
 
 </div>
 
-It will ask you a few questions. I used the following answers
+It will ask you a few questions. I used the following answers.
 
 <div class="termy">
 
@@ -242,9 +241,9 @@ Use auto config? (y/n) > <see below>
 
 </div>
 
-`use auto config` depends on if you are using a machine with a browser (like your personal computer). If you are on a server without access to a browser, hit `n` and you will be given a link to copy and paste into a browser.
+`use auto config` depends on whether you use a machine with a browser (like your personal computer). If you are on a server without access to a browser, hit `n` and you will be given a link to copy and paste into a browser.
 
-If you hit `n`, head over to a machine with rclone installed (e.g. brew install rclone) that has a browser and type
+If you hit `n`, head over to a machine with rclone installed (e.g. brew install rclone) that has a browser and type.
 
 <div class="termy">
 
@@ -254,7 +253,7 @@ $ rclone authorize box
 
 </div>
 
-That will take you into a login page. Just login and hit authorize. Come back to the command line console and you will see a code that looks like the following.
+That will take you to a login page. Just log in and hit authorise. Come back to the command line console, and you will see a code that looks like the following.
 
 ```
 #Paste this code into the rclone configuration:
@@ -265,7 +264,7 @@ There you now have Box setup to mount! Check `~/.config/rclone/rclone.conf` to s
 
 ### Mounting Box
 
-To mount box, you can use the following command
+To mount Box, you can use the following command
 
 <div class="termy">
 
@@ -282,17 +281,17 @@ $ rclone mount --daemon g002: /mnt/box
 
 </div>
 
-Now box will be mounted to /mnt/box
+Now Box will be mounted to /mnt/Box
 
 !!! warning "Path must exist"
 
-    The /mnt/path/to/box must exist. If it doesn't, you will get an error.
+ The /mnt/path/to/Box must exist. If it doesn't, you will get an error.
 
 ### Mounting Globus
 
 To install globus, we need Globus Personal Connect. You can find the complete installation [here](https://docs.globus.org/how-to/globus-connect-personal-linux/)
 
-Once you install, you can run the following
+Once you install, you can run the following.
 
 <div class="termy">
 

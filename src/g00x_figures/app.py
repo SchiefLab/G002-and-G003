@@ -1,6 +1,7 @@
 """This is our main entry point"""
 
 # %%
+import functools
 import logging
 import math
 import subprocess
@@ -71,8 +72,6 @@ from g00x_figures.spr import (
     plot_spr_core_candidates,
     plot_spr_prime,
 )
-
-import functools
 
 
 @click.group(invoke_without_command=True)
@@ -145,11 +144,12 @@ def cli(
     ctx.obj["is_main"] = is_main
     ctx.obj["use_geomean"] = use_geomean
     ctx.obj["median_scale"] = median_scale
-    
+
     for key in ["fig", "img_outdir", "metric_outdir"]:
         value = ctx.obj[key]
         if fig is not None:
             logging.info(f"{key}: {value}")
+
 
 @cli.command("flow-freq")
 @click.pass_context
@@ -183,6 +183,7 @@ def fig8(ctx: click.Context, *args, **kwargs) -> None:
     metric_outdir = ctx.obj["metric_outdir"]
     breakpoint()
     plot_cp_frequency(data, img_outpath=img_outpath, metric_outdir=metric_outdir)
+
 
 @cli.command("prime-mut")
 @click.pass_context
@@ -862,17 +863,28 @@ def s27(ctx: click.Context) -> None:
     save(img, dfs, img_outpath, metric_outdir)
 
 
+@cli.command("test")
+@click.pass_context
+def plot_test(ctx: click.Context) -> None:
+    """Plot all figures."""
+    commands = [
+        "echo 'Plotting main figures'",
+    ]
+    click.echo(ctx.obj)
+    for cmd in commands:
+        subprocess.run(cmd, shell=True, check=True)
+
+
 @cli.command("main")
 @click.pass_context
-def plot_spr(ctx: click.Context) -> None:
+def plot_main(ctx: click.Context) -> None:
     """Plot all figures."""
     commands = [
         "g00x plot -m --fig fig2 flow-freq",
         "g00x plot -m --fig fig3-nearest prime-mut --aa --method nearest",
         "g00x plot -m --fig fig3-midpoint prime-mut --aa --method midpoint",
         "g00x plot -m --fig fig4 boost-freq",
-        "g00x plot -m --fig fig5-nearest boost-mut-aa --method nearest",
-        "g00x plot -m --fig fig5-midpoint boost-mut-aa --method midpoint",
+        "g00x plot -m --fig fig5 boost-mut-aa --method nearest",
         "g00x plot -m --fig fig6 -g -s 1 spr-boost",
         "g00x plot -m --fig fig7 fig8",
     ]

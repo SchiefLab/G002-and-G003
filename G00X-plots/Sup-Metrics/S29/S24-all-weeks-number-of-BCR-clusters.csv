@@ -1,0 +1,10 @@
+count,label,trial
+7548,cluster_single_timepoint,G003
+572,cluster_more_one_timepoint,G003
+49,cluster_multiple_subjects,G003
+17844,cluster_single_timepoint,G002
+910,cluster_more_one_timepoint,G002
+164,cluster_multiple_subjects,G002
+1346,cluster_single_timepoint,G001
+135,cluster_more_one_timepoint,G001
+2,cluster_multiple_subjects,G001

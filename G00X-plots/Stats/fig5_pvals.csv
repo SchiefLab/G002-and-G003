@@ -1,0 +1,17 @@
+"panel","y_label","weeks","comp","p.value","fdr"
+"A","v_mutation_aa_heavy",16,"eOD->eOD vs. eOD->core",0.00335392216255128,0.0134156886502051
+"A","v_mutation_aa_heavy",24,"eOD->eOD vs. eOD->core",0.0661905187660245,0.132381037532049
+"A","v_mutation_aa_heavy",24,"eOD->eOD vs. eOD->eOD->core",0.900582322598436,0.900582322598436
+"A","v_mutation_aa_heavy",24,"eOD->core vs. eOD->eOD->core",0.10701170630326,0.142682275071013
+"B","v_mutation_aa_light",16,"eOD->eOD vs. eOD->core",0.00141026293691742,0.00564105174766969
+"B","v_mutation_aa_light",24,"eOD->eOD vs. eOD->core",0.124364579173945,0.165819438898593
+"B","v_mutation_aa_light",24,"eOD->eOD vs. eOD->eOD->core",0.362016781570402,0.362016781570402
+"B","v_mutation_aa_light",24,"eOD->core vs. eOD->eOD->core",0.0314618768247161,0.0629237536494321
+"E","residues",16,"eOD->eOD vs. eOD->core",0.00708985706810146,0.00945314275746862
+"E","residues",24,"eOD->eOD vs. eOD->core",0.000321934062329538,0.000643868124659075
+"E","residues",24,"eOD->eOD vs. eOD->eOD->core",0.635455658926111,0.635455658926111
+"E","residues",24,"eOD->core vs. eOD->eOD->core",0.000165349335578141,0.000643868124659075
+"F","residues",16,"eOD->eOD vs. eOD->core",9.10257437825129e-06,3.64102975130052e-05
+"F","residues",24,"eOD->eOD vs. eOD->core",4.34737327529826e-05,5.79649770039768e-05
+"F","residues",24,"eOD->eOD vs. eOD->eOD->core",0.708420091779086,0.708420091779086
+"F","residues",24,"eOD->core vs. eOD->eOD->core",3.38508694091295e-05,5.79649770039768e-05

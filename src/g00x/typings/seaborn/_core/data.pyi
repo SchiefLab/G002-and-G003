@@ -8,6 +8,7 @@ from seaborn._core.typing import DataSource, VariableSpec
 """
 Components for parsing variable assignments and internally representing plot data.
 """
+
 class PlotData:
     """
     Data table with plot variable schema and mapping to original names.
@@ -35,19 +36,17 @@ class PlotData:
         Dictionary mapping plot variable names to unique data source identifiers.
 
     """
+
     frame: DataFrame
     frames: dict[tuple, DataFrame]
     names: dict[str, str | None]
     ids: dict[str, str | int]
     source_data: DataSource
     source_vars: dict[str, VariableSpec]
-    def __init__(self, data: DataSource, variables: dict[str, VariableSpec]) -> None:
-        ...
-
+    def __init__(self, data: DataSource, variables: dict[str, VariableSpec]) -> None: ...
     def __contains__(self, key: str) -> bool:
         """Boolean check on whether a variable is defined in this dataset."""
         ...
-
     def join(self, data: DataSource, variables: dict[str, VariableSpec] | None) -> PlotData:
         """Add, replace, or drop variables and return as a new dataset."""
         ...

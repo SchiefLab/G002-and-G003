@@ -1,0 +1,8 @@
+psname,pseudogroup,clonality
+eOD,1,0.964
+core,2,1.0
+eOD->eOD,3,0.902
+eOD->core,4,0.861
+eOD->eOD,5,0.907
+eOD->core,6,0.863
+eOD->eOD->core,7,0.822

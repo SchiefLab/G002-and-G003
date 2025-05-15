@@ -1,0 +1,742 @@
+---
+title: "manuscript_code"
+output: html_document
+date: "2025-04-23"
+params:
+  data_location: '../../G00x-plots/'
+---
+
+```{r library}
+library(conflicted)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(patchwork)
+
+conflict_prefer("filter", "dplyr")
+```
+
+```{r data}
+bama_df <- read.csv("2025-03-18G00X_manuscript_Fig10.csv")
+
+# For magnitude response legends
+group_pooled_colors_resp <- c("#DAC248", "#CB88BA", "#44739E")
+color_names <- c("Wk -5,2,4,8", "Wk 10,16", "Wk 18,20,24")
+
+# For response rate legends
+group_pooled_colors_resp_short <- c("#DAC248", "#CB88BA", "#44739E")
+color_names_short <- c("Wk 2,4,8", "Wk 10,16", "Wk 18,20,24") # response rate plot doesn't include wk -5 (baseline)
+
+names(group_pooled_colors_resp) <- color_names
+names(group_pooled_colors_resp_short) <- color_names_short
+```
+
+```{r preprocess}
+bama_core_df <- bama_df %>%
+  mutate(week = paste0("Wk ", week)) %>%
+  mutate(
+    week = factor(week, levels = c("Wk -5", "Wk 2", "Wk 4", "Wk 8", "Wk 10", "Wk 16", "Wk 18", "Wk 20", "Wk 24"), ordered = T),
+    pseudogroup = factor(
+      pseudogroup,
+      levels = c("eOD", "eOD->eOD", "eOD->core", "eOD->eOD->core", "core"),
+      ordered = T
+    ))
+```
+
+```{r rr-plot-core60, fig.height=7, fig.width=9.5, warning = F}
+
+# response rate plot function for all core 60mer antigen
+# generates response rate plot with CI whiskers
+# Includes week labels on top
+# Excludes antigen labels on the right, and group names and legend on the bottom
+
+plot_rr_core <- function(antigen_name){
+
+rr_plot_df <-
+  bama_core_df %>%
+  filter(
+         week != "Wk -5") %>%
+  distinct(pubid, week, outcome, `response call`, pseudogroup) %>%
+  mutate(`response call` = as.numeric(`response call`)) %>%
+
+  group_by(outcome, week, pseudogroup) %>%
+  dplyr::summarize( # need to change to perform calculations with functions instead
+    n = n(),
+    response_frac = paste(sum(`response call`), n(), sep = "/"),
+    response_prop = eval(parse(text = response_frac)),
+    response_pct = response_prop * 100,
+     all_zero = response_prop == 0,
+    npos = sum(`response call`),
+    z = abs(qnorm(1 - (1 - .95) / 2)),
+    p = npos / n,
+    denom = 1 + z * z / n,
+    t1 = p + z * z / 2 / n,
+    t2 = z * sqrt(p * (1 - p) / n + z * z / 4 / n / n),
+    mean = p,
+    lower = (t1 - t2) / denom,
+    upper = (t1 + t2) / denom,
+    CI = paste0('(', round_away_0(lower * 100, 1), '\\%, ',
+                           round_away_0(upper * 100, 1),'\\%)')
+    ) %>% ungroup() %>%
+  group_by(outcome, week, pseudogroup) %>%
+  mutate(resp_col = ifelse(mean == 0,0,1)) %>%
+  ungroup() %>%
+  filter(outcome == antigen_name) %>%
+
+  mutate(
+   group_col = # generate names for color legend
+         case_when(
+           week %in% c("Wk -5", "Wk 2" , "Wk 4", "Wk 8") ~ "Wk 2,4,8", # yellow
+           week %in% c("Wk -5", "Wk 10", "Wk 16") ~ "Wk 10,16", # pink
+           week %in% c("Wk 18","Wk 20","Wk 24") ~ "Wk 18,20,24" )) %>% # blue
+  mutate(group_col = factor(group_col, levels = c("Wk 2,4,8", "Wk 10,16", "Wk 18,20,24")))
+
+rr_plot <- ggplot(data = rr_plot_df,
+
+                  aes(x = factor(pseudogroup),
+                      y = (round(100 * response_prop, 2)),
+                      ymin = lower * 100, ymax = upper * 100,
+                      color = group_col))+ # color label groups by timepoints
+
+  facet_grid(outcome~week, scales = "free_x", space = "free") +
+
+  geom_linerange(position = position_dodge(width = 0.8), size =1.2) +
+
+  # attempt to create dot with black border
+  geom_point(position = position_dodge(width = 0.8), pch=21, color = "black", size = 3) +
+  geom_point(position = position_dodge(width = 0.8), aes(fill = group_col), size = 3) +
+
+  coord_cartesian(ylim = c(0,100)) +
+  scale_y_continuous("Response Rate (%)") +
+  scale_x_discrete("") +
+  scale_color_manual(values = group_pooled_colors_resp_short) +
+
+  theme_bw() +
+
+  theme(
+        strip.text.x = element_text(size = 9),
+        strip.text.y = element_blank(),
+        axis.text.y = element_text(size = 9),
+        axis.text.x = element_blank(),
+        legend.position = "none",
+        panel.spacing.x=unit(0, "lines"),
+        legend.title = element_blank(),
+        plot.margin = unit(c(0,0,-.5,0), "lines"))
+
+rr_plot
+
+}
+
+# Antigen order:
+# core-g28v2 60mer, core-g28v2 monomer, core-g28v2-KO11b monomer, core-g28v2 CD4bs, Lumazine Synthase
+
+# only first antigen on top (core 60mer) has week labels on top
+core_rr_core<-plot_rr_core("core-g28v2 60mer")
+
+```
+
+```{r rr-plot-core, fig.height=7, fig.width=9.5, warning = F }
+
+
+# response rate plot function for core monomer, core KO, and CD4bs antigens
+# Excludes week, antigen, and group labels and group legends
+
+plot_rr <- function(antigen_name){
+
+rr_plot_df <-
+  bama_core_df %>%
+  filter(week != "Wk -5") %>%
+  distinct(pubid, week, outcome, `response call`, pseudogroup) %>%
+  mutate(`response call` = as.numeric(`response call`)) %>%
+  group_by(outcome, week, pseudogroup) %>%
+  dplyr::summarize(
+    n = n(),
+    response_frac = paste(sum(`response call`), n(), sep = "/"),
+    response_prop = eval(parse(text = response_frac)),
+    response_pct = response_prop * 100,
+     all_zero = response_prop == 0,
+    npos = sum(`response call`),
+    z = abs(qnorm(1 - (1 - .95) / 2)),
+    p = npos / n,
+    denom = 1 + z * z / n,
+    t1 = p + z * z / 2 / n,
+    t2 = z * sqrt(p * (1 - p) / n + z * z / 4 / n / n),
+    mean = p,
+    lower = (t1 - t2) / denom,
+    upper = (t1 + t2) / denom,
+    CI = paste0('(', round_away_0(lower * 100, 1), '\\%, ',
+                           round_away_0(upper * 100, 1),'\\%)')
+    ) %>% ungroup() %>%
+  group_by(outcome, week, pseudogroup) %>%
+  mutate(resp_col = ifelse(mean == 0,0,1)) %>%
+  ungroup() %>%
+  filter(outcome == antigen_name) %>%
+  mutate(
+   group_col =
+         case_when(
+           week %in% c("Wk -5", "Wk 2" , "Wk 4", "Wk 8") ~ "Wk 2,4,8", # yellow
+           week %in% c("Wk -5", "Wk 10", "Wk 16") ~ "Wk 10,16", # pink
+           week %in% c("Wk 18","Wk 20","Wk 24") ~ "Wk 18,20,24")) %>%
+  mutate(group_col = factor(group_col, levels = c("Wk 2,4,8", "Wk 10,16", "Wk 18,20,24")))
+
+rr_plot <- ggplot(data = rr_plot_df,
+                  aes(
+                    x = factor(pseudogroup),
+                    y = (round(100 * response_prop, 2)),
+                    ymin = lower * 100, ymax = upper * 100,
+                    color = group_col
+                  ) )+
+  facet_grid(outcome~week, scales = "free_x", space = "free") +
+
+  geom_linerange(position = position_dodge(width = 0.8), size =1.2) +
+
+  geom_point(position = position_dodge(width = 0.8), pch=21, color = "black", size = 3) +
+
+  geom_point(position = position_dodge(width = 0.8), aes(fill = group_col), size = 3) +
+
+  coord_cartesian(ylim = c(0,100)) +
+  scale_y_continuous("Response Rate (%)") +
+  scale_x_discrete("") +
+  scale_color_manual(values = group_pooled_colors_resp_short) +
+
+  theme_bw() +
+  theme(
+    strip.text.x = element_blank(),
+    strip.text.y = element_blank(),
+    axis.text.y = element_text(size = 9),
+    axis.text.x = element_blank(),
+    legend.position = "none",
+    panel.spacing.x=unit(0, "lines"),
+    legend.title = element_blank(),
+    plot.margin = unit(c(0,0,-.5,0), "lines"))
+
+rr_plot
+}
+
+# Antigen order:
+# core-g28v2 60mer, core-g28v2 monomer, core-g28v2-KO11b monomer, core-g28v2 CD4bs, Lumazine Synthase
+
+core_rr<-plot_rr("core-g28v2 60mer")
+core_mono_rr<- plot_rr("core-g28v2 monomer")
+core_ko_rr<- plot_rr("core-g28v2-KO11b monomer")
+
+```
+
+```{r rr-plot-core-diffbind, fig.height=4, fig.width=9.5 "}
+# response rate plot for core differential binding antigen
+
+rr_plot_diff_bind_core_df <-
+  bama_core_df %>%
+  filter(week != "Wk -5") %>%
+
+  distinct(pubid, week, outcome, `response call`, pseudogroup) %>%
+  mutate(`response call` = as.numeric(`response call`)) %>%
+  filter(!is.na(`response call`)) %>%
+
+  group_by(outcome, week,pseudogroup) %>%
+  dplyr::summarize(
+    n = n(),
+    response_frac = paste(sum(`response call`), n(), sep = "/"),
+    response_prop = eval(parse(text = response_frac)),
+    response_pct = response_prop * 100,
+    npos = sum(`response call`),
+    all_zero = response_prop == 0,
+    z = abs(qnorm(1 - (1 - .95) / 2)),
+    p = npos / n,
+    denom = 1 + z * z / n,
+    t1 = p + z * z / 2 / n,
+    t2 = z * sqrt(p * (1 - p) / n + z * z / 4 / n / n),
+    mean = p,
+    lower = (t1 - t2) / denom,
+    upper = (t1 + t2) / denom,
+    CI = paste0(
+      '(',
+      round_away_0(lower * 100, 1),
+      '\\%, ',
+      round_away_0(upper * 100, 1),
+      '\\%)'
+    )
+  ) %>%
+  ungroup() %>%
+
+  filter(outcome == "CD4bs core") %>%
+
+
+  mutate(week = factor(week, levels = c("Wk 2", "Wk 4", "Wk 8", "Wk 10", "Wk 16", "Wk 18", "Wk 20", "Wk 24"), ordered = T)) %>%
+
+   mutate(
+   group_col =
+         case_when(
+           week %in% c("Wk -5", "Wk 2" , "Wk 4", "Wk 8") ~ "Wk 2,4,8", # yellow
+           week %in% c("Wk -5", "Wk 10", "Wk 16") ~ "Wk 10,16", # pink
+           week %in% c("Wk 18","Wk 20","Wk 24") ~ "Wk 18,20,24")) %>%
+  mutate(group_col = factor(group_col, levels = c("Wk 2,4,8", "Wk 10,16", "Wk 18,20,24")))
+
+
+
+rr_plot_diff_bind <- ggplot(data = rr_plot_diff_bind_core_df,
+                   aes(x=pseudogroup,
+                     y = (round(100 * response_prop, 2)),
+                     ymin = lower * 100,
+                     ymax = upper * 100,
+                     colour = group_col)
+                   ) +
+  facet_grid(outcome~week, scales = "free_x", space = "free") +
+
+  geom_linerange(position = position_dodge(width = .8), size = 1.2) +
+
+  geom_point(position = position_dodge(width = .8) , size = 3)+
+
+  coord_cartesian(ylim = c(0, 100)) +
+  scale_y_continuous("Response Rate (%)") +
+  scale_x_discrete("") +
+  scale_color_manual( values = group_pooled_colors_resp_short) +
+
+  theme_bw() +
+   theme(
+     strip.text.x = element_blank(),
+     strip.text.y = element_blank(),
+     axis.text.y = element_text(size = 9),
+     axis.text.x = element_blank(),
+     legend.position = "none",
+     panel.spacing.x=unit(0, "lines"),
+     legend.title = element_blank()
+        )
+
+rr_plot_diff_bind
+
+
+```
+
+```{r rr-plot-ls, fig.height=4, fig.width=9.5 }
+
+# response rate function for Lumazine Synthase
+# Excludes week and antigen labels
+# Includes group labels and group legend on the bottom
+
+plot_rr_ls <- function(antigen_name){
+
+rr_plot_df <-
+  bama_core_df %>%
+  filter(week != "Wk -5") %>%
+  distinct(pubid, week, outcome, `response call`, pseudogroup) %>%
+  mutate(`response call` = as.numeric(`response call`)) %>%
+  group_by(outcome, week, pseudogroup) %>%
+  dplyr::summarize(
+    n = n(),
+    response_frac = paste(sum(`response call`), n(), sep = "/"),
+    response_prop = eval(parse(text = response_frac)),
+    response_pct = response_prop * 100,
+     all_zero = response_prop == 0,
+    npos = sum(`response call`),
+    z = abs(qnorm(1 - (1 - .95) / 2)),
+    p = npos / n,
+    denom = 1 + z * z / n,
+    t1 = p + z * z / 2 / n,
+    t2 = z * sqrt(p * (1 - p) / n + z * z / 4 / n / n),
+    mean = p,
+    lower = (t1 - t2) / denom,
+    upper = (t1 + t2) / denom,
+    CI = paste0('(', round_away_0(lower * 100, 1), '\\%, ',
+                           round_away_0(upper * 100, 1),'\\%)')
+    ) %>% ungroup() %>%
+  group_by(outcome, week, pseudogroup) %>%
+  mutate(resp_col = ifelse(mean == 0,0,1)) %>%
+  ungroup() %>%
+
+  filter(outcome == antigen_name) %>%
+  mutate(
+   group_col =
+         case_when(
+           week %in% c("Wk -5", "Wk 2" , "Wk 4", "Wk 8") ~ "Wk 2,4,8", # yellow
+           week %in% c("Wk -5", "Wk 10", "Wk 16") ~ "Wk 10,16", # pink
+           week %in% c("Wk 18","Wk 20","Wk 24") ~ "Wk 18,20,24")) %>%
+  mutate(group_col = factor(group_col, levels = c("Wk 2,4,8", "Wk 10,16", "Wk 18,20,24")))
+
+rr_plot <- ggplot(data = rr_plot_df,
+                  aes(
+                    x = factor(pseudogroup),
+                      y = (round(100 * response_prop, 2)),
+                      ymin = lower * 100, ymax = upper * 100,
+                  color = group_col
+                  ) )+
+
+  facet_grid(outcome~week, scales = "free_x", space = "free") +
+
+  geom_linerange(position = position_dodge(width = 0.8), size =1.2) +
+
+  geom_point(position = position_dodge(width = 0.8), pch=21, color = "black", size = 3) +
+
+   geom_point(position = position_dodge(width = 0.8), aes(fill = group_col), size = 3) +
+
+  coord_cartesian(ylim = c(0,100)) +
+  scale_y_continuous("Response Rate (%)") +
+
+  # create -> in the group name
+ scale_x_discrete("", labels = c("eOD->eOD" = expression("eOD" %->% "eOD"),
+                              "eOD->core" = expression("eOD" %->% "core"),
+                              "eOD->eOD->core" = expression("eOD" %->% "eOD" %->% "core"))) +
+    scale_color_manual(values = group_pooled_colors_resp_short) +
+
+  theme_bw() +
+  theme(strip.text.x = element_blank(),
+        strip.text.y = element_blank(),
+        axis.text.y = element_text(size = 9),
+        axis.text.x = element_text(size = 10,angle = 45, vjust = 1, hjust = 1),
+        legend.position = "bottom",
+        panel.spacing.x=unit(0, "lines"),
+        legend.title = element_blank(),
+        plot.margin = unit(c(0,0,-.5,0), "lines"))
+
+rr_plot
+}
+
+# LS is at the bottom so it has group labels and legend
+ls_rr <- plot_rr_ls("Lumazine Synthase")
+
+
+```
+
+```{r mag-plot-core60, fig.height=8, fig.width=11.5 }
+
+# magnitude response plot function for core 60mer antigen
+# Includes week label on top and antigen label to the right
+# Excludes group label on bottom and legend
+
+one_frame_core <- function(antigen_name){
+mag_plot_df <- bama_core_df %>%
+  mutate(
+    `response call` = ifelse(is.na(`response call`), "na", `response call`),
+    plot_shape = case_when(
+      `response call` == FALSE ~ 1,
+      `response call` == TRUE ~ 1,
+      `response call` == "na" ~ 1
+    )
+  ) %>%
+
+  mutate(week = factor(week, levels = c("Wk -5", "Wk 2", "Wk 4", "Wk 8", "Wk 10", "Wk 16", "Wk 18", "Wk 20", "Wk 24"), ordered = T)) %>%
+    mutate(
+    response_color = case_when(
+      `response call` == "na" ~ 1,
+      `response call` == FALSE ~ 1,
+      `response call` == TRUE ~ 1
+    )
+  ) %>% arrange(pseudogroup == "core") %>%
+  mutate(group_x = pseudogroup,
+         group_col =
+         case_when(
+           week %in% c("Wk -5", "Wk 2" , "Wk 4", "Wk 8") ~ "Wk -5,2,4,8", # yellow
+           week %in% c("Wk -5", "Wk 10", "Wk 16") ~ "Wk 10,16", # pink
+           week %in% c("Wk 18","Wk 20","Wk 24") ~ "Wk 18,20,24" # blue
+
+
+         ))%>%
+  filter(outcome == antigen_name)
+
+
+mag_plot <- ggplot(mag_plot_df, aes(x = group_x, y = pmax(`response magnitude`,100), color = group_col, fill = group_col)) +
+    geom_boxplot(
+   aes(fill = group_col),
+    data = mag_plot_df,
+
+    lwd = 0.5,
+    outlier.colour = NA,color = "black"
+
+  ) +
+
+  geom_jitter(
+  aes(fill = group_col),
+   position = position_jitterdodge(jitter.width = .5, seed = 1, jitter.height = 0),
+   size = 2, color = "black", shape = 21, stroke = 0.75
+  ) +
+
+
+scale_color_manual(values = group_pooled_colors_resp) +
+  scale_fill_manual(values = group_pooled_colors_resp) +
+
+  facet_grid(outcome ~ week, scales = "free_x", space = "free") +
+
+  # To add additional empty space on the top of the plot for statistical indicators, change limits to 10^6
+  scale_y_log10("AUTC", limits = c(100,10^5), breaks = c(100,1000,10000,100000),
+                   labels = c(expression( ""<= 100),  "1000",  "10000", "100000")) +
+
+  scale_x_discrete("") +
+  theme_bw() +
+  theme(
+    strip.text.x = element_text(size = 9),
+    strip.text.y = element_text(size = 9),
+    axis.text.y = element_text(size = 9),
+    axis.text.x = element_blank(),
+    panel.spacing.x=unit(0, "lines"),
+    legend.position = "none",
+    legend.title = element_blank()
+  )
+mag_plot
+}
+
+# Antigen Order
+# core-g28v2 60mer, core-g28v2 monomer, core-g28v2-KO11b monomer, core-g28v2 CD4bs, Lumazine Synthase
+
+
+core_plot <- one_frame_core("core-g28v2 60mer")
+
+
+```
+
+```{r mag-plot-core, fig.height=8, fig.width=11.5 }
+
+
+one_frame<- function(antigen_name){
+mag_plot_df <- bama_core_df %>%
+  mutate(
+    `response call` = ifelse(is.na(`response call`), "na", `response call`),
+    plot_shape = case_when(
+      `response call` == FALSE ~ 1,
+      `response call` == TRUE ~ 1,
+      `response call` == "na" ~ 1
+    )
+  ) %>%
+
+  mutate(week = factor(week, levels = c("Wk -5", "Wk 2", "Wk 4", "Wk 8", "Wk 10", "Wk 16", "Wk 18", "Wk 20", "Wk 24"), ordered = T)) %>%
+    mutate(
+    response_color = case_when(
+      `response call` == "na" ~ 1,
+      `response call` == FALSE ~ 1,
+      `response call` == TRUE ~ 1
+    )
+  ) %>% arrange(pseudogroup == "core") %>%
+  mutate(group_x = pseudogroup,
+         group_col =
+         case_when(
+           week %in% c("Wk -5", "Wk 2" , "Wk 4", "Wk 8") ~ "Wk -5,2,4,8", # yellow
+           week %in% c("Wk -5", "Wk 10", "Wk 16") ~ "Wk 10,16", # pink
+           week %in% c("Wk 18","Wk 20","Wk 24") ~ "Wk 18,20,24" # blue
+
+
+         ))%>%
+  filter(outcome == antigen_name)
+
+
+mag_plot <- ggplot(mag_plot_df, aes(x = group_x, y = pmax(`response magnitude`,100), color = group_col, fill = group_col)) +
+    geom_boxplot(
+   aes(fill = group_col),
+    data = mag_plot_df,
+    lwd = 0.5,
+    outlier.colour = NA,color = "black"
+
+  ) +
+
+  geom_jitter(
+  aes(fill = group_col),
+   position = position_jitterdodge(jitter.width = .5, seed = 1, jitter.height = 0),
+   size = 2, color = "black", shape = 21, stroke = 0.75
+  ) +
+
+
+scale_color_manual(values = group_pooled_colors_resp) +
+  scale_fill_manual(values = group_pooled_colors_resp) +
+
+  facet_grid(outcome ~ week, scales = "free_x", space = "free") +
+  scale_y_log10("AUTC", limits = c(100,10^5), breaks = c(100,1000,10000,100000),
+                   labels = c(expression( ""<= 100),  "1000",  "10000", "100000")) +
+
+  scale_x_discrete("") +
+  theme_bw() +
+  theme(
+    strip.text.x =  element_blank(),
+    strip.text.y = element_text(size = 9),
+    axis.text.y = element_text(size = 9),
+    axis.text.x = element_blank(),
+    panel.spacing.x=unit(0, "lines"),
+    legend.position = "none",
+    legend.title = element_blank()
+  )
+mag_plot
+}
+
+# AUTC magnitude plot
+# core-g28v2 60mer, core-g28v2 monomer, core-g28v2-KO11b monomer, core-g28v2 CD4bs, Lumazine Synthase
+
+
+core_plot <- one_frame("core-g28v2 60mer")
+
+core_mono_plot <- one_frame("core-g28v2 monomer")
+
+core_ko_plot <- one_frame("core-g28v2-KO11b monomer")
+```
+
+```{r mag-plot-core-diffbind, fig.height= 4, fig.width=11.5 }
+
+# core-g28v2 60mer, core-g28v2 monomer, core-g28v2-KO11b monomer, core-g28v2 CD4bs, Lumazine Synthase
+
+
+mag_plot_diff_bind_core_df <- bama_core_df %>%
+  select(c(pubid, outcome, week, `response magnitude`, `response call`, pseudogroup)) %>%
+  filter(outcome == "CD4bs core") %>%
+  mutate(
+         plot_shape = case_when(`response call` == 0 ~ 1, `response call` == 1 ~ 1, `response call` == 2~1),
+         group_plot = "100µg eOD-GT8 60mer") %>%
+  mutate(week = factor(week, levels = c("Wk -5", "Wk 2", "Wk 4", "Wk 8", "Wk 10", "Wk 16", "Wk 18", "Wk 20", "Wk 24"), ordered = T),
+         outcome = "core-g28v2 CD4bs") %>%
+
+    mutate(group_x = pseudogroup,
+         group_col =
+         case_when(
+         week %in% c("Wk -5", "Wk 2" , "Wk 4", "Wk 8") ~ "Wk -5,2,4,8", # yellow
+           week %in% c("Wk -5", "Wk 10", "Wk 16") ~ "Wk 10,16", # pink
+           week %in% c("Wk 18","Wk 20","Wk 24") ~ "Wk 18,20,24" # blue
+
+
+         ))
+
+mag_plot_diff_bind<-
+  ggplot(mag_plot_diff_bind_core_df %>% mutate(outcome = "core-g28v2 CD4bs"), aes(x = pseudogroup, y = pmax(100,`response magnitude`), color = group_col)) +
+    geom_boxplot(
+    aes(fill = group_col),
+    data = (mag_plot_diff_bind_core_df %>% filter(`response call` == TRUE)%>% mutate(outcome = "core-g28v2 CD4bs")),
+    lwd = 0.5,
+    outlier.colour = NA,
+    color = "black"
+
+  ) +
+
+  geom_jitter(
+   aes(fill = group_col),
+   position = position_jitterdodge(jitter.width = .75, seed = 1, jitter.height = 0),
+   size = 2, color = "black", shape = 21, stroke = 0.75
+  ) +
+
+   scale_color_manual(labels = c("Wk -5,2,4,8", "Wk 10,16", "Wk 18,20,24"), values = group_pooled_colors_resp) +
+  scale_fill_manual(labels = c("Wk -5,2,4,8", "Wk 10,16", "Wk 18,20,24"), values = group_pooled_colors_resp) +
+
+  facet_grid(outcome~week, scales = "free_x", space = "free") +
+
+  scale_x_discrete("",labels = c("eOD->eOD" = expression("eOD" %->% "eOD"),
+                              "eOD->core" = expression("eOD" %->% "core"),
+                              "eOD->eOD->core" = expression("eOD" %->% "eOD" %->% "core"))) +
+  scale_y_log10(
+    bquote(" " * Delta * "AUTC"),
+    limits = c(100, 10 ^ 5),
+    breaks = c(100, 1000, 10000, 100000),
+    labels = c(expression("" <= 100),  "1000",  "10000", "100000")
+  ) +
+  theme_bw() +
+  theme(
+    strip.text.x =  element_blank(),
+    strip.text.y = element_text(size = 9),
+    axis.text.y = element_text(size = 8),
+    axis.text.x = element_blank(),
+    legend.position = "none",
+    panel.spacing.x=unit(0, "lines")
+  )
+
+mag_plot_diff_bind
+
+```
+
+```{r mag-plot-ls, fig.height=8, fig.width=11.5 }
+
+
+one_frame_ls <- function(antigen_name){
+mag_plot_df <- bama_core_df %>%
+  mutate(
+    `response call` = ifelse(is.na(`response call`), "na", `response call`),
+    plot_shape = case_when(
+      `response call` == FALSE ~ 1,
+      `response call` == TRUE ~ 1,
+      `response call` == "na" ~ 1
+    )
+  ) %>%
+
+  mutate(week = factor(week, levels = c("Wk -5", "Wk 2", "Wk 4", "Wk 8", "Wk 10", "Wk 16", "Wk 18", "Wk 20", "Wk 24"), ordered = T)) %>%
+    mutate(
+    response_color = case_when(
+      `response call` == "na" ~ 1,
+      `response call` == FALSE ~ 1,
+      `response call` == TRUE ~ 1
+    )
+  ) %>% arrange(pseudogroup == "core") %>%
+  mutate(group_x = pseudogroup,
+         group_col =
+         case_when(
+           week %in% c("Wk -5", "Wk 2" , "Wk 4", "Wk 8") ~ "Wk -5,2,4,8", # yellow
+           week %in% c("Wk -5", "Wk 10", "Wk 16") ~ "Wk 10,16", # pink
+           week %in% c("Wk 18","Wk 20","Wk 24") ~ "Wk 18,20,24" # blue
+
+
+         ))%>%
+  filter(outcome == antigen_name)
+
+
+mag_plot <- ggplot(mag_plot_df, aes(x = group_x, y = pmax(`response magnitude`,100), color = group_col, fill = group_col)) +
+    geom_boxplot(
+   aes(fill = group_col),
+    data = mag_plot_df,
+    lwd = 0.5,
+    outlier.colour = NA,color = "black"
+
+  ) +
+
+  geom_jitter(
+  aes(fill = group_col),
+   position = position_jitterdodge(jitter.width = .5, seed = 1, jitter.height = 0),
+   size = 2, color = "black", shape = 21, stroke = 0.75
+  ) +
+
+
+scale_color_manual(values = group_pooled_colors_resp) +
+  scale_fill_manual(values = group_pooled_colors_resp) +
+
+  facet_grid(outcome ~ week, scales = "free_x", space = "free") +
+  scale_y_log10("AUTC", limits = c(100,10^5), breaks = c(100,1000,10000,100000),
+                   labels = c(expression( ""<= 100),  "1000",  "10000", "100000")) +
+
+   scale_x_discrete("",labels = c("eOD->eOD" = expression("eOD" %->% "eOD"),
+                              "eOD->core" = expression("eOD" %->% "core"),
+                              "eOD->eOD->core" = expression("eOD" %->% "eOD" %->% "core"))) +
+  theme_bw() +
+  theme(
+     strip.text.x =  element_blank(),
+    strip.text.y = element_text(size = 9),
+    axis.text.y = element_text(size = 8),
+    axis.text.x = element_text(size = 10,angle = 45, vjust = 1, hjust = 1),
+    legend.position = "bottom",
+    legend.key.size = unit(0.5, "cm"),
+    legend.key.width = unit(1, "cm"),
+    legend.title = element_blank(),
+    panel.spacing.x=unit(0, "lines")
+  )
+mag_plot
+}
+# AUTC magnitude plot
+
+ls_plot <- one_frame_ls("Lumazine Synthase")
+
+
+
+```
+
+
+
+```{r combined, fig.height= 16, fig.width=12, warning = F}
+# antigen order
+# core-g28v2 60mer, core-g28v2 monomer, core-g28v2-KO11b monomer, core-g28v2 CD4bs, Lumazine Synthase
+# response rate column on left, magnitude reponse on right
+
+combined3 <-
+  core_rr + core_plot + core_mono_rr + core_mono_plot + core_ko_rr + core_ko_plot + rr_plot_diff_bind2 + mag_plot_diff_bind2 + ls_rr + ls_plot +
+
+  plot_layout(ncol = 2) +
+
+  # add panel labels
+  plot_annotation(tag_levels = 'A') & theme(plot.tag = element_text(face = 'bold'))
+
+# save to PDF
+ggsave(
+  "rr_mag_combined_no_space.pdf",
+  combined3,
+  dpi = 1200,
+  width = 12,
+  height = 16,
+  device = "pdf")
+```

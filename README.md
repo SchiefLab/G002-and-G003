@@ -1,5 +1,5 @@
 <div align="center">
-<img src="readme.svg" style="margin:-5em;width:75%;height:75%">
+<img src="poster.png" style="margin:0.5em;width:75%;height:75%">
 </div>
 
 <div class="flex-container" align="center">
@@ -12,6 +12,12 @@
     <a href="https://github.com/pre-commit/pre-commit">
     <img src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white"
         alt="pre commit"></a>
+    <a href="https://doi.org/10.5281/zenodo.15284778">
+    <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.15284778.svg"
+        alt="zenodo link"></a>
+    <a href="https://app.netlify.com/projects/g00x/deploys">
+    <img src="https://api.netlify.com/api/v1/badges/0cfc5010-68e1-4002-a9bd-237baf1b320b/deploy-status"
+        alt="Netlify Status"></a>
 </div>
 
 <h1 align="center" style="font-size: 1.8em">
@@ -44,12 +50,13 @@
 - [Figures and Tables](#figures-and-tables)
   - [Main Figures](#main-figures)
   - [Supplementary Figures](#supplementary-figures)
+  - [Supplementary Comparison Tables](#supplementary-comparison-tables)
 - [Issues](#issues)
 - [License](#license)
 
 # About / Summary
 
-This repository serves two major purposes. 
+This repository serves two major purposes.
 
 First, this repository contains the data for the publication “Vaccination with mRNA-encoded nanoparticles drives early maturation of HIV bnAb precursors in humans”, Willis, Prabhakaran, Muthui, Naidoo, Sincomb, Wu, Cottrell, Landais, deCamp, et al., Science, 2025. This publication reports the safety and immunogenicity data from the clinical trials IAVI G002 (in the United States) and IAVI G003 (in Rwanda and South Africa). The data in the repository includes:
   - Antigen- and epitope-specific memory B cell frequencies (FACS data)
@@ -58,7 +65,7 @@ First, this repository contains the data for the publication “Vaccination wit
   - SPR *K*<sub>D</sub>, *k*<sub>on</sub>, and *k*<sub>off</sub> values for VRC01-class and non-VRC01-class competitor antibodies (derived from sorted memory B cells) binding to various antigens
   - Code for generating main text figures 2 through 7.
   - Code for generating the spreadsheet Data S10. “Source data”.
-  
+
 Second, the repository presents the G00x pipeline designed to facilitate the analysis of germline-targeting vaccine clinical trials. It is an all-in-one pipeline and analysis platform that parses, validates, calculates B cell frequencies, runs cellranger and combines all analyses into a plottable dataframe. The pipeline supports datasets for both G002 and G003 trials (related to germline targeting to elicit VRC01-class antibodies against HIV) and ensures that all data is processed and validated to maintain the integrity of the clinical trial results. The pipeline is readily modifiable to enable handling of other types of germline-targeting trials, with other types of analyses, and can also be modified to enable data storage/data flow pathways different from that used in G002 and G003.
 
 ---
@@ -126,10 +133,10 @@ This installation assumes that `git` and `conda` are in your path.
 
 ```
 # clone the repository
-git clone https://github.com/SchiefLab/G00x.git
+git clone https://github.com/SchiefLab/G002-and-G003.git
 
 # change directory
-cd G00x
+cd G002-and-G003
 
 # this will create a conda environment called g00x and install the package
 ./install.sh
@@ -390,22 +397,36 @@ poetry run pytest -sv --log-cli-level DEBUG tests
 
 Main figures as they are displayed in the G002 and G003  paper. Figure 1 is not included as it is manually generated.
 
+You can plot them all at once.
+
 ```bash
-g00x plots fig2
-g00x plots fig3
-g00x plots fig4
-g00x plots fig5
-g00x plots fig6
-g00x plots fig7
+g00x plot main-figures
 ```
 
+Or you can plot them one at a time.
+
+```bash
+g00x plot fig2
+g00x plot fig3
+g00x plot fig4
+g00x plot fig5
+g00x plot fig6
+g00x plot fig7
+```
 
 ## Supplementary Figures
 
-Supplementary figures are in no particular order. They are generated as needed.
+Supplementary figures are in order.
 
 ```bash
-g00x plots suppfigures --all #TODO: Update later
+g00x plot sup-figures  #TODO: Update later
+```
+
+## Supplementary Comparison Tables
+
+```bash
+g00x plot comparison-tables
+g00x plot sup-tables
 ```
 
 # Issues

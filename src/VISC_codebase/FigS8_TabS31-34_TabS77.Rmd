@@ -1,0 +1,847 @@
+---
+title: "Generate Fig S8, Table S31-34, Table S77"
+author: "Gabrielle Lemire"
+output: pdf_document
+params:
+  data_location: '../../G00x-plots/'
+---
+
+\listoffigures
+\listoftables
+
+```{r load-libraries, warning = F, include=FALSE}
+output_type <- 'latex'
+library(tidyr)
+library(dplyr)
+library(conflicted)
+library(VISCfunctions)
+library(kableExtra)
+library(knitr)
+library(ggplot2)
+library(testthat)
+library(stringr)
+library(cowplot)
+conflict_prefer("filter", "dplyr")
+
+# knitr options
+opts_chunk$set(echo = FALSE,
+               fig.pos = "H")
+```
+
+```{r fixed-raw-data}
+data_location <- params$data_location
+data <- read.csv(paste0(data_location, "2025-04-24G00X_manuscript_FigS8.csv"))
+```
+
+```{r basic-checks}
+# we have 5 antigens in these data
+expect_equal(data %>%
+               distinct(outcome) %>%
+               nrow(),
+             5)
+
+# we have 8 timepoints in these data
+expect_equal(data %>%
+               distinct(week) %>%
+               nrow(),
+             8)
+
+# no AUTC or delta AUTC's should be less than 0
+expect_true(min(data$response.magnitude) <= 0)
+
+# all baseline should be NA for response call
+expect_equal(data %>% filter(week == -5) %>% filter(is.na(response.call)) %>% nrow(),
+             data %>% filter(week == -5) %>% nrow())
+
+# no one is missing a response magnitude
+expect_equal(data %>% filter(is.na(response.magnitude)) %>% nrow(),
+             0)
+
+# all 4 antigens for pubID 151 are missing for week 10
+expect_equal(data %>% filter(week != -5) %>% filter(is.na(response.call)) %>% nrow(),
+             4)
+```
+
+
+```{r preprocess-data}
+# declare vars
+g003_color <- "#CA77B4" #G003
+g002_color <- "#B0EDC5" #G002
+g001_color <- "#6B67CB" #G001
+
+vis_shape <- 21 #circle with outline and filled w fill color
+
+data_size_autc <- 2
+
+seed <- 0203
+
+antigens <- c("eOD-GT8 60mer", "eOD-GT8.1", "eOD-GT8 KO11", "eOD-GT8 CD4bs", "Lumazine Synthase")
+
+# data manipulation
+combined_data <- data %>%
+  mutate(visit_vis = ifelse(week == -5, "Baseline", week)) %>%
+  rename(study = trial,
+         antigen = outcome) %>%
+  pivot_longer(cols = c(response.magnitude, response.call),
+               values_to = "endpt_val",
+               names_to = "endpoint") %>%
+  mutate(endpoint = case_when((endpoint == "response.call" &
+                                 antigen != "eOD-GT8 CD4bs") ~
+                                "Response Rate (Wilson CI)",
+                              (endpoint == "response.call" &
+                                 antigen == "eOD-GT8 CD4bs") ~
+                                "Diff Bind Response Rate (Wilson CI)",
+                              (endpoint == "response.magnitude" &
+                                 antigen != "eOD-GT8 CD4bs") ~
+                                "AUTC",
+                              (endpoint == "response.magnitude" &
+                                 antigen == "eOD-GT8 CD4bs") ~
+                                "delta AUTC",
+                              .default = NA)) %>%
+  select(study, pubID, antigen, visit_vis, endpoint, endpt_val)
+
+```
+
+
+```{r declare-rr-fig-fnts}
+#' Generate ggplot with Response Rates with Wilson 95% Confidence Intervals
+#'
+#' @param rr_data tibble. contains columns: antigen, visit_vis, response_rate, lower_ci, upper_ci, and colour_vis.
+#' @param spec_antigen string. filters rr_data for the specific antigen in the visual
+#' @param antigen_title string. plot title. Enter empty string for no plot title.
+#' @param x_axis_title string. x-axis title. Enter empty string for no x-axis label.
+#' @param amt_jitter numeric. distance between CI bars between studies
+#' @param keep_legend boolean. TRUE keeps the legend, FALSE drops the legend
+#' @param g001_color string. HEX code for color of G001 CI bars
+#' @param g002_color string. HEX code for color of G002 CI bars
+#' @param g003_color string. HEX code for color of G003 CI bars
+#'
+#' @return ggplot object with confidence intervals for G001, G002 and G003 for the given antigen
+#'
+generate_rr_plot <- function(rr_data, spec_antigen, antigen_title,
+                            x_axis_title, amt_jitter, keep_legend,
+                            plot_gap, g001_color, g002_color, g003_color){
+
+antigen_CIs <- rr_data %>%
+  filter(antigen == spec_antigen) %>%
+  filter(visit_vis != "Baseline") %>%
+  ggplot(aes(x = visit_vis,
+             y = 100 * response_rate,
+             colour = colour_vis,
+             ymin = 100 * lower_ci,
+             ymax = 100 * upper_ci)) +
+  geom_linerange(position = position_dodge(width = amt_jitter)) +
+  geom_point(position = position_dodge(width = amt_jitter),
+             size = 3) +
+  scale_color_manual(name = " ",
+                     values = c(g001_color, g002_color, g003_color),
+                     labels = c("G001", "G002", "G003")) +
+  theme_bw() +
+  scale_y_continuous("Response rate (%)", limits = c(0,100.1)) +
+  ggtitle(as.character(antigen_title)) +
+  scale_x_discrete(x_axis_title,
+                   limits  = c("2", "8", "10", "16", "18", "20", "24"),
+                   labels = c("2", "8", "10", "16", "18", "20", "24")) +
+    theme(plot.title = element_text(size = 12, margin = margin(0,0,plot_gap,0)),
+          axis.text.y = element_text(size = 10),
+          axis.text.x = element_text(size = ifelse(keep_legend, 10, 0)),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(),
+          panel.border = element_blank(),
+          axis.line = element_line(color = 'black'),
+          legend.position = "none")
+return(antigen_CIs)
+
+}
+
+#' Generate antigen specific boxplot for G001, G002 and G003 magnitudes
+#'
+#' @param endpt_data data. contains columns: antigen, endpoint, visit_vis, endpt_val, study.
+#' @param spec_antigen string. filters rr_data for the specific antigen in the visual
+#' @param antigen_title string. plot title. Enter empty string for no plot title.
+#' @param x_axis_title string. x-axis title. Enter empty string for no x-axis label.
+#' @param spec_endpt string. filters endpt_data for endpoint.
+#' @param endpt_val string. column name for column containing autc and delta autc.
+#' @param vis_shape number. ggplot value for shape and fill of points.
+#' @param amt_jitter numeric. distance between CI bars between studies
+#' @param keep_legend boolean. TRUE keeps the legend, FALSE drops the legend
+#' @param plot_gap numeric. space between title and figure.
+#' @param data_size numeric. size of points on boxplots.
+#' @param g001_color string. HEX code for color of G001 CI bars
+#' @param g002_color string. HEX code for color of G002 CI bars
+#' @param g003_color string. HEX code for color of G003 CI bars
+#' @param y_axis_lab sting. label for z axis.
+#'
+#' @returns ggplot boxplot figure
+#'
+generate_boxplot <- function(endpt_data, spec_antigen, antigen_title,
+                           x_axis_title, spec_endpt, endpt_val,
+                           vis_shape,  amt_jitter, keep_legend,
+                           plot_gap, data_size, g001_color,
+                           g002_color, g003_color, y_axis_lab){
+
+  filtered_data <- endpt_data %>%
+    filter(antigen == spec_antigen & endpoint == spec_endpt)
+
+  antigen_boxplot <- filtered_data %>%
+    ggplot(aes(x = visit_vis, y = pmax(100, endpt_val), fill = study)) +
+    geom_boxplot(lwd = 0.5,
+                 outlier.colour = NA,
+                 position = position_dodge2(width = c(rep(3, 6)), preserve = 'single'),
+                 show.legend = FALSE) +
+    geom_jitter(shape = vis_shape,
+                size = data_size,
+                position = position_jitterdodge(jitter.width = amt_jitter)
+                ) +
+    scale_y_log10(
+      y_axis_lab,
+      limits = c(100, 10 ^ 5),
+      breaks = c(100, 1000, 10000, 100000),
+      labels = c(expression("" <= 100), expression(10^{3}),  expression(10^{4}), expression(10^{5}))) +
+    ggtitle(as.character(antigen_title)) +
+    scale_x_discrete(x_axis_title,
+                   limits  = c("Baseline", "2", "8", "10", "16", "18", "20", "24"),
+                   labels = c("Baseline", "2", "8", "10", "16", "18", "20", "24")) +
+    theme(plot.title = element_text(size = 12, margin = margin(0,0,plot_gap,0)),
+          axis.title = element_text(size = 12),
+          axis.text.y = element_text(size = 10),
+          axis.text.x = element_text(size = ifelse(keep_legend, 10, 0)),
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(),
+          panel.border = element_blank(),
+          axis.line = element_line(color = 'black'),
+          legend.position = "none") +
+  scale_fill_manual(name = " ",
+                    values = c(g001_color, g002_color, g003_color))
+  return(antigen_boxplot)
+}
+
+
+
+```
+
+```{r create-rr-fig-data}
+rate_results <- subset(combined_data,
+                                  endpoint == "Response Rate (Wilson CI)") %>%
+  # drop NAs (baseline)
+  filter(!is.na(endpt_val)) %>%
+  group_by(study, antigen, visit_vis, endpoint) %>%
+  arrange(study, antigen, visit_vis) %>%
+  dplyr::summarize(
+    total = n(),
+    total_positive = sum(endpt_val),
+    response_rate = mean(endpt_val),
+    .groups = "drop") %>%
+  mutate(
+      lower_ci = binom::binom.confint(total_positive, total, methods = "wilson")$lower,
+      upper_ci = binom::binom.confint(total_positive, total, methods = "wilson")$upper,
+      all_zero = response_rate == 0,
+      antigen_label = factor(antigen, levels = c("eOD-GT8 60mer", "eOD-GT8.1",
+                                              "eOD-GT8 KO11", "eOD-GT8 CD4bs", "Lumazine Synthase")),
+      response_frac = paste0(total_positive, "/", total),
+      response_parse = paste0("frac(", total_positive, ",", total, ")"),
+      colour_vis = case_when(study == "G001" ~ g001_color,
+                             study == "G002" ~ g002_color,
+                             study == "G003" ~ g003_color)) %>%
+  filter(visit_vis != "4")
+
+
+#response rate plot for diff bind.
+rate_resultsDB <- subset(combined_data,
+                                  endpoint == "Diff Bind Response Rate (Wilson CI)") %>%
+    # drop NAs (baseline)
+  filter(!is.na(endpt_val)) %>%
+  group_by(study, antigen, visit_vis, endpoint) %>%
+  arrange(study, antigen, visit_vis) %>%
+  dplyr::summarize(
+    total = n(),
+    total_positive = sum(endpt_val),
+    response_rate = mean(endpt_val),
+    .groups = "drop") %>%
+  # we know all of baselines are non-responders so impute the value
+  mutate(total_positive = case_when(study == "G003" &
+                                      antigen == "eOD-GT8.1" &
+                                      visit_vis == "Baseline" ~ 0,
+                                    TRUE ~ total_positive
+                                    ),
+         response_rate = case_when(study == "G003" &
+                                      antigen == "eOD-GT8.1" &
+                                      visit_vis == "Baseline" ~ 0,
+                                    TRUE ~ response_rate
+                                    )) %>%
+  mutate(
+      lower_ci = binom::binom.confint(total_positive, total, methods = "wilson")$lower,
+      upper_ci = binom::binom.confint(total_positive, total, methods = "wilson")$upper,
+      all_zero = response_rate == 0,
+      antigen_label = factor(antigen, levels = c("eOD-GT8 60mer", "eOD-GT8.1",
+                                              "eOD-GT8 KO11", "eOD-GT8 CD4bs", "Lumazine Synthase")),
+      response_frac = paste0(total_positive, "/", total),
+      response_parse = paste0("frac(", total_positive, ",", total, ")"),
+      colour_vis = case_when(study == "G001" ~ g001_color,
+                             study == "G002" ~ g002_color,
+                             study == "G003" ~ g003_color)) %>%
+  filter(visit_vis != "4")
+
+```
+
+```{r create-rr-CIs}
+CIs_60mer <- generate_rr_plot(rate_results,
+                spec_antigen = antigens[1],
+                antigen_title = antigens[1],
+                x_axis_title = "",
+                amt_jitter = 1,
+                keep_legend = FALSE,
+                plot_gap = 0,
+                g001_color = g001_color,
+                g002_color = g002_color,
+                g003_color = g003_color)
+
+CIs_eODGT8.1 <- generate_rr_plot(rate_results,
+                spec_antigen = antigens[2],
+                antigen_title = antigens[2],
+                x_axis_title = "",
+                amt_jitter = 1,
+                keep_legend = FALSE,
+                plot_gap = 0,
+                g001_color = g001_color,
+                g002_color = g002_color,
+                g003_color = g003_color)
+
+CIs_KO11 <- generate_rr_plot(rate_results,
+                spec_antigen = antigens[3],
+                antigen_title = antigens[3],
+                x_axis_title = "",
+                amt_jitter = 1,
+                keep_legend = FALSE,
+                plot_gap = 0,
+                g001_color = g001_color,
+                g002_color = g002_color,
+                g003_color = g003_color)
+
+CIs_DB <- generate_rr_plot(rate_resultsDB,
+                spec_antigen = antigens[4],
+                antigen_title = antigens[4],
+                x_axis_title = "",
+                amt_jitter = 1,
+                keep_legend = FALSE,
+                plot_gap = 0,
+                g001_color = g001_color,
+                g002_color = g002_color,
+                g003_color = g003_color)
+
+
+CIs_LS <- generate_rr_plot(rate_results,
+                spec_antigen = antigens[5],
+                antigen_title = antigens[5],
+                x_axis_title = "Weeks Post Vaccination",
+                amt_jitter = 1,
+                keep_legend = TRUE,
+                plot_gap = 0,
+                g001_color = g001_color,
+                g002_color = g002_color,
+                g003_color = g003_color)
+
+```
+
+```{r create-boxplots}
+boxplot_60mer <- generate_boxplot(combined_data,
+                                spec_antigen = antigens[1],
+                                antigen_title = antigens[1],
+                                spec_endpt = "AUTC",
+                                x_axis_title = "",
+                                endpt_val,
+                                vis_shape,
+                                amt_jitter = .1,
+                                keep_legend = FALSE,
+                                plot_gap = 0,
+                                data_size = data_size_autc,
+                                g001_color = g001_color,
+                                g002_color = g002_color,
+                                g003_color = g003_color,
+                             y_axis_lab = bquote("AUTC"))
+
+boxplot_eODGT8.1 <- generate_boxplot(combined_data,
+                                spec_antigen = antigens[2],
+                                antigen_title = antigens[2],
+                                spec_endpt = "AUTC",
+                                x_axis_title = "",
+                                endpt_val,
+                                vis_shape,
+                                amt_jitter = .1,
+                                keep_legend = FALSE,
+                                plot_gap = 0,
+                                data_size = data_size_autc,
+                                g001_color = g001_color,
+                                g002_color = g002_color,
+                                g003_color = g003_color,
+                                y_axis_lab = bquote("AUTC"))
+
+boxplot_KO11 <- generate_boxplot(combined_data,
+                               spec_antigen = antigens[3],
+                               antigen_title = antigens[3],
+                               spec_endpt = "AUTC",
+                               x_axis_title = "",
+                               endpt_val,
+                               vis_shape,
+                               amt_jitter = .1,
+                               keep_legend = FALSE,
+                               plot_gap = 0,
+                               data_size = data_size_autc,
+                               g001_color = g001_color,
+                               g002_color = g002_color,
+                               g003_color = g003_color,
+                               y_axis_lab = bquote("AUTC"))
+
+boxplot_DB <- generate_boxplot(combined_data,
+                             spec_antigen = antigens[4],
+                             antigen_title = antigens[4],
+                             spec_endpt = "delta AUTC",
+                             x_axis_title = "",
+                             endpt_val,
+                             vis_shape,
+                             amt_jitter = .1,
+                             keep_legend = FALSE,
+                             plot_gap = 0,
+                             data_size = data_size_autc,
+                             g001_color = g001_color,
+                             g002_color = g002_color,
+                             g003_color = g003_color,
+                             y_axis_lab = bquote(" " * Delta * "AUTC"))
+
+
+boxplot_LS <- generate_boxplot(combined_data,
+                             spec_antigen = antigens[5],
+                             antigen_title = antigens[5],
+                             spec_endpt = "AUTC",
+                             x_axis_title = "Weeks Post Vaccination",
+                             endpt_val,
+                             vis_shape,
+                             amt_jitter = .1,
+                             keep_legend = TRUE,
+                             plot_gap = 0,
+                             data_size = data_size_autc,
+                             g001_color = g001_color,
+                             g002_color = g002_color,
+                             g003_color = g003_color,
+                             y_axis_lab = bquote("AUTC"))
+
+
+boxplot_DB_legend <- generate_boxplot(combined_data,
+                             spec_antigen = antigens[4],
+                             antigen_title = antigens[4],
+                             spec_endpt = "delta AUTC",
+                             x_axis_title = "Weeks Post Vaccination",
+                             endpt_val,
+                             vis_shape,
+                             amt_jitter = .1,
+                             keep_legend = TRUE,
+                             plot_gap = 0,
+                             data_size = 3,
+                             g001_color = g001_color,
+                             g002_color = g002_color,
+                             g003_color = g003_color,
+                             y_axis_lab = bquote(" " * Delta * "AUTC"))
+```
+
+```{r combine-to-single-fig, fig.height=15, fig.width=13, fig.cap="Fig S8. Serum IgG antibody binding responses to eOD-GT8 60mer and related probes, for recipients of eOD-GT8 60mer mRNA-LNP in G002 and G003 or eOD-GT8 60mer protein and AS01B in G001."}
+
+combinedcols <- cowplot::plot_grid(CIs_60mer, boxplot_60mer,
+                                   CIs_eODGT8.1, boxplot_eODGT8.1,
+                                   CIs_KO11, boxplot_KO11,
+                                   CIs_DB, boxplot_DB,
+                                   CIs_LS, boxplot_LS,
+                                   labels = c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J"),
+                                   ncol = 2, rel_widths = c(1,1))
+
+shared_legend <- cowplot::get_plot_component(boxplot_DB_legend +
+    guides(color = guide_legend(nrow = 1)) +
+    theme(legend.position = "bottom", legend.text = element_text(size = 10)),
+    'guide-box-bottom', return_all = TRUE)
+
+combinedcols_legend <- cowplot::plot_grid(combinedcols,
+                                          shared_legend,
+                                          ncol = 1,
+                                          rel_heights = c(1.5,.1))
+combinedcols_legend
+```
+
+```{r output-pdf-to-share}
+ggsave(
+  "pdfs/FigS8_BAMA_G00X_eOD_supp_fig.pdf",
+  combinedcols_legend,
+  dpi = 1200,
+  width = 13,
+  height = 15,
+  device = "pdf"
+)
+```
+
+```{r}
+# function to manually parse sample size column
+
+extract_samp_sizes <- function(x) {
+  # Extract the first number after /
+  num1 <- str_extract(x, "(?<=/)\\d+(?=\\s*=)")
+
+  # Extract the second number after /
+  num2 <- str_extract(str_extract(x, "vs\\..*"), "(?<=/)\\d+(?=\\s*=)")
+
+  # Return formatted result
+  samp_size <- paste(num1, "vs.", num2)
+  return(samp_size)
+}
+
+```
+
+```{r mag-wk-compare}
+# create data object with magnitude rates
+magnitude_rates_tests  <- combined_data %>%
+  filter(endpoint %in% c("AUTC", "delta AUTC")) %>%
+  filter(!(visit_vis %in% c(4, 18, 20, 24))) %>%
+  mutate(Visit = factor(visit_vis, levels = c("Baseline", "2", "8", "10", "16")),
+         Antigen = factor(antigen, levels = c("eOD-GT8 60mer", "eOD-GT8.1",
+                                              "eOD-GT8 KO11", "eOD-GT8 CD4bs", "Lumazine Synthase"))) %>%
+  filter(endpt_val > 0) %>%
+  group_by(Antigen, Visit) %>%
+  reframe(
+    VISCfunctions::pairwise_test_cont(
+    x = endpt_val,
+    group = study,
+    method = "wilcox",
+    alternative = "two.sided",
+    num_needed_for_test = 3,
+    log10_stats = TRUE,
+), .groups = "drop") %>%
+  filter(!(grepl("G003", Comparison) & Antigen == "Lumazine Synthase")) %>%
+  select(Antigen, Visit, Comparison, SampleSizes, Median_Min_Max, MagnitudeTest) %>%
+  rename(`Median (Min, Max)` = Median_Min_Max,
+         `Week` = Visit,
+         `P-value ` = MagnitudeTest,
+         `Sample Sizes` = SampleSizes) %>%
+  group_by(Antigen) %>%
+  mutate(`FDR ` = p.adjust(`P-value `, method = 'fdr')) %>%
+  ungroup()
+
+magnitude_rates_pretty <- magnitude_rates_tests %>%
+  filter(!(grepl("G003", Comparison) & Antigen == "Lumazine Synthase")) %>%
+  mutate(
+    `P-value ` = pretty_pvalues(
+      `P-value `,
+      digits = 4,
+      output_type = 'latex',
+      sig_alpha = .05,
+      background = 'yellow'
+    ),
+      `FDR ` = pretty_pvalues(
+      `FDR `,
+      digits = 4,
+      output_type = 'latex',
+      sig_alpha = .2,
+      background = 'yellow'
+    ),
+    Antigen = escape(Antigen))
+
+```
+
+
+
+```{r rr-wk-compare}
+# create data with response rates
+response_rates_tests <- combined_data %>%
+  filter(endpoint %in% c("Response Rate (Wilson CI)",
+                         "Diff Bind Response Rate (Wilson CI)")) %>%
+  filter(!(visit_vis %in% c("Baseline", 4, 18, 20, 24))) %>%
+  mutate(Week = factor(visit_vis, levels = c("2", "8", "10", "16")),
+         Antigen = factor(antigen, levels = c("eOD-GT8 60mer", "eOD-GT8.1",
+                                              "eOD-GT8 KO11", "eOD-GT8 CD4bs", "Lumazine Synthase"))) %>%
+  group_by(Antigen, Week) %>%
+    reframe(VISCfunctions::pairwise_test_bin(
+    x = endpt_val,
+    group = study,
+    method = "barnard",
+    alternative = "two.sided",
+    num_needed_for_test = 3),
+    .groups = "drop") %>%
+  filter(!(grepl("G003", Comparison) & Antigen == "Lumazine Synthase")) %>%
+  mutate(`Sample Sizes` = extract_samp_sizes(ResponseStats)) %>%
+  select(Antigen, Week, Comparison, `Sample Sizes`,
+         ResponseStats, ResponseTest) %>%
+  rename(`Response Rate (CI)` = ResponseStats,
+         `P-value ` = ResponseTest) %>%
+  group_by(Antigen) %>%
+  mutate(`FDR ` = p.adjust(`P-value `, method = 'fdr'))
+
+response_rates_pretty <- response_rates_tests %>%
+  mutate(
+    `P-value ` = pretty_pvalues(
+      `P-value `,
+      digits = 4,
+      output_type = 'latex',
+      sig_alpha = .05,
+      background = 'yellow'),
+    `FDR ` = pretty_pvalues(
+      `FDR `,
+      digits = 4,
+      output_type = 'latex',
+      sig_alpha = .2,
+      background = 'yellow'),
+    Antigen = escape(Antigen))
+
+
+```
+
+
+```{r mag-wk-2-10}
+magnitude_wk_tests_2_10 <- combined_data %>%
+  filter(endpoint %in% c("AUTC", "delta AUTC")) %>%
+  filter(visit_vis %in% c("2", "10")) %>%
+  mutate(Visit = factor(visit_vis, levels = c("2", "10")),
+         Antigen = factor(antigen, levels = c("eOD-GT8 60mer", "eOD-GT8.1",
+                                              "eOD-GT8 KO11", "eOD-GT8 CD4bs", "Lumazine Synthase")),
+         Study = study) %>%
+  group_by(Antigen, Study) %>%
+    reframe(VISCfunctions::pairwise_test_cont(
+    x = endpt_val,
+    group = Visit,
+    id = pubID,
+    paired = TRUE,
+    method = "wilcox",
+    alternative = "two.sided",
+    num_needed_for_test = 3,
+    log10_stats = TRUE,
+), .groups = "drop") %>%
+  select(Antigen, Study, Comparison, SampleSizes, Median_Min_Max, MagnitudeTest) %>%
+  rename(`Median (Min, Max)` = Median_Min_Max,
+         `P-value ` = MagnitudeTest,
+         `Sample Sizes` = SampleSizes) %>%
+  group_by(Antigen) %>%
+  mutate(`FDR ` = p.adjust(`P-value `, method = 'fdr'))
+
+
+magnitude_wk_pretty_2_10 <- magnitude_wk_tests_2_10 %>%
+  filter(!(grepl("G003", Comparison) & Antigen == "Lumazine Synthase")) %>%
+  mutate(
+    `P-value ` = pretty_pvalues(
+      `P-value `,
+      digits = 4,
+      output_type = 'latex',
+      sig_alpha = .05,
+      background = 'yellow'
+    ),
+      `FDR ` = pretty_pvalues(
+      `FDR `,
+      digits = 4,
+      output_type = 'latex',
+      sig_alpha = .2,
+      background = 'yellow'
+    ),
+    Antigen = escape(Antigen))
+```
+
+
+```{r rr-wk-2-10}
+
+response_wk_tests_2_10 <- combined_data %>%
+  filter(endpoint %in% c("Response Rate (Wilson CI)",
+                         "Diff Bind Response Rate (Wilson CI)")) %>%
+  filter(visit_vis %in% c("2", "10")) %>%
+  mutate(Week = factor(visit_vis, levels = c("2", "10")),
+         Antigen = factor(antigen, levels = c("eOD-GT8 60mer", "eOD-GT8.1",
+                                              "eOD-GT8 KO11", "eOD-GT8 CD4bs", "Lumazine Synthase")),
+         Study = study) %>%
+  group_by(Antigen, Study) %>%
+    reframe(VISCfunctions::pairwise_test_bin(
+    x = endpt_val,
+    group = Week,
+    method = "mcnemar",
+    id = pubID,
+    alternative = "two.sided",
+    num_needed_for_test = 3),
+    .groups = "drop") %>%
+  mutate(`Sample Sizes` = extract_samp_sizes(ResponseStats)) %>%
+  select(Antigen, Study, Comparison, `Sample Sizes`, ResponseStats, ResponseTest) %>%
+  rename(`P-value ` = ResponseTest) %>%
+  group_by(Antigen) %>%
+  mutate(`FDR ` = p.adjust(`P-value `, method = 'fdr'))
+
+# note to this is an interim solution given a reproducible example has been documented in VISCfunctions git issues but not resolved yet - https://github.com/FredHutch/VISCfunctions/issues/102
+# the output when changing the order of factors shows up in a different order for Comparison versus ResponseStats
+response_wk_tests_mod_2_10 <- response_wk_tests_2_10 %>%
+  separate(ResponseStats, c("ResponseStats1", "ResponseStats2"), sep = "vs.") %>%
+  mutate(new_ResponseStats = paste(ResponseStats2, "vs.", ResponseStats1)) %>%
+  select(-c(ResponseStats2, ResponseStats1))
+
+
+response_wk_pretty_2_10 <- response_wk_tests_mod_2_10 %>%
+  mutate(
+    `P-value` = pretty_pvalues(
+      `P-value `,
+      digits = 4,
+      output_type = 'latex',
+      sig_alpha = .05,
+      background = 'yellow'),
+    `FDR` = pretty_pvalues(
+      `FDR `,
+      digits = 4,
+      output_type = 'latex',
+      sig_alpha = .2,
+      background = 'yellow'),
+    Antigen = escape(Antigen))
+
+
+```
+
+```{r mag-wk-8-24}
+
+magnitude_wk_tests_8_24 <- combined_data %>%
+  filter(study == "G002") %>%
+  filter(endpoint %in% c("AUTC", "delta AUTC")) %>%
+  filter(visit_vis %in% c("8", "24")) %>%
+  mutate(Visit = factor(visit_vis, levels = c("8", "24")),
+         Antigen = factor(antigen, levels = c("eOD-GT8 60mer", "eOD-GT8.1",
+                                              "eOD-GT8 KO11", "eOD-GT8 CD4bs", "Lumazine Synthase")),
+         Study = study) %>%
+  group_by(Antigen, Study) %>%
+  summarise(VISCfunctions::pairwise_test_cont(
+    x = endpt_val,
+    group = Visit,
+    id = pubID,
+    paired = TRUE,
+    method = "wilcox",
+    alternative = "two.sided",
+    num_needed_for_test = 3,
+    log10_stats = TRUE), .groups = "drop") %>%
+  select(Antigen, Study, Comparison, SampleSizes, Median_Min_Max, MagnitudeTest) %>%
+  rename(`Median (Min, Max)` = Median_Min_Max,
+         `P-value ` = MagnitudeTest,
+         `Sample Sizes` = SampleSizes) %>%
+  group_by(Antigen) %>%
+  mutate(`FDR ` = p.adjust(`P-value `, method = 'fdr'))
+
+magnitude_wk_pretty_8_24 <- magnitude_wk_tests_8_24 %>%
+  mutate(
+    `P-value ` = pretty_pvalues(
+      `P-value `,
+      digits = 4,
+      output_type = 'latex',
+      sig_alpha = .05,
+      background = 'yellow'
+    ),
+      `FDR ` = pretty_pvalues(
+      `FDR `,
+      digits = 4,
+      output_type = 'latex',
+      sig_alpha = .2,
+      background = 'yellow'
+    ),
+    Antigen = escape(Antigen))
+
+```
+
+\pagebreak
+
+```{r generate-tab-S31}
+response_rates_pretty %>%
+  filter(!(grepl("G003", Comparison) & Antigen == "eOD-GT8 CD4bs")) %>%
+  mutate(across(`Response Rate (CI)`, ~stringr::str_replace_all(.x, '%', '\\\\%'))) %>%
+  kable(format = output_type,
+        escape = FALSE,
+        booktabs = T,
+        linesep = "",
+        caption = c("Table S31. Serum IgG binding antibody response rates to eOD-GT8 60mer and related antigens, for recipients of eOD-GT8 60mer mRNA-LNP in G002 and G003 or eOD-GT8 60mer protein and AS01B in G001."),
+        caption.short = c("Table S31. Two sided Barnard tests at a .05 significance level for pairwise comparisons of response rates between G001, G002 and G003")
+        ) %>%
+  kable_styling(
+    font_size = 6,
+    latex_options = c("hold_position",  "basic")
+    ) %>%
+  collapse_rows(1:2, valign = "top", latex_hline = "major")
+
+
+```
+
+\pagebreak
+
+```{r generate-tab-s32}
+
+magnitude_rates_pretty %>%
+  filter(!(grepl("G003", Comparison) & Antigen == "eOD-GT8 CD4bs")) %>%
+  kable(format = output_type,
+        escape = FALSE,
+        booktabs = T,
+        linesep = "",
+        caption = c("Table S32. Serum IgG binding antibody response magnitudes to eOD-GT8 60mer and related antigens, for recipients of eOD-GT8 60mer mRNA-LNP in G002 and G003 or eOD-GT8 60mer protein and AS01B in G001."),
+        caption.short = c("Table S32. Two sided Wilcox tests at a .05 significance level for pairwise comparisons of response magnitudes (AUTC and delta AUTC) between G001, G002 and G003")
+        ) %>%
+  kable_styling(
+    font_size = 6,
+    latex_options = c("hold_position",  "basic")
+    ) %>%
+  collapse_rows(1:2, valign = "top", latex_hline = "major")
+```
+
+\pagebreak
+
+```{r generate-tab-s33}
+
+response_wk_pretty_2_10 %>%
+  rename(`Response Rate (CI)` = new_ResponseStats) %>%
+  select(c(Antigen, Study, Comparison, `Sample Sizes`,
+           `Response Rate (CI)`, `P-value`, FDR)) %>%
+  mutate(across(`Response Rate (CI)`, ~stringr::str_replace_all(.x, '%', '\\\\%'))) %>%
+  kable(format = output_type,
+        escape = FALSE,
+        booktabs = T,
+        linesep = "",
+        caption = c("Table S33. Week 2 (post first vaccination) vs. week 10 (two weeks post second vaccination) comparisons ofserum IgG binding antibody response rates to eOD-GT8 60mer and related antigens, for recipients of eOD-GT8 60mer mRNA-LNP in G002 and G003 or eOD-GT8 60mer protein and AS01B in G001."),
+        caption.short = c("Table S33. Two sided Mcnemar tests at a .05 significance level for pairwise comparisons of week 2 and week 10 response magnitudes (AUTC and delta AUTC).")
+        ) %>%
+  kable_styling(
+    font_size = 6,
+    latex_options = c("hold_position",  "basic")
+    ) %>%
+  collapse_rows(1:2, valign = "top", latex_hline = "major")
+
+```
+
+\pagebreak
+
+```{r generate-tab-s34}
+
+magnitude_wk_pretty_2_10 %>%
+  kable(format = output_type,
+        escape = FALSE,
+        booktabs = T,
+        linesep = "",
+        caption = c("Table S34. Week 2 (post first vaccination) vs. week 10 (two weeks post second vaccination) comparisons ofserum IgG binding antibody magnitudes to eOD-GT8 60mer and related antigens, for recipients of eOD-GT8 60mer mRNA-LNP in G002 and G003 or eOD-GT8 60mer protein and AS01B in G001."),
+        caption.short = c("Table S34. Two sided Wilcox signed rank tests at a .05 significance level for pairwise comparisons of week 2 and week 10 response magnitudes (AUTC and delta AUTC)")
+        ) %>%
+  kable_styling(
+    font_size = 6,
+    latex_options = c("hold_position",  "basic")
+    ) %>%
+  collapse_rows(1:2, valign = "top", latex_hline = "major")
+
+```
+
+
+\pagebreak
+
+```{r generate-tab-s77}
+
+magnitude_wk_pretty_8_24 %>%
+  kable(format = output_type,
+        escape = FALSE,
+        booktabs = T,
+        linesep = "",
+        caption = c("Table S77. Two sided Wilcox signed rank tests at a .05 significance level for pairwise comparisons of week 8 and week 24 response magnitudes (AUTC and delta AUTC) for pooled G002 groups for antigens eOD-GT8 60mer, eOD-GT8.1, eOD-GT8 KO11, eOD-GT8 CD4bs, and Lumazine Synthase."),
+        caption.short = c("Table S77. Two sided Wilcox signed rank tests at a .05 significance level for pairwise comparisons of week 8 and week 24 response magnitudes (AUTC and delta AUTC) for pooled G002 groups.")
+        ) %>%
+  kable_styling(
+    font_size = 6,
+    latex_options = c("hold_position",  "basic")
+    ) %>%
+  collapse_rows(1:2, valign = "top", latex_hline = "major")
+
+```

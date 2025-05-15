@@ -523,7 +523,7 @@ def run_airr(
 
     # Insert the pubid at 0 column for pubid identification
     # airr_df.insert(0, "pubID", airr_df["ptid"].map(lookup_maps))
-    airr_df['pubID'] = airr_df['ptid']
+    airr_df["pubID"] = airr_df["ptid"]
 
     # Insert a unique cellid
     cellid_cols = ["pubID", "group", "weeks", "probe_set", "sort_pool", "cellhash"]
