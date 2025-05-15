@@ -1,42 +1,42 @@
 # Analysis
 
-The analysis of the data is can be done after the pipeline.
+The analysis of the data can be done after the pipeline.
 
 ![full pipeline](img/Pipeline.png)
 
 ## Getting an analysis report
 
-The analysis report is the sequencing and flow cytometry data combined. It has all count and frequencies of the flow data and the frequencies of VRC01 class among the sequences. It will then combine those frequencies to give a final frequency of VRC01 among some cell type phenotype.
+The analysis report is the combined sequencing and flow cytometry data. It has all the counts and frequencies of the flow data and the frequencies of the VRC01 class among the sequences. It will then combine those frequencies to give a final frequency of VRC01 among some cell type phenotypes.
 
 === ":material-console-line: Command Line Usage"
 
-    The following will produce an analysis report and combine data. It will output a flow
+ The following will produce an analysis report and combine data. It will output a flow
 
-    <div class='termy'>
-    ```bash
-    $ g00x g003 analysis report -s g003/G003/output/final_df.feather -f g003/G003/output/flow_output.feather -o g003/G003/output/flow_and_sequencing
-    ```
-    </div>
+ <div class='termy'>
+ ```bash
+ $ g00x g003 analysis report -s g003/G003/output/final_df.feather -f g003/G003/output/flow_output.feather -o g003/G003/output/flow_and_sequencing
+ ```
+ </div>
 
 === " :material-api: Python"
 
-    ```python
+ ```python
     from g00x.data import Data
     from g00x.analysis.report import combine_seq_and_flow
 
-    data = Data()
-    sequencing_dataframe_path = "g003/G003/output/final_df.feather"
-    flow_dataframe_path = "g003/G003/output/flow_output.feather"
+ data = Data()
+ sequencing_dataframe_path = "g003/G003/output/final_df.feather"
+ flow_dataframe_path = "g003/G003/output/flow_output.feather"
 
-    # input the sequeences to feather
-    sequencing_dataframe = pd.read_feather(sequencing_dataframe_path)
-    flow_dataframe = pd.read_feather(flow_dataframe_path)
+    # input the sequences to feather
+ sequencing_dataframe = pd.read_feather(sequencing_dataframe_path)
+ flow_dataframe = pd.read_feather(flow_dataframe_path)
 
-    # generate three different dataframe
-    seq_and_flow_df, seq_and_flow_df_long_name, seq_and_flow_df_long_form = combine_seq_and_flow(
-        data, sequencing_dataframe, flow_dataframe
-    )
-    ```
+    # generate three different dataframes
+ seq_and_flow_df, seq_and_flow_df_long_name, seq_and_flow_df_long_form = combine_seq_and_flow(
+ data, sequencing_dataframe, flow_dataframe
+ )
+ ```
 
 This will output a `flow_and_sequencing.feather`, `flow_and_sequencing_long_names.feather`, and `flow_and_sequencing_long_form.feather`.
 
@@ -46,7 +46,7 @@ The long form is the long form dataframe:
 |-------------|-----------|--------------|-------|-------|----------|-----------|-------------|------------|-----------|--------------------------|-------------------------|---------------------|-------------|
 | KWTRPG003   | G003-243  | G003-243  | 10    | -5    | V91      | eODGT8    | PBMC        | count      | 102.0     | IgD+/KO-/Antigen++ B cells | IgD+/KO-/Antigen++ B cells | P14                 |             |
 | KWTRPG003   | G003-243  | G003-243  | 10    | 8     | V201     | eODGT8    | PBMC        | count      | 2163368.0 | IgD+ B cells            | IgD+ B cells           | P6                  |             |
-               |
+ |
 
 The long names are pivoted:
 
@@ -71,11 +71,11 @@ Easily count the amount of samples we have.
 
 === ":material-console-line: Command Line Usage"
 
-    <div class='termy'>
-    ```bash
-    $ g00x g003 analysis count -f g003/G003/output/flow_output.feather -o count
-    ```
-    </div>
+ <div class='termy'>
+ ```bash
+ $ g00x g003 analysis count -f g003/G003/output/flow_output.feather -o count
+ ```
+ </div>
 
 This will output:
 

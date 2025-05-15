@@ -1,49 +1,49 @@
 ## Validation
 
-The most important part of this clinical trial other than it working, is that everything is validated. That means that the data is validated, the code is validated, and the results are validated. This is a very important part of the process and should not be skipped.
+The most important part of this clinical trial, other than its working, is that everything is validated. That means that the data is validated, the code is validated, and the results are validated. This is a crucial part of the process and should not be skipped.
 
 ### FACS/Sorting
 
-These are instructions on how to validate the file structure containing the FACS/Sorting data **before** uploading to box.
+These are instructions on validating the file structure containing the FACS/Sorting data **before** uploading to Box.
 
 === ":material-console-line: Command Line Usage"
 
-    <div class="termy">
-    ```bash
-    #Run the validator for flow from the command line
-    $ g00x g002 validate flow my_path/to/box/G002/
-    ```
-    </div>
+ <div class="termy">
+ ```bash
+ #Run the validator for flow from the command line
+ $ g00x g002 validate flow my_path/to/box/G002/
+ ```
+ </div>
 
 
-    If you got your data from [AWS](g002_data.md#aws-g002), your command line would look like the following
+ If you got your data from [AWS](g002_data.md#aws-g002), your command line would look like the following
 
-    <div class="termy">
-    ```bash
-    #Run the validator for flow given the AWS structure
-    $ g00x g002 validate g002/G002/sorting/G002
-    ```
-    </div>
+ <div class="termy">
+ ```bash
+ #Run the validator for flow given the AWS structure
+ $ g00x g002 validate g002/G002/sorting/G002
+ ```
+ </div>
 
 === " :material-api: Python"
 
-    ```python
+ ```python
     from g00x.flow.flow import parse_flow_data
     from g00x.data import Data
 
     # data
-    data = Data()
+ data = Data()
 
     # parse flow data into a dataframe
-    validated_structure = parse_flow_data(data,"g002/G002/sorting/G002") # this returns a dataframe
-    ```
+ validated_structure = parse_flow_data(data,"g002/G002/sorting/G002") # this returns a dataframe
+ ```
 
 #### File structure
 
-Your folder structure on box should look like this.
+Your folder structure on Box should look like this.
 
 ```bash
-# if you used the above commands to sync the data. The folder structure will look like this
+# If you used the above commands to sync the data. The folder structure will look like this
 
 g002/G002/sorting
 └── G002
@@ -65,7 +65,7 @@ g002/G002/sorting
 
 ### Sequencing files
 
-In order to validate the sequencing files, it must be merged with the flow data. Thus you will need both sequencing and flow files. This is because most of the metadata is housed in the flow files.
+To validate the sequencing files, they must be merged with the flow data. Thus, you will need both sequencing and flow files. This is because most of the metadata is housed in the flow files.
 
 The folder for sequencing should look like the following.
 
@@ -78,9 +78,9 @@ G002
 │   ├── 221019_VH00497_32_AAANGGVM5
 │   └── sample_manifest.csv
 └── run0004
-    ├── 221101_VL00414_3_AACFYLCM5
-    ├── 221103_VL00414_4_AAATJGYM5
-    └── sample_manifest.csv
+ ├── 221101_VL00414_3_AACFYLCM5
+ ├── 221103_VL00414_4_AAATJGYM5
+ └── sample_manifest.csv
 ```
 
 where a `sample_manifest.csv` looks like the following.
@@ -99,35 +99,35 @@ To run the `merge` use the following.
 
 === ":material-console-line: Command Line Usage"
 
-    <div class="termy">
-    ```bash
-    $ g00x g002 validate merge -f /path/to/flow -s /path/to/sequencing -o merge.csv
-    ---> 100%
+ <div class="termy">
+ ```bash
+ $ g00x g002 validate merge -f /path/to/flow -s /path/to/sequencing -o merge.csv
+ ---> 100%
 
-    ```
-    </div>
+ ```
+ </div>
 
-    If you have the [AWS Structure](g002_data.md#aws-g002), you can use the following command to merge the files.
+ You can use the following command to merge the files if you have the [AWS Structure](g002_data.md#aws-g002).
 
-    <div class='termy' >
-    ``` bash
-    $ g00x g002 validate merge -s ./g002/G002/sequencing/G002 -f ./g002/G002/sorting/G002 -o merge.csv
-    ---> 100%
+ <div class='termy' >
+ ``` bash
+ $ g00x g002 validate merge -s ./g002/G002/sequencing/G002 -f ./g002/G002/sorting/G002 -o merge.csv
+ ---> 100%
 
-    ```
-    </div>
+ ```
+ </div>
 
 === " :material-api: Python"
 
-    ```python
+ ```python
     from g00x.sequencing.merge import merge_flow_and_sequencing
     from g00x.data import Data
 
-    out = 'merge.csv'
-    data = Data()
-    df = merge_flow_and_sequencing(data,"path/to/flow", "path/to/sequencing")
-    df.to_csv(out)
-    ```
+ out = 'merge.csv'
+ data = Data()
+ df = merge_flow_and_sequencing(data,"path/to/flow", "path/to/sequencing")
+ df.to_csv(out)
+ ```
 
 The merged file will use the sort pool and sorting date as the fields to join together the sequencing and flow data.
 
@@ -135,7 +135,7 @@ The merged file will use the sort pool and sorting date as the fields to join to
 
 #### Merged Fields
 
-Below is all the fields available in the merged file. You may view the merged file through the api `my_file = merge_flow_and_sequencing(data,"path/to/flow", "path/to/sequencing")` and then `my_file.data` to view the data.
+Below are all the fields available in the merged file. You may view the merged file through the api `my_file = merge_flow_and_sequencing(data,"path/to/flow", "path/to/sequencing")` and then `my_file.data` to view the data.
 
 |          Column          | Definition                                                                |
 | :----------------------: | :------------------------------------------------------------------------ |
@@ -151,7 +151,7 @@ Below is all the fields available in the merged file. You may view the merged fi
 |       run_dir_path       | Where the sequencing data path is located                                 |
 |       pool_number        | :material-merge: The pool number is the same as the sort pool             |
 |       sorted_date        | :material-merge: The date of the sort                                     |
-| vdj_sequencing_replicate | How many times has the sample been sequenced for VDJ, index starts at zeo |
+| vdj_sequencing_replicate | How many times has the sample been sequenced for VDJ, index starts at zero |
 | cso_sequencing_replicate | How many times has the sample been sequenced for the feature library      |
 |   vdj_lirary_replicate   | How many times has the same library been prepared for the VDJ             |
 |  cso_library_replicate   | How many times has the same library been prepared for the feature         |

@@ -1,12 +1,12 @@
 # 10x pipeline
 
-After you have a validated merged dataframe in from [validation](g002_validation.md), you can begin the 10X pipeline which consists of demultiplexing, vdj, and feature counting.
+After you have a validated merged dataframe from [validation](g002_validation.md), you can begin the 10X pipeline consisting of demultiplexing, vdj, and feature counting.
 
 ![full pipeline](img/Pipeline.png)
 
 !!! warning "CellRanger 6.1"
 
-    The cellranger version in this pipeline is 6.1
+    The CellRanger version in this pipeline is 6.1
 
 ## Flow
 
@@ -85,7 +85,7 @@ The demulitplex algorithm will add the following fields in demultiplex output
 |  vdj_fastq_dir  | The full path to the vdj fastq directory                            |
 |  cso_fastq_dir  | The full path to the cso fastq directory                            |
 
-An example demultiplexing output dataframe is found below.
+An example of a demultiplexing output dataframe is found below.
 
 |     | ptid      | group | weeks | visit_id | probe_set | sample_type | run_date   | sort_pool | hashtag | run_dir_path                                                            | pool_number | sorted_date | vdj_sequencing_replicate | cso_sequencing_replicate | vdj_lirary_replicate | cso_library_replicate | bio_replicate | vdj_index | feature_index | vdj_run_id                  | cso_run_id                  | vdj_run_dir_path                                                                                    | cso_run_dir_path                                                                                    | vdj_fastq_dir                                                                                                                                            | vdj_sample_name | cso_fastq_dir                                                                                                                                            | cso_sample_name |
 | --: | :-------- | ----: | ----: | :------- | :-------- | :---------- | :--------- | :-------- | :------ | :---------------------------------------------------------------------- | :---------- | :---------- | -----------------------: | -----------------------: | -------------------: | --------------------: | ------------: | :-------- | :------------ | :-------------------------- | :-------------------------- | :-------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------- |
@@ -98,7 +98,7 @@ The output of demultiplexing pipeline will be used as input, see the [pipeline](
 
 === ":material-console-line: Command Line Usage"
 
-    The following will run the VDJ pipeline from the demultiplex dataframe and output vdj.feather inside of the output folder.
+    The following will run the VDJ pipeline from the demultiplex dataframe and output the vdj.feather inside the output folder.
 
     <div class="termy">
     ```bash
@@ -109,7 +109,7 @@ The output of demultiplexing pipeline will be used as input, see the [pipeline](
 
 === " :material-api: Python"
 
-    You can run the same with the following python code.
+    You can run the same with the following Python code.
 
     ```python
     from g00x.sequencing.tenX import run_vdj
@@ -132,7 +132,7 @@ This CSO pipeline will run the cellranger count part and output a feature matrix
 
 === ":material-console-line: Command Line Usage"
 
-    The following will run the CSO pipeline from the demultiplex dataframe and output cso.feather inside of the output folder.
+    The following will run the CSO pipeline from the demultiplex dataframe and output cso.feather inside the output folder.
 
     <div class="termy">
     ```bash
@@ -143,7 +143,7 @@ This CSO pipeline will run the cellranger count part and output a feature matrix
 
 === " :material-api: Python"
 
-    You can run the same with the following python code.
+    You can run the same with the following Python code.
 
     ```python
     from g00x.sequencing.tenX import run_cso
@@ -154,7 +154,7 @@ This CSO pipeline will run the cellranger count part and output a feature matrix
     run_cso(data, demultiplex_dataframe, out)
     ```
 
-The output cso dataframe will only contain one additional field
+The output CSO dataframe will only contain one additional field
 
 |   Column   | Definition                             |
 | :--------: | :------------------------------------- |
@@ -191,7 +191,7 @@ It will...
 
 === " :material-api: Python"
 
-    You can run the same with the following python code.
+    You can run the same with the following Python code.
 
     ```python
     from g00x.data import Data

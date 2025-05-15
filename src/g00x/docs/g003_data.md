@@ -4,13 +4,13 @@ We store our data on [AWS S3 Buckets](https://aws.amazon.com/s3/). We have two b
 
 # Obtaining AWS credentials.
 
-To get AWS credentials, you can either email [Troy](mailto:tsincomb@iavi.org) to get access.
+To get AWS credentials, you can email [Troy](mailto:tsincomb@iavi.org) to get access.
 
 There are two scenarios for access.
 
 1. You already have an AWS key. In that case, email us your IAM ARN and we will add you to the IAM group.
 
-2. You don't have an AWS account and need to be added to the SchiefLab group. In that case, you will receive an email with login instructions, your OTP (one time password) and your security credentials. The security credentials will be your AWS key and secret key and will be used to access the data programatically
+2. You don't have an AWS account and need to be added to the SchiefLab group. In that case, you will receive an email with login instructions, your OTP (one time password) and your security credentials. The security credentials will be your AWS key and secret key and will be used to access the data programmatically
 
 ## AWS G003
 
@@ -45,7 +45,7 @@ PRE raw_sequences
 </div>
 !!! info "G003"
 
-    If you are shown the `PRE g003/` output, you have access to the bucket.
+ You have access to the bucket if you are shown the `PRE g003/` output.
 
 ### AWS S3 Copy Specific Files from AWS
 
@@ -53,40 +53,40 @@ Below is a way to only copy certain components of the AWS bucket
 
 === "Sorting"
 
-    <div class="termy">
+ <div class="termy">
 
-    ```console
-    $ aws s3 cp --recursive  s3://iavig003sabucket/g003/sorting/ buckets/g003/sorting
-    ---> 100%
-    ```
-    </div>
+ ```console
+ $ aws s3 cp --recursive  s3://iavig003sabucket/g003/sorting/ buckets/g003/sorting
+ ---> 100%
+ ```
+ </div>
 
 === "Sequencing"
 
-    Get all sequencing files
-    <div class="termy">
-    ```console
-    $ aws s3 cp --recursive  s3://iavig003sabucket/g003/sequencing/ buckets/g003/sequencing
-    ---> 100%
-    ```
-    </div>
+ Get all sequencing files
+ <div class="termy">
+ ```console
+ $ aws s3 cp --recursive  s3://iavig003sabucket/g003/sequencing/ buckets/g003/sequencing
+ ---> 100%
+ ```
+ </div>
 
-    get the sequencing and sorting directory excluding large bcl and fastq files
-    <div class="termy">
-    ```console
-    $ aws s3 cp --recursive s3://iavig003sabucket/g003/ ./g003/sequencing --exclude *working_directory/* --exclude *.fastq.gz --exclude *.tif --exclude *.cbcl --exclude *.imf1 --exclude *.filter --exclude *.bin --exclude *Logs/* --exclude *_stdout --exclude *_stderr --exclude *Autofocus/* --exclude *Intensities/*
-    ---> 100%
-    ```
-    </div>
+ get the sequencing and sorting directory, excluding large bcl and fastq files
+ <div class="termy">
+ ```console
+ $ aws s3 cp --recursive s3://iavig003sabucket/g003/ ./g003/sequencing --exclude *working_directory/* --exclude *.fastq.gz --exclude *.tif --exclude *.cbcl --exclude *.imf1 --exclude *.filter --exclude *.bin --exclude *Logs/* --exclude *_stdout --exclude *_stderr --exclude *Autofocus/* --exclude *Intensities/*
+ ---> 100%
+ ```
+ </div>
 
 === "Output"
 
-    <div class="termy">
-    ```console
-    $ aws s3 cp --recursive  s3://iavig003sabucket/g003/output/ buckets/g003/output
-    ---> 100%
-    ```
-    </div>
+ <div class="termy">
+ ```console
+ $ aws s3 cp --recursive  s3://iavig003sabucket/g003/output/ buckets/g003/output
+ ---> 100%
+ ```
+ </div>
 
 ### AWS S3 Copy Local Files to AWS
 
@@ -101,7 +101,7 @@ $ aws s3 cp --recursive  221118_VH00124_107_AAAW2V3HV  s3://iavig003sabucket/raw
 
 !!! info "221118_VH00124_107_AAAW2V3HV"
 
-    This is the flow cell directory from the sequencer. If you are an end user, update to `s3://iavig003sabucket/raw_sequences`.
+ This is the flow cell directory from the sequencer. If you are an end user, update to `s3://iavig003sabucket/raw_sequences`.
 
 ### AWS S3 Sync All Files from AWS
 
@@ -114,18 +114,18 @@ $ aws s3 sync --delete  s3://iavig003sabucket/ buckets/ --region af-south-1
 ```
 </div>
 
-!!! warning "Warning: Large File"
+!!! Warning "Warning: Large File"
 
-    The entire bucket will likely be over 2 TB
+ The entire bucket will likely be over 2 TB
 
 !!! warning "--delete"
 
-    The `--delete` flag will delete any files in the destination that are not in the source. This is useful for keeping the destination in sync with the source. If you don't want to delete files, remove the `--delete` flag.
+ The `--delete` flag will delete any files in the destination that are not in the source. This is useful for keeping the destination in sync with the source. If you don't want to delete files, remove the `--delete` flag.
 
 !!! info "Sync"
 
-    The `sync` command can also be used on specific file susbsets, e.g. sorting
+ The `sync` command can also be used on specific file susbsets, e.g. sorting
 
 !!! info "s3://iavig003sabucket/g003"
 
-    The subpath `g003` is the main g003 bucket. The top level may have some other app related things.
+ The subpath `g003` is the main g003 bucket. The top level may have some other app-related things.
