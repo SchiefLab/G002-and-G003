@@ -1,6 +1,4 @@
 """This is our main entry point"""
-
-# %%
 import functools
 import logging
 import math

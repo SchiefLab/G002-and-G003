@@ -42,12 +42,12 @@ plotnine = "0.12.3"
 matplotlib = "3.8.2"
 scipy = "^1.9.3"
 sadie-antibody = { git = "https://github.com/jwillis0720/sadie.git", rev = "v1.1.2" }
-# seaborn = { git = "https://github.com/tmsincomb/seaborn-fork.git" }
+seaborn = { git = "https://github.com/tmsincomb/seaborn-fork.git" }
 logomaker = "^0.8"
 pandera = "^0.18.0"
 patchworklib = "0.6.3"
 biopython = "1.80"
-seaborn = "^0.13.2"
+# seaborn = "0.11.2"
 
 
 [tool.poetry.group.dev.dependencies]

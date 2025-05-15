@@ -15,6 +15,7 @@ from g00x_figures.plot_helpers.boxplot import adjust_boxplot, format_y_axis
 from g00x_figures.plot_helpers.font import apply_global_font_settings
 from g00x_figures.plot_helpers.legend import plot_legend as legend
 from g00x_figures.plot_helpers.symlog import MinorSymLogLocator
+from g00x_figures.wilson import wilsonify
 
 pal = {
     "G001": "#6C65FF",
@@ -352,7 +353,7 @@ def plot_flow_frequencies(data: Data, img_outdir: Path, metric_outdir: Path, use
         # TODO:remove ci for -5
         # _df.loc[_df[_df["weeks"] == -5].index, yname] = 10
         ax = sns.pointplot(
-            data=_df.query("weeks != -5"),
+            data=_df,
             hue="pseudogroup",
             y=yname,
             x="weeks",
@@ -365,6 +366,13 @@ def plot_flow_frequencies(data: Data, img_outdir: Path, metric_outdir: Path, use
             palette=pal,
             dodge=0.25,
         )
+        # wilsonify(
+        #     g=ax,
+        #     data=_df.query("weeks != -5"),
+        #     x="weeks",
+        #     y=yname,
+        #     hue="pseudogroup",
+        # )
         # median to csv
         median_metric_df = (
             unsync_weeks(_df)
@@ -372,6 +380,7 @@ def plot_flow_frequencies(data: Data, img_outdir: Path, metric_outdir: Path, use
             .median()
             # .reset_index()
         )
+        # breakpoint()
         # median_metric_df = median_metric_df.rename({"Response x": yname})
         # removing pointplot medians
         # median_metric_dfs.append(median_metric_df)

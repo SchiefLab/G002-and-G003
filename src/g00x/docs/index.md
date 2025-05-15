@@ -1,3 +1,6 @@
+<div align="center">
+<img src="poster.png" style="margin:0.5em;width:75%;height:75%">
+</div>
 <h1 align="center">
   <br>
   G00x - Generalizable Germline-Targeting Clinical Trial Pipeline
@@ -13,16 +16,12 @@
     <a href="https://github.com/pre-commit/pre-commit">
     <img src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white"
         alt="pre commit">
-    <!-- <br>
-    <a href="https://github.com/SchiefLab/G00x/actions/workflows/sequence.yml/badge.svg">
-    <img src="https://github.com/SchiefLab/G00x/actions/workflows/sequence.yml/badge.svg"
-         alt="Sequence">
-    <a href="https://github.com/SchiefLab/G00x/actions/workflows/pyright.yml/badge.svg">
-    <img src="https://github.com/SchiefLab/G00x/actions/workflows/pyright.yml/badge.svg"
-         alt="Static Type Checking">
-    <a href="https://github.com/SchiefLab/G00x/actions/workflows/flow.yml/badge.svg">
-    <img src="https://github.com/SchiefLab/G00x/actions/workflows/flow.yml/badge.svg"
-         alt="Flow workflow"> -->
+    <a href="https://doi.org/10.5281/zenodo.15284778">
+    <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.15284778.svg"
+        alt="zenodo link"></a>
+    <a href="https://app.netlify.com/projects/g00x/deploys">
+    <img src="https://api.netlify.com/api/v1/badges/0cfc5010-68e1-4002-a9bd-237baf1b320b/deploy-status"
+        alt="Netlify Status"></a>
 </div>
 
 ## About

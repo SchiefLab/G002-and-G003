@@ -7,18 +7,6 @@ import seaborn as sns
 
 
 def wilsonify(g, data, x, y, hue=None, z=1.96):
-    """
-    Adds Wilson confidence interval error bars to a Seaborn pointplot.
-
-    Parameters:
-    - g: the Axes object returned by sns.pointplot
-    - data: original dataframe used in sns.pointplot
-    - x: column name used for x-axis (categorical)
-    - y: column name used for binary outcome (0/1)
-    - hue: column name for hue groupings (if any)
-    - z: z-score for confidence interval (default is 1.96 for 95%)
-    """
-
     def wls_confidence_interval(values, z=1.96):
         n = len(values)
         if n == 0:
@@ -35,7 +23,7 @@ def wilsonify(g, data, x, y, hue=None, z=1.96):
     if hue:
         group_cols.append(hue)
 
-    # Group data and compute Wilson intervals
+    # Compute Wilson intervals
     summary = (
         data.groupby(group_cols)[y].agg(["mean", "count", "sum"]).rename(columns={"mean": "proportion"}).reset_index()
     )
@@ -49,22 +37,42 @@ def wilsonify(g, data, x, y, hue=None, z=1.96):
     summary["yerr_low"] = summary["proportion"] - summary["ci_low"]
     summary["yerr_high"] = summary["ci_high"] - summary["proportion"]
 
-    # Map error bars to the correct x-axis positions
-    if hue:
-        offsets = g.get_children()[0].get_offsets()
-        x_positions = offsets[:, 0]
-    else:
-        x_positions = np.arange(len(summary))
+    # Determine x-axis positions
+    positions = {}
+    for line in g.lines:
+        x_data = line.get_xdata()
+        y_data = line.get_ydata()
+        for x_val, y_val in zip(x_data, y_data):
+            positions[(x_val, y_val)] = x_val
 
-    for i, (_, row) in enumerate(summary.iterrows()):
-        g.errorbar(
-            x=x_positions[i],
-            y=row["proportion"],
-            yerr=[[row["yerr_low"]], [row["yerr_high"]]],
-            fmt="none",
-            capsize=5,
-            color="black",
-        )
+    # Now match each row in summary to its x-position and draw error bars
+    for line in g.lines:
+        x_vals = line.get_xdata()
+        y_vals = line.get_ydata()
+        for x_val, y_val in zip(x_vals, y_vals):
+            match = summary[np.isclose(summary["proportion"], y_val)]
+            if hue:
+                # If hue, filter further by category position
+                hue_levels = g.legend_.texts
+                for idx, row in match.iterrows():
+                    g.errorbar(
+                        x=x_val,
+                        y=row["proportion"],
+                        yerr=[[row["yerr_low"]], [row["yerr_high"]]],
+                        fmt="none",
+                        capsize=5,
+                        color="black",
+                    )
+            else:
+                for idx, row in match.iterrows():
+                    g.errorbar(
+                        x=x_val,
+                        y=row["proportion"],
+                        yerr=[[row["yerr_low"]], [row["yerr_high"]]],
+                        fmt="none",
+                        capsize=5,
+                        color="black",
+                    )
 
 
 if __name__ == "__main__":
