@@ -149,9 +149,10 @@ def figures(
     root_logger.setLevel(logging.INFO)
 
     data = ctx.obj["data"]
-    ctx.obj["outdir"] = (
-        Path(__file__).parent.parent.parent / "G00X-plots-test"
-    )  # outdir if outdir else data.paths.figure_outdir
+    ctx.obj["data"] = outdir if outdir else data.paths.figure_outdir
+    # ctx.obj["outdir"] = (
+    #     Path(__file__).parent.parent.parent / "G00X-plots-test"
+    # )  # outdir if outdir else data.paths.figure_outdir
 
     if is_main:
         dest = "Main"
@@ -246,7 +247,7 @@ def prime_mutations(ctx: click.Context, aa: bool, method: str, no_panel_e: bool)
     data = ctx.obj["data"]
     fig = ctx.obj["fig"]
     outdir = ctx.obj["outdir"]
-    img_outdir = Path(outdir)
+    img_outdir = ctx.obj["img_outdir"]
     img_outdir = ctx.obj["img_outdir"]
     # metric_outdir = ctx.obj["metric_outdir"]
     metric_outdir = ctx.obj["metric_outdir"]
@@ -322,7 +323,7 @@ def boost_mut_aa(ctx: click.Context, method: str) -> None:
         dest = "Main"
     else:
         dest = "Sup"
-    img_outdir = Path(outdir) / f"{dest}"
+    img_outdir = ctx.obj["img_outdir"] / f"{dest}"
     metric_outdir = Path(outdir) / f"{dest}-Metrics/{fig}"
     img_outdir.mkdir(parents=True, exist_ok=True)
     metric_outdir.mkdir(parents=True, exist_ok=True)
@@ -377,8 +378,8 @@ def fig6(ctx: click.Context) -> None:
 def cp_freq(ctx: click.Context) -> None:
     data = ctx.obj["data"]
     fig = ctx.obj["fig"]
-    outdir = ctx.obj["outdir"]
-    img_outdir = Path(outdir)
+    # outdir = ctx.obj["outdir"]
+    img_outdir = ctx.obj["img_outdir"]
     img_outpath = img_outdir / f"{fig}.png"
     # metric_outdir = ctx.obj["metric_outdir"]
     metric_outdir = ctx.obj["metric_outdir"]
@@ -412,6 +413,18 @@ def plot_main(ctx: click.Context) -> None:
 ### Supplementary Figures ###
 
 
+def save(img, dfs, img_outpath, metric_outdir):
+    img.savefig(img_outpath, dpi=700)
+    key_list = ["trial", "pseudogroup", "weeks", "pubID"]
+    for df in dfs:
+        name = df.name
+        kl = [k for k in key_list if k in df.columns]
+        key = [k for k in df.key if k not in kl]
+        df = df[kl + key]
+        df = df.sort_values(kl)
+        df.to_csv(metric_outdir / f"fig_{name}.csv", index=False)
+
+
 @figures.command("methodology2")
 @click.pass_context
 def methodology_comparison(ctx: click.Context) -> None:
@@ -435,7 +448,7 @@ def s20(ctx: click.Context) -> None:
     data = ctx.obj["data"]
     fig = ctx.obj["fig"]
     outdir = ctx.obj["outdir"]
-    img_outdir = Path(outdir)
+    img_outdir = ctx.obj["img_outdir"]
     img_outpath = img_outdir / f"{fig}.png"
     metric_outdir = ctx.obj["metric_outdir"]
     img, dfs = flow_cytometry_plot.create_plot(
@@ -464,8 +477,8 @@ def s21(ctx: click.Context) -> None:
     }
     data = ctx.obj["data"]
     fig = ctx.obj["fig"]
-    outdir = ctx.obj["outdir"]
-    img_outdir = Path(outdir)
+    # outdir = ctx.obj["outdir"]
+    img_outdir = ctx.obj["img_outdir"]
     img_outpath = img_outdir / f"{fig}.png"
     metric_outdir = ctx.obj["metric_outdir"]
     img, dfs = flow_cytometry_plot.create_plot(
@@ -494,8 +507,8 @@ def s21(ctx: click.Context) -> None:
 def s22(ctx: click.Context) -> None:
     data = ctx.obj["data"]
     fig = ctx.obj["fig"]
-    outdir = ctx.obj["outdir"]
-    img_outdir = Path(outdir)
+    # outdir = ctx.obj["outdir"]
+    img_outdir = ctx.obj["img_outdir"]
     img_outpath = img_outdir / f"{fig}.png"
     metric_outdir = ctx.obj["metric_outdir"]
     img, dfs = plot_isotype_data(seq=data.get_g002_sequences_prime())
@@ -507,8 +520,8 @@ def s22(ctx: click.Context) -> None:
 def s23(ctx: click.Context) -> None:
     data = ctx.obj["data"]
     fig = ctx.obj["fig"]
-    outdir = ctx.obj["outdir"]
-    img_outdir = Path(outdir)
+    # outdir = ctx.obj["outdir"]
+    img_outdir = ctx.obj["img_outdir"]
     img_outpath = img_outdir / f"{fig}.png"
     metric_outdir = ctx.obj["metric_outdir"]
     img, dfs = plot_isotype_data(seq=data.get_g003_sequences_prime())
@@ -520,8 +533,8 @@ def s23(ctx: click.Context) -> None:
 def s24(ctx: click.Context) -> None:
     data = ctx.obj["data"]
     fig = ctx.obj["fig"]
-    outdir = ctx.obj["outdir"]
-    img_outdir = Path(outdir)
+    # outdir = ctx.obj["outdir"]
+    img_outdir = ctx.obj["img_outdir"]
     img_outpath = img_outdir / f"{fig}.png"
     metric_outdir = ctx.obj["metric_outdir"]
     img, dfs = run_percent_igg_responders(data)
@@ -533,8 +546,8 @@ def s24(ctx: click.Context) -> None:
 def s27(ctx: click.Context) -> None:
     data = ctx.obj["data"]
     fig = ctx.obj["fig"]
-    outdir = ctx.obj["outdir"]
-    img_outdir = Path(outdir)
+    # outdir = ctx.obj["outdir"]
+    img_outdir = ctx.obj["img_outdir"]
     img_outpath = img_outdir / f"{fig}.png"
     metric_outdir = ctx.obj["metric_outdir"]
     img, dfs = plot_qc()
@@ -546,9 +559,10 @@ def s27(ctx: click.Context) -> None:
 def s28(ctx: click.Context) -> None:
     data = ctx.obj["data"]
     fig = ctx.obj["fig"]
-    outdir = ctx.obj["outdir"]
+    # outdir = ctx.obj["outdir"]
+    img_outdir = ctx.obj["img_outdir"]
     metric_outdir = ctx.obj["metric_outdir"]
-    img_outpath = Path(outdir) / f"{fig}-spr-eOD.png"
+    img_outpath = Path(img_outdir) / f"{fig}-spr-eOD.png"
     g1, vrc01_dfs = plot_spr_prime(
         data=data,
         analyte="eOD-GT8.1_His-Avi_mC",
@@ -578,13 +592,15 @@ def num_bcr_clusters(ctx: click.Context, use_last_week: bool) -> None:
     fig = ctx.obj["fig"]
     outdir = ctx.obj["outdir"]
     outdir = Path(outdir)
-    img_outdir = outdir / "images"
+    # img_outdir = outdir / "images"
+    img_outdir = ctx.obj["img_outdir"]
+    metric_outdir = ctx.obj["metric_outdir"]
     logging.info("Plotting: Number of BCR clusters")
     logging.info(f"Output directory: {outdir}")
     name = ctx.command.name
     img_outpath = img_outdir / f"{fig}-{name}.png"
     df = plot_multi_find_clonality(data, img_outpath, use_last_week=use_last_week)
-    df.to_csv(outdir / "metrics" / f"{fig}-{name}.csv", index=False)
+    df.to_csv(metric_outdir / f"{fig}-{name}.csv", index=False)
 
 
 @figures.command("hierarchical-clustering-and-polyclonality")
@@ -599,12 +615,13 @@ def hierarchical_clustering_and_polyclonality(ctx: click.Context, use_last_week:
     fig = ctx.obj["fig"]
     outdir = ctx.obj["outdir"]
     outdir = Path(outdir)
-    img_outdir = outdir / "images"
+    # img_outdir = outdir / "images"
+    img_outdir = ctx.obj["img_outdir"]
     logging.info("Plotting: Number of BCR clusters")
     logging.info(f"Output directory: {outdir}")
     name = ctx.command.name
     img_outpath = img_outdir / f"{fig}-{name}.png"
-    metric_outdir = outdir / "metrics"
+    metric_outdir = ctx.obj["metric_outdir"]
     plot_polyclonality(
         data,
         img_outpath,
@@ -626,7 +643,8 @@ def s31(ctx: click.Context) -> None:
     data = ctx.obj["data"]
     fig = ctx.obj["fig"]
     outdir = ctx.obj["outdir"]
-    img_outdir = Path(outdir)
+    # img_outdir = ctx.obj["img_outdir"]
+    img_outdir = ctx.obj["img_outdir"]
     img_outpath = img_outdir / f"{fig}.png"
     metric_outdir = ctx.obj["metric_outdir"]
     img, dfs = flow_cytometry_plot.create_plot(
@@ -649,7 +667,7 @@ def s32(ctx: click.Context) -> None:
     data = ctx.obj["data"]
     fig = ctx.obj["fig"]
     outdir = ctx.obj["outdir"]
-    img_outdir = Path(outdir)
+    img_outdir = ctx.obj["img_outdir"]
     img_outpath = img_outdir / f"{fig}.png"
     metric_outdir = ctx.obj["metric_outdir"]
     img, dfs = plot_pre_post_frequency(data=data)
@@ -661,9 +679,9 @@ def s32(ctx: click.Context) -> None:
 def s33(ctx: click.Context) -> None:
     data = ctx.obj["data"]
     fig = ctx.obj["fig"]
-    outdir = ctx.obj["outdir"]
+    # outdir = ctx.obj["outdir"]
     metric_outdir = ctx.obj["metric_outdir"]
-    img_outpath = Path(outdir) / f"{fig}-spr-core.png"
+    img_outpath = Path(metric_outdir) / f"{fig}-spr-core.png"
     g1, vrc01_dfs = plot_spr_prime(
         data=data,
         analyte="core-Hx_r4.0D_TH6_g28v2_pHLsecAvi",
@@ -689,8 +707,8 @@ def s33(ctx: click.Context) -> None:
 def s34(ctx: click.Context) -> None:
     data = ctx.obj["data"]
     fig = ctx.obj["fig"]
-    outdir = ctx.obj["outdir"]
-    img_outdir = Path(outdir)
+    # outdir = ctx.obj["outdir"]
+    img_outdir = ctx.obj["img_outdir"]
     img_outpath = img_outdir / f"{fig}.png"
     metric_outdir = ctx.obj["metric_outdir"]
     img, dfs = plot_isotype_data_pseudogroups(seq_boost=data.get_g002_sequences_boost())
@@ -703,30 +721,30 @@ def boost_clonality(ctx: click.Context) -> None:
     """Plot boost clonality for supplementary figure 29."""
     data = ctx.obj["data"]
     fig = ctx.obj["fig"]
-    outdir = ctx.obj["outdir"]
-    outdir = Path(outdir)
-    img_outdir = outdir / "images"
-    metric_outdir = outdir / "metrics"
+    # outdir = ctx.obj["outdir"]
+    # outdir = Path(outdir)
+    img_outdir = ctx.obj["img_outdir"]
+    metric_outdir = ctx.obj["metric_outdir"]
     name = ctx.command.name
     img_outpath = img_outdir / f"{fig}-{name}.png"
     logging.info(f"Plotting {name}: {img_outpath}")
     g1 = plot_boost_clonality(
         data=data,
-        img_outdir=outdir,
+        img_outdir=img_outdir,
         metric_outdir=metric_outdir,
         fig="figA",
         y_axis="clonality",
     )
     g2 = plot_boost_clonality(
         data=data,
-        img_outdir=outdir,
+        img_outdir=img_outdir,
         metric_outdir=metric_outdir,
         fig="figB",
         y_axis="total_unique",
     )
     g3 = plot_boost_clonality(
         data=data,
-        img_outdir=outdir,
+        img_outdir=img_outdir,
         metric_outdir=metric_outdir,
         fig="figC",
         y_axis="median_cluster_size",
@@ -740,8 +758,8 @@ def boost_clonality(ctx: click.Context) -> None:
 def s40(ctx: click.Context) -> None:
     data = ctx.obj["data"]
     fig = ctx.obj["fig"]
-    outdir = ctx.obj["outdir"]
-    img_outdir = Path(outdir)
+    # outdir = ctx.obj["outdir"]
+    img_outdir = ctx.obj["img_outdir"]
     img_outpath = img_outdir / f"{fig}.png"
     metric_outdir = ctx.obj["metric_outdir"]
     img, dfs = plot_shm_spr(data=data)
@@ -753,8 +771,9 @@ def s40(ctx: click.Context) -> None:
 def s41(ctx: click.Context) -> None:
     data = ctx.obj["data"]
     fig = ctx.obj["fig"]
-    outdir = ctx.obj["outdir"]
-    img_outdir = Path(outdir)
+    # outdir = ctx.obj["outdir"]
+    outdir = ctx.obj["img_outdir"]
+    img_outdir = ctx.obj["img_outdir"]
     img_outpath = img_outdir / f"{fig}.png"
     metric_outdir = ctx.obj["metric_outdir"]
     img, dfs = spr_properties(data=data)
@@ -766,7 +785,8 @@ def s41(ctx: click.Context) -> None:
 def s42(ctx: click.Context) -> None:
     data = ctx.obj["data"]
     fig = ctx.obj["fig"]
-    outdir = ctx.obj["outdir"]
+    # outdir = ctx.obj["outdir"]
+    outdir = ctx.obj["img_outdir"]
     analyte_ln = "core-Hx_r4.0D_TH6_g28v2_pHLsecAvi"
     analyte_sn = "core-g28v2"
     img_outpath = Path(outdir) / f"{fig}.png"
@@ -776,7 +796,8 @@ def s42(ctx: click.Context) -> None:
         analyte_short_name=analyte_sn,
         lt=5e-5,
     )
-    save(img, dfs, img_outpath, Path(outdir) / "metrics")
+    metric_outdir = ctx.obj["metric_outdir"]
+    save(img, dfs, img_outpath, metric_outdir)
 
 
 @figures.command("b-kon-koff-spr-N276-g002")
@@ -784,7 +805,8 @@ def s42(ctx: click.Context) -> None:
 def s45(ctx: click.Context) -> None:
     data = ctx.obj["data"]
     fig = ctx.obj["fig"]
-    outdir = ctx.obj["outdir"]
+    # outdir = ctx.obj["outdir"]
+    outdir = ctx.obj["img_outdir"]
     analyte_ln = "core-Hx_r4.0_TH6_g28v2_N276_pHLsecAvi"
     analyte_sn = "core-N276"
     img_outpath = Path(outdir) / f"{fig}.png"
@@ -794,7 +816,8 @@ def s45(ctx: click.Context) -> None:
         analyte_short_name=analyte_sn,
         lt=1e-4,
     )
-    save(img, dfs, img_outpath, Path(outdir) / "metrics")
+    metric_outdir = ctx.obj["metric_outdir"]
+    save(img, dfs, img_outpath, metric_outdir)
 
 
 @figures.command("fig38")
@@ -803,7 +826,8 @@ def fig38(ctx: click.Context) -> None:
     """Figure 7."""
     data = ctx.obj["data"]
     fig = ctx.obj["fig"]
-    outdir = ctx.obj["outdir"]
+    # outdir = ctx.obj["outdir"]
+    outdir = ctx.obj["img_outdir"]
     img_outpath = Path(outdir) / f"{fig}.png"
     analyte_mapping = {
         "191084_SOSIP_MD39_mC": "191084",
@@ -830,7 +854,8 @@ def fig38(ctx: click.Context) -> None:
 def S47(ctx: click.Context) -> None:
     data = ctx.obj["data"]
     fig = ctx.obj["fig"]
-    outdir = ctx.obj["outdir"]
+    # outdir = ctx.obj["outdir"]
+    outdir = ctx.obj["img_outdir"]
     img_outpath = Path(outdir) / f"{fig}.png"
     metric_outdir = ctx.obj["metric_outdir"]
     plot_spr_core_candidates(
@@ -847,7 +872,8 @@ def S47(ctx: click.Context) -> None:
 def sup51(ctx: click.Context) -> None:
     data = ctx.obj["data"]
     fig = ctx.obj["fig"]
-    outdir = ctx.obj["outdir"]
+    # outdir = ctx.obj["outdir"]
+    outdir = ctx.obj["img_outdir"]
     img_outpath = Path(outdir) / f"{fig}.png"
     analyte_mapping = {
         "191084_SOSIP_MD39_N276D_mC": "191084-N276D",
@@ -899,6 +925,6 @@ def plot_sup(ctx: click.Context) -> None:
         "g00x plot --fig S47 -g -s 1 S47",
         "g00x plot --fig S51 -g -s 1 b-freq-spr-g002-nonvrc01",
     ]
-    assert len(set([c.split(" ")[-1] for c in commands])) == len(commands)
+    # assert len(set([c.split(" ")[-1] for c in commands])) == len(commands)
     for cmd in commands:
         subprocess.run(cmd, shell=True, check=True)

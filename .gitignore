@@ -34,16 +34,16 @@ upload_cov.sh
 local_gene_reference/*
 htmlcov*
 Main/~$Figure1H_Table.xlsx
-src/g002_figures/data/g002/final_df.feather
+# src/g002_figures/data/g002/final_df.feather
 notebooks/SPR/Data_S3.csv.gz
 notebooks/g002_sequences.csv.gz
 
 *.docx
-final_df.feather
+# final_df.feather
 src/g002_figures/data/g002/Icon*
-src/g002_figures/data/g002/final_df.*
-*.feather
-src/g002_figures/data/g002/*
+# src/g002_figures/data/g002/final_df.*
+# *.feather
+# src/g002_figures/data/g002/*
 
 # files not needed
 figA_percent_bcr_nonvrc01_light.csv
