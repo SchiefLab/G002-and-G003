@@ -1,7 +1,7 @@
 import click
 
 from g00x_figures.cli import figures
-from VISC_codebase.cli import comparisons
+from VISC_codebase.cli import comparison_tables
 
 
 @click.group()
@@ -11,7 +11,7 @@ def main():
 
 
 # Supplementary Comparison Tables
-figures.add_command(comparisons, name="comparison-tables")
+figures.add_command(comparison_tables, name="comparison-tables")
 # Supplementary Tables
 # TODO:
 # Main Figures
