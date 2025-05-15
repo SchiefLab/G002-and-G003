@@ -142,6 +142,76 @@ cd G002-and-G003
 ./install.sh
 ```
 
+## Installation Guide: Cell Ranger 7.0 and bcl2fastq
+G00x requires `cellranger 7.0.1` to be installed from the 10x website. Please check that you system needs to meet the [system requirements](https://www.10xgenomics.com/support/software/cell-ranger/downloads/cr-system-requirements). The installation instructions for cel are on the [10x website](https://www.10xgenomics.com/support/software/cell-ranger/downloads#download-links), then to add the cellranger binary to your path. 
+
+---
+
+### 1. Install Cell Ranger 7.0.1
+
+1. Download and Extract
+
+```bash
+cd ~/apps  # Or any directory in your PATH
+wget link to cellranger-7.0.1.tar.gz on 10x website
+tar -xzvf cellranger-7.0.1.tar.gz
+```
+
+2.  Add to PATH
+
+Edit your shell config file (`~/.bashrc`, `~/.zshrc`, etc.):
+
+```bash
+export PATH=/apps/cellranger:$PATH
+```
+
+Then reload:
+
+```bash
+source ~/.bashrc
+# or
+source ~/.zshrc
+```
+
+3. Confirm Installation
+
+```bash
+cellranger --version
+# Should return something like: cellranger 7.0.1
+```
+
+---
+
+###  2. Install bcl2fastq
+
+1. Download from Illumina (login required):  
+   [Illumina bcl2fastq Download](https://support.illumina.com/sequencing/sequencing_software/bcl2fastq-conversion-software/downloads.html)
+
+2. Install:
+
+```bash
+tar -xvzf bcl2fastq2-2.20.0.422-Linux-x86_64.zip
+cd bcl2fastq2-2.20.0.422
+./install
+```
+
+3. Add to PATH:
+
+```bash
+export PATH=/usr/local/bcl2fastq/bin:$PATH
+```
+
+4. Confirm Installation
+
+```bash
+bcl2fastq --version
+# Should return version info like: bcl2fastq v2.20.0.422
+```
+
+After installation, both tools can be used in your G00x pipeline. The Pipeline will detect them in the path, but you can also specify the path to the tools when running the pipeline
+
+---
+
 ## Validation
 
 The most important part of this clinical trial other than it working, is that everything is validated. That means that the data is validated, the code is validated, and the results are validated. This is a very important part of the process and should not be skipped.
