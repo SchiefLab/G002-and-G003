@@ -1,3 +1,0 @@
-[build]
-command = "pip install mkdocs==1.4.2 mkdocs-material==9.0.12 mkdocs-git-revision-date-plugin==0.3.2 mkdocs-redirects==1.2.0 mkdocs-include==1.0.0 && mkdocs build"
-publish = "site"

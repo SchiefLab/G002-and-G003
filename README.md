@@ -15,6 +15,9 @@
     <a href="https://doi.org/10.5281/zenodo.15284778">
     <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.15284778.svg"
         alt="zenodo link"></a>
+    <a href="https://app.netlify.com/projects/g00x/deploys">
+    <img src="https://api.netlify.com/api/v1/badges/0cfc5010-68e1-4002-a9bd-237baf1b320b/deploy-status"
+        alt="Netlify Status"></a>
 </div>
 
 <h1 align="center" style="font-size: 1.8em">
