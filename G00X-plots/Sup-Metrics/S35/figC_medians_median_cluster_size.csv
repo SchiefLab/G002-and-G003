@@ -1,0 +1,8 @@
+psname,pseudogroup,median_cluster_size
+eOD,1,1.0
+core,2,1.0
+eOD->eOD,3,1.0
+eOD->core,4,1.0
+eOD->eOD,5,1.0
+eOD->core,6,1.0
+eOD->eOD->core,7,1.0

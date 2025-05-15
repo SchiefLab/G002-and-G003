@@ -1,0 +1,8 @@
+psname,pseudogroup,total_unique
+eOD,1,27.0
+core,2,1.5
+eOD->eOD,3,72.0
+eOD->core,4,72.5
+eOD->eOD,5,128.0
+eOD->core,6,211.0
+eOD->eOD->core,7,165.0

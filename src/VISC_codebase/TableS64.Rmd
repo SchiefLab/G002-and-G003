@@ -1,0 +1,47 @@
+---
+title: "Table S64"
+date: "`r Sys.Date()`"
+geometry: "left=0.5in, right=0.5in, top=0.5in, bottom=0.25in"
+output: pdf_document
+header-includes:
+    - \usepackage{caption}
+---
+
+\captionsetup[table]{labelformat=empty}
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(tidyverse)
+library(VISCfunctions)
+library(kableExtra)
+
+# csv files are saved here
+STATS = '~/Repo/Schief856_G002/data/dropbox/Stats.codebase'
+```
+
+\clearpage
+
+```{r figureS47}
+dat = read.csv(file.path(STATS, 'SPR_supp_S47_pvalues.csv'))
+dat$p.value = pretty_pvalues(dat$p.value, digits = 4, sig_alpha=0.05, missing_char='NA', background = "yellow")
+dat$fdr = pretty_pvalues(dat$fdr, digits = 4, sig_alpha=0.2, missing_char='NA', background = "yellow")
+dat$comp = gsub('->', '$\\\\rightarrow$', dat$comp)
+dat$week[which(dat$week[-1] == dat$week[-length(dat$week)]) + 1] ='\\hfill'
+dat$est = sprintf('%0.4f', dat$est)
+dat$lci = sprintf('%0.4f', dat$lci)
+dat$uci = sprintf('%0.4f', dat$uci)
+
+kbl(dat %>% dplyr::select(week, comp, est, lci, uci, p.value, fdr) %>% ungroup(),
+    align = 'llrrrrr',
+    format = "latex",
+    escape = FALSE,
+    longtable = TRUE,
+    booktabs = TRUE,
+    row.names = FALSE,
+    col.names = c('Week', 'Group', 'Difference', 'LCI', 'UCI', 'P-value', 'FDR'),
+    caption="Table S64. Testing between groups was done using GEE. Difference is the geometric mean ratio of Group 2 versus Group 1 with the lower (LCI) and upper 95\\% confidence interval (UCI). Analyses are conditional on K$_\\textbf{D}$ less than 50$\\mu$M. Comparisons resulting in NA do not have any values less than than 50$\\mu$M in one of the comparitor groups. P values less than 0.05 and Q values less than 0.2 are highlighted.") %>%
+  kable_styling(font_size = 7.5) %>%
+  pack_rows(index=table(dat$panel), hline_before = TRUE, hline_after = TRUE, escape=TRUE)
+```

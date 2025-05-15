@@ -29,6 +29,7 @@ class Path(Mark):
     .. include:: ../docstrings/objects.Path.rst
 
     """
+
     color: MappableColor = ...
     alpha: MappableFloat = ...
     linewidth: MappableFloat = ...
@@ -39,7 +40,6 @@ class Path(Mark):
     edgecolor: MappableColor = ...
     edgewidth: MappableFloat = ...
     _sort: ClassVar[bool] = ...
-
 
 @document_properties
 @dataclass
@@ -57,8 +57,8 @@ class Line(Path):
     .. include:: ../docstrings/objects.Line.rst
 
     """
-    _sort: ClassVar[bool] = ...
 
+    _sort: ClassVar[bool] = ...
 
 @document_properties
 @dataclass
@@ -75,15 +75,14 @@ class Paths(Mark):
     .. include:: ../docstrings/objects.Paths.rst
 
     """
+
     color: MappableColor = ...
     alpha: MappableFloat = ...
     linewidth: MappableFloat = ...
     linestyle: MappableString = ...
     _sort: ClassVar[bool] = ...
-    def __post_init__(self): # -> None:
+    def __post_init__(self):  # -> None:
         ...
-
-
 
 @document_properties
 @dataclass
@@ -100,8 +99,8 @@ class Lines(Paths):
     .. include:: ../docstrings/objects.Lines.rst
 
     """
-    _sort: ClassVar[bool] = ...
 
+    _sort: ClassVar[bool] = ...
 
 @document_properties
 @dataclass
@@ -114,8 +113,8 @@ class Range(Paths):
     .. include:: ../docstrings/objects.Range.rst
 
     """
-    ...
 
+    ...
 
 @document_properties
 @dataclass
@@ -128,4 +127,5 @@ class Dash(Paths):
     .. include:: ../docstrings/objects.Dash.rst
 
     """
+
     width: MappableFloat = ...

@@ -130,7 +130,7 @@ def get_frequency_df(data: Data, combined_flow_df: pd.DataFrame) -> pd.DataFrame
 
 def calculate_frequency_dataframe(data: Data, flow_df: pd.DataFrame) -> pd.DataFrame:
     # flow_df["pubID"] = flow_df["ptid"].map(data.get_g003_pubids_lookup())
-    flow_df["pubID"] = flow_df['ptid']
+    flow_df["pubID"] = flow_df["ptid"]
     # from IPython import embed
 
     # embed()
@@ -402,7 +402,7 @@ def g003_combine_seq_and_flow(
             "percent_ep_among_igg",
             "percent_IGHG_vrc01_class_sequences",
             "percent_vrc01_among_igg",
-            "Percent of VRC01-class sequences among IgG", # epitope specific
+            "Percent of VRC01-class sequences among IgG",  # epitope specific
         )
     )  # type: ignore
 
@@ -450,7 +450,7 @@ def g003_combine_seq_and_flow(
     combined_pivot_long = combined_df.pivot(row_index, "long_name", "value").reset_index()  # type: ignore
     combined_pivot_long.columns.name = ""
     combined_pivot_long = combined_pivot_long.merge(counts_df, on=["run_purpose", "ptid", "weeks"], how="left")
-    
+
     # With long names
     # combined_pivot_calc = combined_df.pivot(row_index, "calculation", "value").reset_index()  # type: ignore
     # combined_pivot_calc.columns.name = ""

@@ -19,11 +19,15 @@ OrderSpec = Union[Iterable, None]
 NormSpec = Union[Tuple[Optional[float], Optional[float]], Normalize, None]
 PaletteSpec = Union[str, list, dict, Colormap, None]
 DiscreteValueSpec = Union[dict, list, None]
-ContinuousValueSpec = Union[Tuple[float, float], List[float], Dict[Any, float], None,]
+ContinuousValueSpec = Union[
+    Tuple[float, float],
+    List[float],
+    Dict[Any, float],
+    None,
+]
+
 class Default:
-    def __repr__(self): # -> Literal['<default>']:
+    def __repr__(self):  # -> Literal['<default>']:
         ...
-
-
 
 default = ...

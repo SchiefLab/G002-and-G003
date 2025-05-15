@@ -1,0 +1,751 @@
+---
+title: "comparison tables"
+output: html_document
+date: "2025-04-29"
+params:
+  data_location: '../../G00x-plots/'
+---
+
+```{r library}
+library(conflicted)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(patchwork)
+
+conflict_prefer("filter", "dplyr")
+```
+
+```{r data}
+data_location <- params$data_location
+bama_df <- read.csv(paste0(data_location, "2025-03-18G00X_manuscript_Fig10.csv"))
+
+# For magnitude response legends
+group_pooled_colors_resp <- c("#DAC248", "#CB88BA", "#44739E")
+color_names <- c("Wk -5,2,4,8", "Wk 10,16", "Wk 18,20,24")
+
+# For response rate legends
+group_pooled_colors_resp_short <- c("#DAC248", "#CB88BA", "#44739E")
+color_names_short <- c("Wk 2,4,8", "Wk 10,16", "Wk 18,20,24") # response rate plot doesn't include wk -5 (baseline)
+
+names(group_pooled_colors_resp) <- color_names
+names(group_pooled_colors_resp_short) <- color_names_short
+
+autc_ant_all <- c("eOD-GT8 60mer", "eOD-GT8.1", "eOD-GT8.1_KO11", "core-g28v2 60mer", "core-g28v2 monomer", "core-g28v2-KO11b monomer",  "Lumazine Synthase")
+```
+
+<!-- Data manipulation  -->
+
+```{r preprocess}
+bama_core_df <- bama_df %>%
+  mutate(week = paste0("Wk ", week)) %>%
+  mutate(
+    week = factor(week, levels = c("Wk -5", "Wk 2", "Wk 4", "Wk 8", "Wk 10", "Wk 16", "Wk 18", "Wk 20", "Wk 24"), ordered = T),
+    pseudogroup = factor(
+      pseudogroup,
+      levels = c("eOD", "eOD->eOD", "eOD->core", "eOD->eOD->core", "core"),
+      ordered = T
+    ))
+```
+
+```{r magnitude-testing-df, warning = F, output = T, include = TRUE}
+# magnitude comparisons at same timepoints
+# Create magnitude response df that includes both AUTC and delta AUTC values
+
+# AUTC values
+magnitude_rates_tests <-
+  bama_core_df %>%
+  mutate(outcome = ifelse(outcome == "CD4bs core","core-g28v2 CD4bs", outcome)) %>%
+  mutate(
+    `response call` = ifelse(is.na(`response call`), "na", `response call`),
+    plot_shape = case_when(
+      `response call` == FALSE ~ 0,
+      `response call` == TRUE ~ 1,
+      `response call` == "na" ~ 2
+    )
+  ) %>%
+  mutate(
+    response_color = case_when(
+      `response call` == "na" ~ 2,
+      `response call` == FALSE ~ 0,
+      `response call` == TRUE ~ 1
+    )
+  ) %>% arrange(pseudogroup == "core") %>%
+  mutate(
+    group_x = pseudogroup,
+    group_col =
+      case_when(
+        week %in% c("Wk -5", "Wk 2" , "Wk 4", "Wk 8") ~ "#DAC248",
+        # yellow
+        week %in% c("Wk -5", "Wk 10", "Wk 16") ~ "#CB88BA",
+        # pink
+        week %in% c("Wk 18", "Wk 20", "Wk 24") ~ "#44739E" # blue
+
+
+      )
+  ) %>%
+
+  filter(
+    outcome %in% c(
+      "Lumazine Synthase",
+      "core-g28v2 60mer",
+      "core-g28v2 monomer",
+      "core-g28v2 CD4bs",
+      "core-g28v2-KO11b monomer"
+
+    ),
+    week != "Wk -5"
+  ) %>%
+  mutate(outcome = factor(
+    outcome,
+    levels = c(
+      "core-g28v2 60mer",
+      "core-g28v2 monomer",
+      "core-g28v2-KO11b monomer",
+      "core-g28v2 CD4bs",
+      "Lumazine Synthase"
+
+    )
+  )) %>%
+  select(c(outcome, week, `response magnitude`, pubid, `response call`, pseudogroup))
+
+
+# `response magnitude` delta for diff bind antigen at all timepoints
+mag_plot_diff_bind_core_df <-
+  bama_core_df %>%
+ filter(outcome == "core-g28v2 CD4bs" ) %>%
+  mutate(
+    plot_shape = case_when(
+      `response call` == 0 ~ 0,
+      `response call` == 1 ~ 1,
+      `response call` == 2 ~ 2
+    ),
+    group_plot = "100µg eOD-GT8 60mer"
+  ) %>%
+
+  mutate(
+    group_x = pseudogroup,
+    group_col =
+      case_when(
+        week %in% c("Wk -5", "Wk 2" , "Wk 4", "Wk 8") ~ "#DAC248",
+        # yellow
+        week %in% c("Wk -5", "Wk 10", "Wk 16") ~ "#CB88BA",
+        # pink
+        week %in% c("Wk 18", "Wk 20", "Wk 24") ~ "#44739E" # blue
+
+      )
+  )
+
+mag_diff_test_df <-
+  mag_plot_diff_bind_core_df %>% filter(week != "Wk -5", outcome == "core-g28v2 CD4bs") %>%
+  mutate(outcome = factor(
+    outcome,
+    levels = c(
+      "core-g28v2 60mer",
+      "core-g28v2 monomer",
+      "core-g28v2-KO11b monomer",
+      'core-g28v2 CD4bs',
+      "Lumazine Synthase"
+    )
+  ))  %>%
+  select(c(outcome, week, `response magnitude`, pubid, `response call`, pseudogroup))
+
+
+# combine magnitude responses for `response magnitude` and autc
+mag_comp <-
+  magnitude_rates_tests %>% rbind(mag_diff_test_df) %>% mutate(outcome = factor(
+    outcome,
+    levels = c(
+      "core-g28v2 60mer",
+      "core-g28v2 monomer",
+      "core-g28v2-KO11b monomer",
+      'core-g28v2 CD4bs',
+      "Lumazine Synthase"
+    )
+  ))
+
+
+
+```
+
+```{r response-testing-df}
+# response rate comparisons at same timepoints
+# Create response rate df that includes both 3-part and 4-part responses
+
+# 3-part response call
+rr_test <- bama_core_df %>%
+  filter(
+         !is.na(`response call`),
+         week != "Wk -5",
+
+         outcome %in% autc_ant_all) %>%
+  distinct(pubid, week, outcome, `response call`, pseudogroup) %>%
+  mutate(`response call` = as.numeric(`response call`)) %>%
+  filter(outcome %in% c("core-g28v2 60mer", "core-g28v2 monomer", "core-g28v2-KO11b monomer",  "Lumazine Synthase"), week != "Wk -5") %>%
+  mutate(outcome = factor(outcome, levels = c("core-g28v2 60mer", "core-g28v2 monomer", "core-g28v2-KO11b monomer", "Lumazine Synthase")))
+
+
+# 4-part repsonse call
+rr_diff_test_df <- bama_core_df %>%
+   filter(
+         week != "Wk -5",
+         ) %>%
+  distinct(pubid, week, outcome, `response call`, pseudogroup) %>%
+  mutate(`response call` = as.numeric(`response call`)) %>%
+  filter(!is.na(`response call`)) %>%
+  filter(outcome == "CD4bs core") %>% mutate(outcome = "core-g28v2 CD4bs")
+
+# combine 3-part and 4-part response call info, all under same variable "`response call`"
+rr_test_df <- rr_test %>% rbind(rr_diff_test_df) %>% mutate(outcome = factor(outcome, levels = c("core-g28v2 60mer", "core-g28v2 monomer", "core-g28v2-KO11b monomer", 'core-g28v2 CD4bs', "Lumazine Synthase")))
+```
+
+```{r mag-post-core-testing-df}
+
+# mag diff with wk -5
+mag_diff_all <- mag_plot_diff_bind_core_df %>%
+  filter(outcome == "CD4bs core") %>% mutate(outcome = "core-g28v2 CD4bs") %>%
+  mutate(outcome = factor(
+    outcome,
+    levels = c(
+      "core-g28v2 60mer",
+      "core-g28v2 monomer",
+      "core-g28v2-KO11b monomer",
+      'core-g28v2 CD4bs',
+      "Lumazine Synthase"
+    )
+  ))  %>%
+  select(c(outcome, week, `response magnitude`, pubid, `response call`, pseudogroup))
+
+# weeks post core comparisons
+mag_df <-
+  bama_core_df  %>%
+
+  mutate(
+    `response call` = ifelse(is.na(`response call`), "na", `response call`),
+    plot_shape = case_when(
+      `response call` == FALSE ~ 0,
+      `response call` == TRUE ~ 1,
+      `response call` == "na" ~ 2
+    )
+  ) %>%
+  mutate(week = factor(
+    week,
+    levels = c("Wk -5", "Wk 2", "Wk 4", "Wk 8", "Wk 10", "Wk 16", "Wk 18", "Wk 20", "Wk 24"),
+    ordered = T
+  )) %>%
+  mutate(
+    response_color = case_when(
+      `response call` == "na" ~ 2,
+      `response call` == FALSE ~ 0,
+      `response call` == TRUE ~ 1
+    )
+  ) %>% arrange(pseudogroup == "core") %>%
+  mutate(
+    group_x = pseudogroup,
+    group_col =
+      case_when(
+        week %in% c("Wk -5", "Wk 2" , "Wk 4", "Wk 8") ~ "#DAC248",
+        # yellow
+        week %in% c("Wk -5", "Wk 10", "Wk 16") ~ "#CB88BA",
+        # pink
+        week %in% c("Wk 18", "Wk 20", "Wk 24") ~ "#44739E" # blue
+      )
+  ) %>%
+  select(c(outcome, week, `response magnitude`, pubid, `response call`, pseudogroup)) %>%
+  rbind(mag_diff_all) %>% mutate(outcome = factor(
+    outcome,
+    levels = c(
+      "core-g28v2 60mer",
+      "core-g28v2 monomer",
+      "core-g28v2-KO11b monomer",
+      'core-g28v2 CD4bs',
+      "Lumazine Synthase"
+    )
+  )) %>%
+
+  # label with post-core groups
+  mutate(dose = case_when(
+    week == "Wk 8" & pseudogroup == "eOD" ~ "0 Wks",
+    week == "Wk 16" & pseudogroup == "eOD->eOD" ~ "0 Wks",
+    week == "Wk -5" & pseudogroup == "eOD" ~ "0 Wks",
+
+    week == "Wk 10" & pseudogroup == "eOD->core" ~ "2 Wks",
+    week == "Wk 18" & pseudogroup == "eOD->eOD->core" ~ "2 Wks",
+    week == "Wk 2" & pseudogroup == "core" ~ "2 Wks",
+
+
+    week == "Wk 4" & pseudogroup == "core" ~ "4 Wks",
+    week == "Wk 20" & pseudogroup == "eOD->eOD->core" ~ "4 Wks",
+
+    week == "Wk 16" & pseudogroup == "eOD->core" ~ "8 Wks",
+    week == "Wk 24" & pseudogroup == "eOD->eOD->core" ~ "8 Wks",
+    week == "Wk 8" & pseudogroup == "core" ~ "8 Wks"
+
+  )) %>%
+
+  # new group names to differentiate between same vax but different times
+  # e.g. eOD at wk -5 and eOD at wk 8 (both eOD but different timepoints)
+  mutate(group_long = case_when(
+    week == "Wk 8" & pseudogroup == "eOD" ~ "eOD wk8",
+    week == "Wk 16" & pseudogroup == "eOD->eOD" ~ "eOD->eOD wk16",
+    week == "Wk -5" & pseudogroup == "eOD" ~ "eOD wk-5",
+
+    week == "Wk 10" & pseudogroup == "eOD->core" ~ "eOD->core wk10",
+    week == "Wk 18" & pseudogroup == "eOD->eOD->core" ~ "eOD->eOD->core wk18",
+    week == "Wk 2" & pseudogroup == "core" ~ "core wk2",
+
+
+    week == "Wk 4" & pseudogroup == "core" ~ "core wk4",
+    week == "Wk 20" & pseudogroup == "eOD->eOD->core" ~ "eOD->eOD->core wk20",
+
+    week == "Wk 16" & pseudogroup == "eOD->core" ~ "eOD->core wk16",
+    week == "Wk 24" & pseudogroup == "eOD->eOD->core" ~ "eOD->eOD->core wk24",
+    week == "Wk 8" & pseudogroup == "core" ~ "core wk8"
+
+  )) %>% filter(!is.na(dose)) %>%
+  filter(outcome %in%  c("core-g28v2 60mer", "core-g28v2 monomer", "core-g28v2-KO11b monomer", 'core-g28v2 CD4bs', "Lumazine Synthase")) %>%
+  mutate(outcome = factor(outcome, levels = c("core-g28v2 60mer", "core-g28v2 monomer", "core-g28v2-KO11b monomer", 'core-g28v2 CD4bs', "Lumazine Synthase")))
+
+
+
+```
+
+```{r mag-0-post-core-testing-df}
+# 0 wks post core
+mag_0 <- mag_df %>% filter(dose == "0 Wks")
+```
+
+```{r mag-8-post-core-testing-df}
+# 2-sample test for 8 weeks post core
+# only want 8 wks per bill's request Jan 14, 2025
+mag_samp <- mag_df %>% filter(dose == "8 Wks")
+```
+
+```{r rr-post-core-testing-df}
+rr_test_new_df <- rr_test_df %>%
+
+  mutate(dose = case_when(
+    week == "Wk 8" & pseudogroup == "eOD" ~ "0 Wks",
+    week == "Wk 16" & pseudogroup == "eOD->eOD" ~ "0 Wks",
+    week == "Wk -5" & pseudogroup == "eOD" ~ "0 Wks",
+
+    week == "Wk 10" & pseudogroup == "eOD->core" ~ "2 Wks",
+    week == "Wk 18" & pseudogroup == "eOD->eOD->core" ~ "2 Wks",
+    week == "Wk 2" & pseudogroup == "core" ~ "2 Wks",
+
+
+    week == "Wk 4" & pseudogroup == "core" ~ "4 Wks",
+    week == "Wk 20" & pseudogroup == "eOD->eOD->core" ~ "4 Wks",
+
+    week == "Wk 16" & pseudogroup == "eOD->core" ~ "8 Wks",
+    week == "Wk 24" & pseudogroup == "eOD->eOD->core" ~ "8 Wks",
+    week == "Wk 8" & pseudogroup == "core" ~ "8 Wks"
+
+  )) %>%
+  mutate(group_long = case_when(
+    week == "Wk 8" & pseudogroup == "eOD" ~ "eOD wk8",
+    week == "Wk 16" & pseudogroup == "eOD->eOD" ~ "eOD->eOD wk16",
+    week == "Wk -5" & pseudogroup == "eOD" ~ "eOD wk-5",
+
+    week == "Wk 10" & pseudogroup == "eOD->core" ~ "eOD->core wk10",
+    week == "Wk 18" & pseudogroup == "eOD->eOD->core" ~ "eOD->eOD->core wk18",
+    week == "Wk 2" & pseudogroup == "core" ~ "core wk2",
+
+
+    week == "Wk 4" & pseudogroup == "core" ~ "core wk4",
+    week == "Wk 20" & pseudogroup == "eOD->eOD->core" ~ "eOD->eOD->core wk20",
+
+    week == "Wk 16" & pseudogroup == "eOD->core" ~ "eOD->core wk16",
+    week == "Wk 24" & pseudogroup == "eOD->eOD->core" ~ "eOD->eOD->core wk24",
+    week == "Wk 8" & pseudogroup == "core" ~ "core wk8"
+
+  )) %>% filter(!is.na(dose)) %>%
+  filter(outcome %in%  c("core-g28v2 60mer", "core-g28v2 monomer", "core-g28v2-KO11b monomer", 'core-g28v2 CD4bs', "Lumazine Synthase")) %>%
+  mutate(outcome = factor(outcome, levels = c("core-g28v2 60mer", "core-g28v2 monomer", "core-g28v2-KO11b monomer", 'core-g28v2 CD4bs', "Lumazine Synthase")))
+```
+
+
+<!-- Magnitude Comparisons at same timepoints between different groups  -->
+
+```{r mt}
+# magnitude response comparison between different groups and all timepoints
+mag_comp_all <- mag_comp %>%
+
+  group_by(outcome, week) %>%
+  summarise(VISCfunctions::pairwise_test_cont(
+    x = `response magnitude`,
+    group = pseudogroup,
+    method = "wilcox",
+    alternative = "two.sided",
+    num_needed_for_test = 3, # paired = FALSE by default
+), .groups = "drop") %>%
+
+  select(outcome, week, Comparison, SampleSizes, Median_Min_Max, MagnitudeTest) %>%
+
+  rename(`Week` = week,
+         `P-value` = MagnitudeTest,
+         `Sample Sizes` = SampleSizes,
+         `Median (Min, Max)` = "Median_Min_Max") # including median and range per bill request on Dec 31, 2024
+
+# highlight p values < 0.05
+magnitude_rates_pretty <- mag_comp_all %>%
+  mutate(
+    `P-value` = pretty_pvalues(
+      `P-value`,
+      output_type = 'latex',
+      sig_alpha = .05,
+      background = 'yellow'
+    )) %>%
+  rename(Antigen = outcome)
+
+
+```
+
+```{r mt-FDR}
+
+# Apply 0.2 FDR
+magnitude_rates_FDR <- mag_comp_all %>%
+  group_by(outcome) %>%
+  mutate(FDR = p.adjust(`P-value`, method = 'fdr')) %>%
+  ungroup() %>%
+  mutate(
+    `P-value` = pretty_pvalues(
+      `P-value`,
+      output_type = 'latex',
+      sig_alpha = .05,
+      background = 'yellow')) %>%
+  mutate(
+    FDR = pretty_pvalues(
+      FDR,
+      output_type = 'latex',
+      sig_alpha = .2,
+      background = 'yellow'),
+    outcome = escape(outcome)) %>% rename(Antigen = outcome) %>%
+  select(c(Antigen, Week, Comparison, `Sample Sizes`, `Median (Min, Max)`, `P-value`, FDR))
+
+
+magnitude_rates_FDR %>%
+    kable(format = output_type,
+        escape = FALSE,
+        booktabs = T,
+        linesep = "",
+        longtable = T,
+        caption = c("Two sided Wilcox tests at a .05 significance level for pairwise comparisons of magnitudes of response between G002 groups were made at all timepoints. A false discovery rate (FDR) adjustment was made within pairwise comparisons by antigen in the column FDR.")) %>%
+  kable_styling(
+    font_size = 6,
+    latex_options = c("hold_position",  "repeat_header")
+    ) %>%
+  collapse_rows(1:2, valign = "top", latex_hline = "major")
+
+```
+
+`r insert_break()`
+
+<!-- Response rate comparisons between groups at all timepoints  -->
+
+```{r rt}
+# antigen order:
+# core-g28v2 60mer, core-g28v2 monomer, core-g28v2-KO11b monomer, core-g28v2 CD4bs, Lumazine Synthase
+
+
+  # mutate(resp = as.numeric(response_pct)) %>%
+
+rr_comp <- rr_test_df %>%
+group_by(outcome ,week) %>%
+  summarise(VISCfunctions::pairwise_test_bin(
+    x = `response call`,
+    group = pseudogroup,
+    method = "barnard",
+    alternative = "two.sided",
+    num_needed_for_test = 3),
+    .groups = "drop") %>%
+  # select(outcome, week, Comparison, `SampleSizes`, ResponseTest) %>%
+  rename(`Week` = week,
+         `P-value` = ResponseTest,
+         `Response Rate (CI)` = ResponseStats)
+
+
+response_rates_pretty <- rr_comp %>%
+  mutate(
+    `P-value` = pretty_pvalues(
+      `P-value`,
+      output_type = 'latex',
+      sig_alpha = .05,
+      background = 'yellow')) %>%
+  rename(Antigen = outcome)
+
+
+
+
+```
+
+```{r rr-FDR}
+# Apply FDR of 0.2
+response_rates_FDR <- rr_comp %>%
+  group_by(outcome) %>%
+  mutate(FDR = p.adjust(`P-value`, method = 'fdr')) %>%
+ungroup() %>%
+  mutate(
+    `P-value` = pretty_pvalues(
+      `P-value`,
+      output_type = 'latex',
+      sig_alpha = .05,
+      background = 'yellow')) %>%
+  mutate(
+    FDR = pretty_pvalues(
+      FDR,
+      output_type = 'latex',
+      sig_alpha = .2,
+      background = 'yellow'),
+    outcome = escape(outcome),
+    'Sample Sizes' = mag_comp_all$`Sample Sizes`) %>%
+  rename(Antigen = outcome) %>%
+  select(c(Antigen, Week, Comparison, `Sample Sizes`, `Response Rate (CI)`,`P-value`, FDR)) %>% mutate(
+    Week = gsub("Wk ", "", Week)
+  )
+
+
+response_rates_FDR %>%
+  mutate(across(`Response Rate (CI)`, stringr::str_replace_all, '%', '\\\\%')) %>%
+    kable(format = output_type,
+        escape = FALSE,
+        booktabs = T,
+        linesep = "",
+        longtable = T,
+        caption = c("Two sided Barnard tests at a .05 significance level for comparisons of response rates between G002 groups were made at all timepoints. A false discovery rate (FDR) adjustment was made within pairwise comparisons by antigen in the column FDR.")) %>%
+  kable_styling(
+    font_size = 6,
+    latex_options = c("hold_position",  "repeat_header")
+    ) %>%
+  collapse_rows(1:2, valign = "top", latex_hline = "major")
+```
+
+
+`r insert_break()`
+
+
+<!-- Magnitude rate comparison between groups at different post-core timepoints  -->
+
+```{r mag-test-0}
+# magnitude comparisons for 0 weeks post core
+# done separately as comparison is paired, with overlapping participants (others are 2-sample)
+mag_comp_0 <- mag_0 %>%
+  group_by(outcome, dose) %>%
+  summarise(VISCfunctions::pairwise_test_cont(
+    x = `response magnitude`,
+    group = group_long,
+    method = "wilcox",
+    alternative = "two.sided",
+    num_needed_for_test = 3,
+    id = pubid,
+    paired = TRUE,
+    # log10_stats = TRUE,
+), .groups = "drop") %>%
+  select(outcome, dose, Comparison, SampleSizes, Median_Min_Max, MagnitudeTest) %>%
+  rename(`Weeks Post Core` = dose,
+         `P-value` = MagnitudeTest,
+         `Sample Sizes` = SampleSizes,
+         `Median (Min, Max)` = "Median_Min_Max")
+
+mag_pretty_0 <- mag_comp_0 %>%
+  mutate(
+    `P-value` = pretty_pvalues(
+      `P-value`,
+      output_type = 'latex',
+      sig_alpha = .05,
+      background = 'yellow'
+    )) %>%
+  rename(Antigen = outcome)
+
+
+```
+
+```{r mag-test-2-sample}
+# 2-sample comparison for 8 wks post core
+mag_comp_samp <- mag_samp %>%
+  group_by(outcome, dose) %>%
+  summarise(VISCfunctions::pairwise_test_cont(
+    x = `response magnitude`,
+    group = group_long,
+    method = "wilcox",
+    alternative = "two.sided",
+    num_needed_for_test = 3,
+    # id = pubid,
+    paired = FALSE,
+    # log10_stats = TRUE,
+), .groups = "drop") %>%
+  select(outcome, dose, Comparison, SampleSizes, Median_Min_Max, MagnitudeTest) %>%
+  rename(`Weeks Post Core` = dose,
+         `P-value` = MagnitudeTest,
+         `Sample Sizes` = SampleSizes,
+         `Median (Min, Max)` = "Median_Min_Max")
+
+mag_pretty_samp <- mag_comp_samp %>%
+  mutate(
+    `P-value` = pretty_pvalues(
+      `P-value`,
+      output_type = 'latex',
+      sig_alpha = .05,
+      background = 'yellow'
+    )) %>%
+  rename(Antigen = outcome)
+```
+
+```{r mag-post-core-combined-df}
+# combine test results from 0 wks post core (paired) and 8 wks post core (2-sample)
+mag_combined <- rbind(mag_comp_0, mag_comp_samp)
+
+```
+
+```{r mag-post-core-FDR}
+# Apply FDR of 0.2
+mag_FDR_new <- mag_combined %>%
+
+  group_by(outcome) %>%
+  mutate(FDR = p.adjust(`P-value`, method = 'fdr')) %>%
+
+  ungroup() %>%
+  mutate(
+    `P-value` = pretty_pvalues(
+      `P-value`,
+      output_type = 'latex',
+      sig_alpha = .05,
+      background = 'yellow')) %>%
+  mutate(
+    FDR = pretty_pvalues(
+      FDR,
+      output_type = 'latex',
+      sig_alpha = .2,
+      background = 'yellow'),
+    outcome = escape(outcome)) %>% rename(Antigen = outcome) %>%
+  select(c(Antigen, `Weeks Post Core`, Comparison, `Sample Sizes`, `Median (Min, Max)`, `P-value`, FDR))
+
+
+mag_FDR_new %>%
+    kable(format = output_type,
+        escape = FALSE,
+        booktabs = T,
+        linesep = "",
+        longtable = T,
+        caption = c("Two sided Wilcox tests at a .05 significance level for comparisons of magnitudes of response between G002 groups were made at different timepoints post vaccination of the Core-g28v2 60mer vaccine. A false discovery rate (FDR) adjustment was made within comparisons by antigen in the column FDR.")) %>%
+  kable_styling(
+    font_size = 6,
+    latex_options = c("hold_position",  "repeat_header")
+    ) %>%
+  collapse_rows(1:2, valign = "top", latex_hline = "major")
+```
+
+
+`r insert_break()`
+
+
+<!-- Response rate comparison between groups at different post-core timepoints  -->
+
+```{r rr-test-0}
+# paired comparison
+rr_comp_0 <- rr_test_new_df %>% filter(dose == "0 Wks") %>%
+group_by(outcome ,dose) %>%
+  summarise(VISCfunctions::pairwise_test_bin(
+    x = `response call`,
+    group = group_long,
+    method = "barnard",
+    alternative = "two.sided",
+    num_needed_for_test = 3),
+    .groups = "drop") %>%
+  # select(outcome, week, Comparison, `SampleSizes`, ResponseTest) %>%
+  rename(`Weeks Post Core` = dose,
+         `P-value` = ResponseTest,
+         `Response Rate (CI)` = ResponseStats,
+         Antigen = outcome)
+
+
+rr_pretty_0 <- rr_comp_0 %>%
+  mutate(
+    `P-value` = pretty_pvalues(
+      `P-value`,
+      output_type = 'latex',
+      sig_alpha = .05,
+      background = 'yellow'))
+
+```
+
+```{r rr-test-2-sample}
+# 2-sample comparison
+rr_comp_samp <- rr_test_new_df %>% filter(dose == "8 Wks") %>%
+group_by(outcome ,dose) %>%
+  summarise(VISCfunctions::pairwise_test_bin(
+    x = `response call`,
+    group = group_long,
+    method = "barnard",
+    alternative = "two.sided",
+    num_needed_for_test = 3),
+    .groups = "drop") %>%
+  # select(outcome, week, Comparison, `SampleSizes`, ResponseTest) %>%
+  rename(`Weeks Post Core` = dose,
+         `P-value` = ResponseTest,
+         `Response Rate (CI)` = ResponseStats,
+         Antigen = outcome)
+
+
+rr_pretty_samp <- rr_comp_samp %>%
+  mutate(
+    `P-value` = pretty_pvalues(
+      `P-value`,
+      output_type = 'latex',
+      sig_alpha = .05,
+      background = 'yellow'))
+
+```
+
+```{r rr-post-core-combined-df}
+rr_combined <- rbind(rr_comp_0, rr_comp_samp)
+```
+
+```{r rr-post-core-sample-size}
+# sample sizes not included in response rate table so using the same sample size column from the magnitude response table
+
+ss <- mag_FDR_new %>% select(c(Antigen, `Weeks Post Core`, Comparison, `Sample Sizes`))
+all_ss <- rr_combined %>% left_join(ss)
+```
+
+```{r rr-post-core-FDR}
+
+rr_FDR_new <- rr_combined %>%
+  group_by(Antigen) %>%
+  mutate(FDR = p.adjust(`P-value`, method = 'fdr')) %>%
+ungroup() %>%
+  mutate(
+    `P-value` = pretty_pvalues(
+      `P-value`,
+      output_type = 'latex',
+      sig_alpha = .05,
+      background = 'yellow')) %>%
+  mutate(
+    FDR = pretty_pvalues(
+      FDR,
+      output_type = 'latex',
+      sig_alpha = .2,
+      background = 'yellow'),
+    Antigen = escape(Antigen),
+    'Sample Sizes' = all_ss$`Sample Sizes`) %>%
+  select(c(Antigen, `Weeks Post Core`, Comparison, `Sample Sizes`, `Response Rate (CI)`,`P-value`, FDR)) %>% mutate(
+    `Weeks Post Core` = gsub(" Wks", "", `Weeks Post Core`)
+  ) %>%
+  rename(`Weeks \n Post \n Core` = `Weeks Post Core`)
+
+
+rr_FDR_new %>%
+  mutate(across(`Response Rate (CI)`, stringr::str_replace_all, '%', '\\\\%')) %>%
+    kable(format = output_type,
+        escape = FALSE,
+        booktabs = T,
+        linesep = "",
+        longtable = T,
+        col.names = linebreak(c("Antigen", "Weeks\nPost\nCore", "Comparison", "Sample\nSizes", "Response Rate (CI)", "P-value", "FDR"), align = "l"),
+        caption = c("Two sided Barnard tests at a .05 significance level for comparisons of response rates between G002 groups were made at different timepoints post vaccination of the Core-g28v2 60mer vaccine. A false discovery rate (FDR) adjustment was made within pairwise comparisons by antigen in the column FDR.")) %>%
+  kable_styling(
+    font_size = 6,
+    latex_options = c("hold_position",  "repeat_header")
+    ) %>%
+  collapse_rows(1:2, valign = "top", latex_hline = "major")
+```

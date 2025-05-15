@@ -1,0 +1,13 @@
+pseudogroup,psname,is_cp,n Abs tested,% $\mathregular{K_D}$s < 100 $\mu$M,N participants,Median $\mathregular{K_D}$ (M),Binder geomean $\mathregular{K_D}$ (M)
+1,eOD,False,17,100,9,4.6e-6,2.8e-6
+1,eOD,True,28,100,15,3.2e-6,1.9e-6
+2,eOD->eOD,False,32,100,17,1.1e-6,1.1e-6
+2,eOD->eOD,True,44,100,24,1.2e-6,1.2e-6
+3,eOD->core,False,21,100,11,1.3e-6,4.9e-7
+3,eOD->core,True,29,100,16,5.5e-10,1.2e-9
+4,eOD->eOD,False,19,100,10,9.9e-7,7.8e-7
+4,eOD->eOD,True,22,100,12,1.8e-6,8.2e-7
+5,eOD->core,False,22,100,12,1.3e-6,2.5e-7
+5,eOD->core,True,32,100,17,2.9e-10,7.8e-10
+6,eOD->eOD->core,False,16,100,8,9.7e-8,7.7e-8
+6,eOD->eOD->core,True,22,100,11,1.8e-9,1.5e-8

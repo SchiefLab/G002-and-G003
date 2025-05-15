@@ -7,22 +7,17 @@ class DocstringComponents:
     def __init__(self, comp_dict, strip_whitespace=...) -> None:
         """Read entries from a dict, optionally stripping outer whitespace."""
         ...
-
-    def __getattr__(self, attr): # -> Any | None:
+    def __getattr__(self, attr):  # -> Any | None:
         """Provide dot access to entries for clean raw docstrings."""
         ...
-
     @classmethod
-    def from_nested_components(cls, **kwargs): # -> Self@DocstringComponents:
+    def from_nested_components(cls, **kwargs):  # -> Self@DocstringComponents:
         """Add multiple sub-sets of components."""
         ...
-
     @classmethod
-    def from_function_params(cls, func): # -> Self@DocstringComponents:
+    def from_function_params(cls, func):  # -> Self@DocstringComponents:
         """Use the numpydoc parser to extract components from existing func."""
         ...
-
-
 
 _core_params = ...
 _core_returns = ...

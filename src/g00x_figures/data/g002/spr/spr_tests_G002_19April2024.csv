@@ -1,0 +1,17 @@
+antigen,yaxis,xaxis,slope,pval
+g28v2,KD,Koff,1.162059198,1.75E-12
+g28v2,KD,Kon,-4.191741725,5.39E-14
+g28v2,Koff,Mutations in BCR (heavy and light count),-0.172751095,3.55E-12
+g28v2,Koff,Key VRC01 Mutations,-0.494740474,4.72E-19
+g28v2,Kon,Mutations in BCR (heavy and light count),0.030295809,1.90E-05
+g28v2,Kon,Key VRC01 Mutations,0.080431697,1.42E-09
+g28v2,KD,Mutations in BCR (heavy and light count),-0.203152207,1.57E-12
+g28v2,KD,Key VRC01 Mutations,-0.575173431,4.09E-19
+N276,KD,Koff,1.119115492,1.39E-05
+N276,KD,Kon,-2.55003005,7.71E-06
+N276,Koff,Mutations in BCR (heavy and light count),-0.050222346,0.04884166
+N276,Koff,Key VRC01 Mutations,-0.157188066,0.049435933
+N276,Kon,Mutations in BCR (heavy and light count),0.006384808,0.342951821
+N276,Kon,Key VRC01 Mutations,0.05928856,0.015110189
+N276,KD,Mutations in BCR (heavy and light count),-0.055273389,0.061771726
+N276,KD,Key VRC01 Mutations,-0.237869853,0.008935651
