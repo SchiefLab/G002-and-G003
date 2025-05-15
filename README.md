@@ -190,7 +190,7 @@ cellranger --version
 2. Install:
 
 ```bash
-tar -xvzf bcl2fastq2-2.20.0.422-Linux-x86_64.zip
+unzip bcl2fastq2-2.20.0.422-Linux-x86_64.zip
 cd bcl2fastq2-2.20.0.422
 ./install
 ```
