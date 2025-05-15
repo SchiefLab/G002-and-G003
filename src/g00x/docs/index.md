@@ -57,8 +57,8 @@ To install G00x package, use the following
 clone the repository
 $ git clone https://github.com/schieflab//G002-and-G003
 
-change into /G002-and-G003
-$ cd /G002-and-G003
+change into G002-and-G003
+$ cd G002-and-G003
 
 create an environment
 $ conda create -n g00x python==3.10.6 poetry==1.3.1 -y
