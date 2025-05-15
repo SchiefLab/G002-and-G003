@@ -33,7 +33,7 @@ This is the code for the G00x pipelines including G002 and G003. It is an all-in
 
 <!-- use a href so you can use _blank to open new tab -->
 
-**Source Code**: <a href="https://github.com/schieflab//G002-and-G003" target="_blank">https://github.com/schieflab//G002-and-G003</a>
+**Source Code**: <a href="https://github.com/schieflab/G002-and-G003" target="_blank">https://github.com/schieflab/G002-and-G003</a>
 
 ---
 
