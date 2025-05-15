@@ -4,6 +4,7 @@ early_access: false
 reviews:
   profile: "chill"
   request_changes_workflow: false
+  sequence_diagrams: true
   high_level_summary: true
   poem: true
   review_status: true
