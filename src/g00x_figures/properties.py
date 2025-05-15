@@ -11,8 +11,8 @@ from matplotlib import pyplot as plt
 from matplotlib import ticker as mtick
 from matplotlib.patches import Patch
 
-from g00x_figures.g00x_plot_templates.bar_plots import stacked_bar_plot_pivot_df
 from g00x_figures.data import Data, Transforms
+from g00x_figures.g00x_plot_templates.bar_plots import stacked_bar_plot_pivot_df
 from g00x_figures.plot_helpers.font import apply_global_font_settings
 from g00x_figures.plots import Plot
 

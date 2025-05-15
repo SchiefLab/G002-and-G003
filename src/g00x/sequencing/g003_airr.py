@@ -28,17 +28,13 @@ def personalize(airr_df: pd.DataFrame, data: Data) -> pd.DataFrame:
     baseline_human = References().get_dataframe().query("name=='human'")
 
     # take out VH12
-    baseline_no_vh12 = baseline_human[
-        baseline_human["gene"].str.split("*").str.get(0) != "IGHV1-2"
-    ].copy()
+    baseline_no_vh12 = baseline_human[baseline_human["gene"].str.split("*").str.get(0) != "IGHV1-2"].copy()
 
     references: References = References()
     haplotype_df = []
 
     # group by allele1 and 2
-    for allele_group, allele_group_df in haplotype_lookup.groupby(
-        ["allele_1", "allele_2", "allele_3"]
-    ):
+    for allele_group, allele_group_df in haplotype_lookup.groupby(["allele_1", "allele_2", "allele_3"]):
         # the haplotype name will be ex allele1_allele2, eg 02_02
         name = "_".join(list(map(lambda x: x.split("*")[-1], allele_group)))
 
@@ -46,15 +42,11 @@ def personalize(airr_df: pd.DataFrame, data: Data) -> pd.DataFrame:
         need_alleles = list(set(list(allele_group)))
 
         # create a baseline ref with no vh12
-        reference = Reference().from_dataframe(
-            baseline_no_vh12.drop(["name", "imgt.sequence_aa"], axis=1)
-        )
+        reference = Reference().from_dataframe(baseline_no_vh12.drop(["name", "imgt.sequence_aa"], axis=1))
 
         # add each allele one at a time
         for needed_allele in need_alleles:
-            reference.add_gene(
-                {"species": "human", "gene": needed_allele, "source": "imgt"}
-            )
+            reference.add_gene({"species": "human", "gene": needed_allele, "source": "imgt"})
         print(f"adding_references:{name}")
 
         # add the reference to references with name
@@ -75,19 +67,11 @@ def personalize(airr_df: pd.DataFrame, data: Data) -> pd.DataFrame:
         # make an api call to get the allele
         haplo = str(haplo)
         airr_api = Airr(haplo, adaptable=True, references=references)
-        heavy_airr_df = airr_api.run_dataframe(
-            sub_df, "cellid", "sequence_heavy"
-        )
-        light_airr_df = airr_api.run_dataframe(
-            sub_df, "cellid", "sequence_light"
-        )
+        heavy_airr_df = airr_api.run_dataframe(sub_df, "cellid", "sequence_heavy")
+        light_airr_df = airr_api.run_dataframe(sub_df, "cellid", "sequence_light")
         # make some temporary dataframes to update
-        h_ = heavy_airr_df.rename({"sequence_id": "cellid"}, axis=1).set_index(
-            "cellid"
-        )
-        l_ = light_airr_df.rename({"sequence_id": "cellid"}, axis=1).set_index(
-            "cellid"
-        )
+        h_ = heavy_airr_df.rename({"sequence_id": "cellid"}, axis=1).set_index("cellid")
+        l_ = light_airr_df.rename({"sequence_id": "cellid"}, axis=1).set_index("cellid")
 
         # suffix with _heavy and light to update
         h_.columns = [str(i) + "_heavy" for i in h_.columns]
@@ -101,9 +85,7 @@ def personalize(airr_df: pd.DataFrame, data: Data) -> pd.DataFrame:
     before_df_len = len(airr_df)
     working_dataframe = pd.concat(personalized_df).reset_index()
     if before_df_len != len(working_dataframe):
-        raise ValueError(
-            f"personalized {len(working_dataframe):,} != {before_df_len:,} before"
-        )
+        raise ValueError(f"personalized {len(working_dataframe):,} != {before_df_len:,} before")
     return working_dataframe
 
 
@@ -202,9 +184,7 @@ def add_mutational_sets(data: Data, dataframe: LinkedAirrTable):
     if not isinstance(dataframe, LinkedAirrTable):
         raise TypeError(f"{dataframe} must be type of LinkedAirrTable")
     if "is_vrc01_class" not in dataframe.columns:
-        raise ValueError(
-            f"is_vrc01_class field not found in {dataframe.columns}"
-        )
+        raise ValueError(f"is_vrc01_class field not found in {dataframe.columns}")
     if "mutations_heavy" not in dataframe.columns:
         raise ValueError(
             f"""mutations_heavy field not found in {dataframe.columns}.
@@ -217,115 +197,53 @@ def add_mutational_sets(data: Data, dataframe: LinkedAirrTable):
 
     cottrell_mabs = "N6 VRC27 VRC01 12A12 PCIN63_71I VRC-PG20".split()
     jardine_mabs = "12A12 3BNC60 VRC-PG04 VRC-PG20 VRC-CH31 VRC01".split()
-    cotrell_focus = vh12_reference_airr_table[
-        vh12_reference_airr_table["sequence_id"].isin(cottrell_mabs)
-    ]
-    jardine_focus = vh12_reference_airr_table[
-        vh12_reference_airr_table["sequence_id"].isin(jardine_mabs)
-    ]
+    cotrell_focus = vh12_reference_airr_table[vh12_reference_airr_table["sequence_id"].isin(cottrell_mabs)]
+    jardine_focus = vh12_reference_airr_table[vh12_reference_airr_table["sequence_id"].isin(jardine_mabs)]
 
-    cotrell_focus_heavy_sets = set(
-        [
-            item
-            for sublist in cotrell_focus["mutations_heavy"].to_list()
-            for item in sublist
-        ]
-    )
-    cotrell_focus_light_sets = set(
-        [
-            item
-            for sublist in cotrell_focus["mutations_light"].to_list()
-            for item in sublist
-        ]
-    )
+    cotrell_focus_heavy_sets = set([item for sublist in cotrell_focus["mutations_heavy"].to_list() for item in sublist])
+    cotrell_focus_light_sets = set([item for sublist in cotrell_focus["mutations_light"].to_list() for item in sublist])
 
-    jardine_focus_heavy_sets = set(
-        [
-            item
-            for sublist in jardine_focus["mutations_heavy"].to_list()
-            for item in sublist
-        ]
-    )
-    jardine_focus_light_sets = set(
-        [
-            item
-            for sublist in jardine_focus["mutations_light"].to_list()
-            for item in sublist
-        ]
-    )
+    jardine_focus_heavy_sets = set([item for sublist in jardine_focus["mutations_heavy"].to_list() for item in sublist])
+    jardine_focus_light_sets = set([item for sublist in jardine_focus["mutations_light"].to_list() for item in sublist])
 
-    dataframe["cottrell_focused_v_common_heavy_positive"] = dataframe[
-        "mutations_heavy"
-    ].apply(
-        lambda x: list(
-            set(get_iter_kabat(x)).intersection(cottrell_super_focus_positive)
-        )
+    dataframe["cottrell_focused_v_common_heavy_positive"] = dataframe["mutations_heavy"].apply(
+        lambda x: list(set(get_iter_kabat(x)).intersection(cottrell_super_focus_positive))
     )
-    dataframe["cottrell_focused_v_common_heavy_negative"] = dataframe[
-        "mutations_heavy"
-    ].apply(
-        lambda x: list(
-            set(map(lambda y: y[1:-1], x)).intersection(
-                cottrell_super_focus_negative
-            )
-        )
+    dataframe["cottrell_focused_v_common_heavy_negative"] = dataframe["mutations_heavy"].apply(
+        lambda x: list(set(map(lambda y: y[1:-1], x)).intersection(cottrell_super_focus_negative))
     )
-    dataframe["cottrell_focused_v_common_score"] = dataframe[
-        "cottrell_focused_v_common_heavy_positive"
-    ].apply(lambda x: len(x)) - dataframe[
-        "cottrell_focused_v_common_heavy_negative"
-    ].apply(
+    dataframe["cottrell_focused_v_common_score"] = dataframe["cottrell_focused_v_common_heavy_positive"].apply(
         lambda x: len(x)
-    )
+    ) - dataframe["cottrell_focused_v_common_heavy_negative"].apply(lambda x: len(x))
 
     dataframe["100bW"] = dataframe["junction_aa_heavy"].apply(find_100b)
-    dataframe["cottrell_focused_v_common_score"] += dataframe["100bW"].apply(
-        lambda x: {True: 1, False: 0}[x]
-    )
+    dataframe["cottrell_focused_v_common_score"] += dataframe["100bW"].apply(lambda x: {True: 1, False: 0}[x])
 
     dataframe["cottrell_v_common_heavy"] = dataframe["mutations_heavy"].apply(
-        lambda x: list(
-            set(get_iter_kabat(x)).intersection(cotrell_focus_heavy_sets)
-        )
+        lambda x: list(set(get_iter_kabat(x)).intersection(cotrell_focus_heavy_sets))
     )
-    dataframe["cottrell_v_common_heavy_score"] = dataframe[
-        "cottrell_v_common_heavy"
-    ].apply(lambda x: len(x))
+    dataframe["cottrell_v_common_heavy_score"] = dataframe["cottrell_v_common_heavy"].apply(lambda x: len(x))
 
     dataframe["cottrell_v_common_light"] = dataframe["mutations_light"].apply(
-        lambda x: list(
-            set(get_iter_kabat(x)).intersection(cotrell_focus_light_sets)
-        )
+        lambda x: list(set(get_iter_kabat(x)).intersection(cotrell_focus_light_sets))
     )
-    dataframe["cottrell_v_common_light_score"] = dataframe[
-        "cottrell_v_common_light"
-    ].apply(lambda x: len(x))
+    dataframe["cottrell_v_common_light_score"] = dataframe["cottrell_v_common_light"].apply(lambda x: len(x))
 
     dataframe["jardine_v_common_heavy"] = dataframe["mutations_heavy"].apply(
-        lambda x: list(
-            set(get_iter_kabat(x)).intersection(jardine_focus_heavy_sets)
-        )
+        lambda x: list(set(get_iter_kabat(x)).intersection(jardine_focus_heavy_sets))
     )
-    dataframe["jardine_v_common_heavy_score"] = dataframe[
-        "jardine_v_common_heavy"
-    ].apply(lambda x: len(x))
+    dataframe["jardine_v_common_heavy_score"] = dataframe["jardine_v_common_heavy"].apply(lambda x: len(x))
     dataframe["jardine_v_common_light"] = dataframe["mutations_light"].apply(
-        lambda x: list(
-            set(get_iter_kabat(x)).intersection(jardine_focus_light_sets)
-        )
+        lambda x: list(set(get_iter_kabat(x)).intersection(jardine_focus_light_sets))
     )
-    dataframe["jardine_v_common_light_score"] = dataframe[
-        "jardine_v_common_light"
-    ].apply(lambda x: len(x))
+    dataframe["jardine_v_common_light_score"] = dataframe["jardine_v_common_light"].apply(lambda x: len(x))
     return dataframe
 
 
 def determine_if_vrc01(df: pd.DataFrame):
     # has vh12
     df["has_vh12"] = False
-    df.loc[
-        df[df["v_call_heavy"].str.contains(r"IGHV1-2\*")].index, "has_vh12"
-    ] = True
+    df.loc[df[df["v_call_heavy"].str.contains(r"IGHV1-2\*")].index, "has_vh12"] = True
 
     # has five leng
     df["has_5_len"] = False
@@ -333,9 +251,7 @@ def determine_if_vrc01(df: pd.DataFrame):
 
     # has both
     df["is_vrc01_class"] = False
-    df.loc[df.query("has_vh12").query("has_5_len").index, "is_vrc01_class"] = (
-        True
-    )
+    df.loc[df.query("has_vh12").query("has_5_len").index, "is_vrc01_class"] = True
     return df
 
 
@@ -353,9 +269,7 @@ def get_pairing(df: pd.DataFrame) -> pd.DataFrame:
         A paired dataframe
     """
     df.insert(0, "cellhash", df["sequence_id"].str.split("_").str.get(0))
-    complete_productive = df.query("productive and complete_vdj").reset_index(
-        drop=True
-    )
+    complete_productive = df.query("productive and complete_vdj").reset_index(drop=True)
     complete_productive["locus"] = pd.Categorical(
         complete_productive["locus"],
         categories=["IGH", "IGK", "IGL"],
@@ -376,15 +290,9 @@ def get_pairing(df: pd.DataFrame) -> pd.DataFrame:
         .query("pair_type=='IGH_IGK' or pair_type=='IGH_IGL'")["cellhash"]
         .to_list()
     )
-    complete_pairing_candidates = complete_productive[
-        complete_productive["cellhash"].isin(good_hashes)
-    ]
-    complete_productive_pairing_candidates_heavy = (
-        complete_pairing_candidates.query("locus=='IGH'")
-    )
-    complete_productive_pairing_candidates_light = (
-        complete_pairing_candidates.query("locus!='IGH'")
-    )
+    complete_pairing_candidates = complete_productive[complete_productive["cellhash"].isin(good_hashes)]
+    complete_productive_pairing_candidates_heavy = complete_pairing_candidates.query("locus=='IGH'")
+    complete_productive_pairing_candidates_light = complete_pairing_candidates.query("locus!='IGH'")
     paired = complete_productive_pairing_candidates_heavy.merge(
         complete_productive_pairing_candidates_light,
         on="cellhash",
@@ -397,9 +305,7 @@ def get_pairing(df: pd.DataFrame) -> pd.DataFrame:
 def determine_if_vrc01(df: pd.DataFrame):
     # has vh12
     df["has_vh12"] = False
-    df.loc[
-        df[df["v_call_heavy"].str.contains(r"IGHV1-2\*")].index, "has_vh12"
-    ] = True
+    df.loc[df[df["v_call_heavy"].str.contains(r"IGHV1-2\*")].index, "has_vh12"] = True
 
     # has five leng
     df["has_5_len"] = False
@@ -407,9 +313,7 @@ def determine_if_vrc01(df: pd.DataFrame):
 
     # has both
     df["is_vrc01_class"] = False
-    df.loc[df.query("has_vh12").query("has_5_len").index, "is_vrc01_class"] = (
-        True
-    )
+    df.loc[df.query("has_vh12").query("has_5_len").index, "is_vrc01_class"] = True
     return df
 
 
@@ -441,9 +345,7 @@ def get_keyed_cso_file(
     else:
         cso_output_path: str = cso_output.iloc[0]
 
-    matrix_path = Path(cso_output_path) / Path(
-        "outs/filtered_feature_bc_matrix/matrix.mtx.gz"
-    )
+    matrix_path = Path(cso_output_path) / Path("outs/filtered_feature_bc_matrix/matrix.mtx.gz")
     logger.info(f"Reading in matrix from {matrix_path}")
 
     if not matrix_path.exists():
@@ -452,31 +354,17 @@ def get_keyed_cso_file(
     matrix = scipy.io.mmread(matrix_path)
 
     # now get the features and barcodes
-    features_path = Path(cso_output_path) / Path(
-        "outs/filtered_feature_bc_matrix/features.tsv.gz"
-    )
+    features_path = Path(cso_output_path) / Path("outs/filtered_feature_bc_matrix/features.tsv.gz")
     if not features_path.exists():
         raise ValueError(f"{features_path} does not exist")
 
-    feature_ids = [
-        row[0]
-        for row in csv.reader(
-            gzip.open(features_path, mode="rt"), delimiter="\t"
-        )
-    ]
+    feature_ids = [row[0] for row in csv.reader(gzip.open(features_path, mode="rt"), delimiter="\t")]
 
-    barcodes_path = features_path = Path(cso_output_path) / Path(
-        "outs/filtered_feature_bc_matrix/barcodes.tsv.gz"
-    )
+    barcodes_path = features_path = Path(cso_output_path) / Path("outs/filtered_feature_bc_matrix/barcodes.tsv.gz")
     if not barcodes_path.exists():
         raise ValueError(f"{barcodes_path} does not exist")
 
-    barcodes = [
-        row[0]
-        for row in csv.reader(
-            gzip.open(barcodes_path, mode="rt"), delimiter="\t"
-        )
-    ]
+    barcodes = [row[0] for row in csv.reader(gzip.open(barcodes_path, mode="rt"), delimiter="\t")]
 
     # now combine the matrix with the barcodes and features
     matrix = pd.DataFrame.sparse.from_spmatrix(matrix)
@@ -491,20 +379,14 @@ def get_keyed_cso_file(
 
     # we will throw out anything less than
     indexes_lt = count_matrix[(count_matrix > drop_lt).sum(axis=1) == 0].index
-    logger.info(
-        f"Dropping {len(indexes_lt)} the following indexes because they have less than 100 counts"
-    )
+    logger.info(f"Dropping {len(indexes_lt)} the following indexes because they have less than 100 counts")
     logger.info(f"{indexes_lt}")
 
     # normal matrix
     nomral_matrix = count_matrix.apply(lambda x: (x / x.sum()), axis=1)
 
-    indexes_no_dominant = nomral_matrix[
-        (nomral_matrix > drop_lt_percentile).sum(axis=1) == 0
-    ].index
-    logger.info(
-        f"Dropping {len(indexes_no_dominant)} the following indexes because they have no dominant HTO"
-    )
+    indexes_no_dominant = nomral_matrix[(nomral_matrix > drop_lt_percentile).sum(axis=1) == 0].index
+    logger.info(f"Dropping {len(indexes_no_dominant)} the following indexes because they have no dominant HTO")
     logger.info(f"{indexes_no_dominant}")
 
     # keep indexes to drop
@@ -521,12 +403,7 @@ def get_keyed_cso_file(
     if survival.empty:
         logger.warn("Survival is empty, returning empty dataframe")
         return pd.DataFrame({"HTO": []})
-    keyed_df = (
-        (survival > drop_lt_percentile)
-        .apply(find_true, axis=1)
-        .to_frame()
-        .rename({0: "HTO"}, axis=1)
-    )
+    keyed_df = (survival > drop_lt_percentile).apply(find_true, axis=1).to_frame().rename({0: "HTO"}, axis=1)
     logger.info(f"Kept {len(keyed_df)} indexes")
     return keyed_df
 
@@ -541,9 +418,7 @@ def g003_run_airr(
 ) -> pd.DataFrame:
     """Run AIRR on the vdj files and demultiplex them with the CSO files"""
     logger.info("Running AIRR")
-    difference = vdj_dataframe.columns.symmetric_difference(
-        cso_dataframe.columns
-    )
+    difference = vdj_dataframe.columns.symmetric_difference(cso_dataframe.columns)
     logger.info(f"Columns in vdj but not cso: {difference}")
 
     # columns we want to merge the CSO on
@@ -562,9 +437,7 @@ def g003_run_airr(
     if (vdj_dataframe.groupby(mergable_columns).size() > 1).any():
         raise ValueError("vdj has multiple rows for the same sample")
 
-    combined_df = vdj_dataframe.merge(
-        cso_dataframe[mergable_columns + ["cso_output"]], on=mergable_columns
-    )
+    combined_df = vdj_dataframe.merge(cso_dataframe[mergable_columns + ["cso_output"]], on=mergable_columns)
 
     airr_api = Airr(
         "human",
@@ -595,15 +468,11 @@ def g003_run_airr(
 
         if paired_airr_out.exists():
             if overwrite:
-                logger.info(
-                    f"pairing file {paired_airr_out} exists but overwrite was passed"
-                )
+                logger.info(f"pairing file {paired_airr_out} exists but overwrite was passed")
                 paired_airr_file = get_pairing(airr_file)
                 paired_airr_file.to_feather(paired_airr_out)
             else:
-                logger.info(
-                    f"Skipping pairing because {paired_airr_out} exists\n"
-                )
+                logger.info(f"Skipping pairing because {paired_airr_out} exists\n")
                 paired_airr_file = pd.read_feather(paired_airr_out)
         else:
             paired_airr_file = get_pairing(airr_file)
@@ -613,9 +482,7 @@ def g003_run_airr(
 
         # locate those in dataframe
         combined_df.loc[g_df.index, "sadie_airr_path"] = str(airr_out)
-        combined_df.loc[g_df.index, "paired_sadie_airr_path"] = str(
-            paired_airr_out
-        )
+        combined_df.loc[g_df.index, "paired_sadie_airr_path"] = str(paired_airr_out)
         g_df["sadie_airr_path"] = str(airr_out)
         g_df["paired_sadie_airr_path"] = str(paired_airr_out)
 
@@ -640,21 +507,17 @@ def g003_run_airr(
 
     # Insert the pubid at 0 column for pubid identification
     # airr_df.insert(0, "pubID", airr_df["ptid"].map(lookup_maps))
-    airr_df['pubID'] = airr_df['ptid']
-    
+    airr_df["pubID"] = airr_df["ptid"]
+
     # Insert a unique cellid
     cellid_cols = ["pubID", "timepoint", "pool_number", "cellhash"]
     airr_df.insert(
         0,
         "cellid",
-        airr_df[cellid_cols].apply(
-            lambda x: "_".join([str(i) for i in x]), axis=1
-        ),
+        airr_df[cellid_cols].apply(lambda x: "_".join([str(i) for i in x]), axis=1),
     )
     if airr_df["cellid"].duplicated().any():
-        raise ValueError(
-            f"cellid is not unique {airr_df[airr_df['cellid'].duplicated()]['cellid']}"
-        )
+        raise ValueError(f"cellid is not unique {airr_df[airr_df['cellid'].duplicated()]['cellid']}")
         # write out save in function so we can use it as an API call
 
     ## CK Remove this step for now untill we get back the data from Karoniska
@@ -713,9 +576,7 @@ def g003_run_airr(
         "is_centroid",
     ]
 
-    logger.info(
-        "Merging AIRR file with mutational analysis, iGL and mutational assignment"
-    )
+    logger.info("Merging AIRR file with mutational analysis, iGL and mutational assignment")
     # merge back with LinkedAirrTable with subselected columns. This preserves our meta data
     airr_df = airr_df.merge(airr_df_lat[mergable_cols], on="cellid")
     # logger.info(f"Saving AIRR file to {Path(output).parent}.feather/csv.gz")

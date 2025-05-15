@@ -1,0 +1,73 @@
+---
+title: "Table S40"
+date: "`r Sys.Date()`"
+output: pdf_document
+params:
+  data_location: '../../G00x-plots/'
+header-includes:
+    - \usepackage{caption}
+---
+
+\captionsetup[table]{labelformat=empty}
+
+
+
+\clearpage
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(tidyverse)
+library(VISCfunctions)
+library(kableExtra)
+
+# csv files are saved here
+STATS = './Stats.codebase'
+```
+
+
+
+\clearpage
+
+```{r figureS19_v1}
+dat = read.csv(file.path(STATS, 'figS19_pvals.csv'))
+
+dat$panel = case_when(
+  dat$panel == 'A' ~ 'A',
+  dat$panel == 'B' ~ 'B',
+  dat$panel == 'C' ~ 'C',
+  dat$panel == 'D' ~ 'D',
+  dat$panel == 'E' ~ 'E',
+  dat$panel == 'F' ~ 'F',
+  dat$panel == 'G' ~ 'G',
+  dat$panel == 'H' ~ 'H',
+  dat$panel == 'I' ~ 'I',
+  dat$panel == 'J' ~ 'J',
+)
+# remove comparisons with n=3
+dat = subset(dat, n>3)
+
+# recompute FDR
+dat = dat %>%
+  group_by(comp) %>%
+  mutate(fdr = p.adjust(p.value, method='fdr')) %>%
+  ungroup()
+
+
+# format output
+dat$mean = sprintf('%0.4f (%0.4f, %0.4f)', dat$estimate, dat$lci, dat$uci)
+dat$p.value = pretty_pvalues(dat$p.value, digits = 4, sig_alpha=0.05, missing_char='NA', background = "yellow")
+dat$fdr = pretty_pvalues(dat$fdr, digits = 4, sig_alpha=0.2, missing_char='NA', background = "yellow")
+
+kbl(dat %>% select(panel, n, mean, p.value, fdr),
+    format = "latex",
+    escape = FALSE,
+    longtable = TRUE,
+    booktabs = TRUE,
+    row.names = FALSE,
+    col.names = c('Panel', 'Number of Pairs', 'Mean (95\\% CI)', 'P-value', 'FDR'),
+    caption="Table S40. Comparisons for figure S19 organized by comparison.  Testing was done using a paired T test with FDR adjustment done across panels within a comparison of methodology (e.g. G001 vs. G002). The mean and 95\\% CI are on the fold change scale for panels
+    A, B, C, F, G and H and difference scale for the remaining panels. P values less than 0.05 and Q values less than 0.2 are highlighted.") %>%
+  kable_styling() %>%
+  pack_rows(index=table(dat$comp), hline_before = TRUE, hline_after = TRUE, escape=TRUE)
+```

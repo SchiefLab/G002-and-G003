@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING, Callable
 from pandas import DataFrame
 
 """Simplified split-apply-combine paradigm on dataframes for internal use."""
-if TYPE_CHECKING:
-    ...
+if TYPE_CHECKING: ...
+
 class GroupBy:
     """
     Interface for Pandas GroupBy operations allowing specified group order.
@@ -22,6 +22,7 @@ class GroupBy:
     - It increases future flexibility regarding alternate DataFrame libraries
 
     """
+
     def __init__(self, order: list[str] | dict[str, list | None]) -> None:
         """
         Initialize the GroupBy from grouping variables and optional level orders.
@@ -36,7 +37,6 @@ class GroupBy:
 
         """
         ...
-
     def agg(self, data: DataFrame, *args, **kwargs) -> DataFrame:
         """
         Reduce each group to a single row in the output.
@@ -47,7 +47,6 @@ class GroupBy:
 
         """
         ...
-
     def apply(self, data: DataFrame, func: Callable[..., DataFrame], *args, **kwargs) -> DataFrame:
         """Apply a DataFrame -> DataFrame mapping to each group."""
         ...

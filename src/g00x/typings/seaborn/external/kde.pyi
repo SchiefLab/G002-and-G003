@@ -53,7 +53,8 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 """
-__all__ = ['gaussian_kde']
+__all__ = ["gaussian_kde"]
+
 class gaussian_kde:
     """Representation of a kernel-density estimate using Gaussian kernels.
 
@@ -167,10 +168,9 @@ class gaussian_kde:
            Series A (General), 132, 272
 
     """
-    def __init__(self, dataset, bw_method=..., weights=...) -> None:
-        ...
 
-    def evaluate(self, points): # -> Any:
+    def __init__(self, dataset, bw_method=..., weights=...) -> None: ...
+    def evaluate(self, points):  # -> Any:
         """Evaluate the estimated pdf on a set of points.
 
         Parameters
@@ -191,9 +191,8 @@ class gaussian_kde:
 
         """
         ...
-
     __call__ = ...
-    def scotts_factor(self): # -> Any:
+    def scotts_factor(self):  # -> Any:
         """Compute Scott's factor.
 
         Returns
@@ -202,8 +201,7 @@ class gaussian_kde:
             Scott's factor.
         """
         ...
-
-    def silverman_factor(self): # -> Any:
+    def silverman_factor(self):  # -> Any:
         """Compute the Silverman factor.
 
         Returns
@@ -212,9 +210,8 @@ class gaussian_kde:
             The silverman factor.
         """
         ...
-
     covariance_factor = ...
-    def set_bandwidth(self, bw_method=...): # -> None:
+    def set_bandwidth(self, bw_method=...):  # -> None:
         """Compute the estimator bandwidth with given method.
 
         The new bandwidth calculated after a call to `set_bandwidth` is used
@@ -236,8 +233,7 @@ class gaussian_kde:
 
         """
         ...
-
-    def pdf(self, x): # -> Any:
+    def pdf(self, x):  # -> Any:
         """
         Evaluate the estimated pdf on a provided set of points.
 
@@ -248,11 +244,9 @@ class gaussian_kde:
 
         """
         ...
-
     @property
-    def weights(self): # -> NDArray[Any] | NDArray[floating[Any]]:
+    def weights(self):  # -> NDArray[Any] | NDArray[floating[Any]]:
         ...
-
     @property
-    def neff(self): # -> Any | floating[Any]:
+    def neff(self):  # -> Any | floating[Any]:
         ...

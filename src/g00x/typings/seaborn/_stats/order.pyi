@@ -10,7 +10,22 @@ from seaborn._core.groupby import GroupBy
 from seaborn._core.scales import Scale
 from seaborn._stats.base import Stat
 
-_MethodKind = Literal["inverted_cdf", "averaged_inverted_cdf", "closest_observation", "interpolated_inverted_cdf", "hazen", "weibull", "linear", "median_unbiased", "normal_unbiased", "lower", "higher", "midpoint", "nearest",]
+_MethodKind = Literal[
+    "inverted_cdf",
+    "averaged_inverted_cdf",
+    "closest_observation",
+    "interpolated_inverted_cdf",
+    "hazen",
+    "weibull",
+    "linear",
+    "median_unbiased",
+    "normal_unbiased",
+    "lower",
+    "higher",
+    "midpoint",
+    "nearest",
+]
+
 @dataclass
 class Perc(Stat):
     """
@@ -31,8 +46,8 @@ class Perc(Stat):
     .. include:: ../docstrings/objects.Perc.rst
 
     """
+
     k: int | list[float] = ...
     method: str = ...
     group_by_orient: ClassVar[bool] = ...
-    def __call__(self, data: DataFrame, groupby: GroupBy, orient: str, scales: dict[str, Scale]) -> DataFrame:
-        ...
+    def __call__(self, data: DataFrame, groupby: GroupBy, orient: str, scales: dict[str, Scale]) -> DataFrame: ...

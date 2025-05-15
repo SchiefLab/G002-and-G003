@@ -8,24 +8,20 @@ from ._decorators import share_init_params_with_map
 
 class SemanticMapping:
     """Base class for mapping data values to plot attributes."""
+
     map_type = ...
     levels = ...
     lookup_table = ...
-    def __init__(self, plotter) -> None:
-        ...
-
-    def map(cls, plotter, *args, **kwargs):
-        ...
-
-    def __call__(self, key, *args, **kwargs): # -> list[Unknown]:
+    def __init__(self, plotter) -> None: ...
+    def map(cls, plotter, *args, **kwargs): ...
+    def __call__(self, key, *args, **kwargs):  # -> list[Unknown]:
         """Get the attribute(s) values for the data key."""
         ...
-
-
 
 @share_init_params_with_map
 class HueMapping(SemanticMapping):
     """Mapping that sets artist colors according to data values."""
+
     palette = ...
     norm = ...
     cmap = ...
@@ -38,24 +34,24 @@ class HueMapping(SemanticMapping):
 
         """
         ...
-
-    def infer_map_type(self, palette, norm, input_format, var_type): # -> Literal['categorical', 'numeric']:
+    def infer_map_type(self, palette, norm, input_format, var_type):  # -> Literal['categorical', 'numeric']:
         """Determine how to implement the mapping."""
         ...
-
-    def categorical_mapping(self, data, palette, order): # -> tuple[list[Any], dict[Unknown, Unknown] | dict[Any, tuple[float, float, float] | str]]:
+    def categorical_mapping(
+        self, data, palette, order
+    ):  # -> tuple[list[Any], dict[Unknown, Unknown] | dict[Any, tuple[float, float, float] | str]]:
         """Determine colors when the hue mapping is categorical."""
         ...
-
-    def numeric_mapping(self, data, palette, norm): # -> tuple[list[Unknown] | list[Any], dict[Unknown, Unknown] | dict[Any, Unknown], Unknown, Unknown | _ColorPalette | list[tuple[float, float, float]] | list[str] | Literal['ch:']]:
+    def numeric_mapping(
+        self, data, palette, norm
+    ):  # -> tuple[list[Unknown] | list[Any], dict[Unknown, Unknown] | dict[Any, Unknown], Unknown, Unknown | _ColorPalette | list[tuple[float, float, float]] | list[str] | Literal['ch:']]:
         """Determine colors when the hue variable is quantitative."""
         ...
-
-
 
 @share_init_params_with_map
 class SizeMapping(SemanticMapping):
     """Mapping that sets artist sizes according to data values."""
+
     norm = ...
     def __init__(self, plotter, sizes=..., order=..., norm=...) -> None:
         """Map the levels of the `size` variable to distinct values.
@@ -66,21 +62,21 @@ class SizeMapping(SemanticMapping):
 
         """
         ...
-
-    def infer_map_type(self, norm, sizes, var_type): # -> Literal['numeric', 'categorical']:
+    def infer_map_type(self, norm, sizes, var_type):  # -> Literal['numeric', 'categorical']:
         ...
-
-    def categorical_mapping(self, data, sizes, order): # -> tuple[list[Any], dict[Unknown, Unknown] | dict[Any, Unknown]]:
+    def categorical_mapping(
+        self, data, sizes, order
+    ):  # -> tuple[list[Any], dict[Unknown, Unknown] | dict[Any, Unknown]]:
         ...
-
-    def numeric_mapping(self, data, sizes, norm): # -> tuple[list[Any], dict[Unknown, Unknown] | Unknown | dict[Any, Unknown], Unknown, tuple[Unknown, Unknown] | tuple[Unknown, ...] | Unknown]:
+    def numeric_mapping(
+        self, data, sizes, norm
+    ):  # -> tuple[list[Any], dict[Unknown, Unknown] | Unknown | dict[Any, Unknown], Unknown, tuple[Unknown, Unknown] | tuple[Unknown, ...] | Unknown]:
         ...
-
-
 
 @share_init_params_with_map
 class StyleMapping(SemanticMapping):
     """Mapping that sets artist style according to data values."""
+
     map_type = ...
     def __init__(self, plotter, markers=..., dashes=..., order=...) -> None:
         """Map the levels of the `style` variable to distinct values.
@@ -92,30 +88,25 @@ class StyleMapping(SemanticMapping):
         """
         ...
 
-
-
 class VectorPlotter:
     """Base class for objects underlying *plot functions."""
+
     _semantic_mappings = ...
     semantics = ...
     wide_structure = ...
     flat_structure = ...
     _default_size_range = ...
-    def __init__(self, data=..., variables=...) -> None:
-        ...
-
+    def __init__(self, data=..., variables=...) -> None: ...
     @classmethod
-    def get_semantics(cls, kwargs, semantics=...): # -> dict[Unknown, Unknown]:
+    def get_semantics(cls, kwargs, semantics=...):  # -> dict[Unknown, Unknown]:
         """Subset a dictionary arguments with known semantic variables."""
         ...
-
     @property
-    def has_xy_data(self): # -> bool:
+    def has_xy_data(self):  # -> bool:
         """Return True at least one of x or y is defined."""
         ...
-
     @property
-    def var_levels(self): # -> dict[Unknown, Unknown]:
+    def var_levels(self):  # -> dict[Unknown, Unknown]:
         """Property interface to ordered list of variables levels.
 
         Each time it's accessed, it updates the var_levels dictionary with the
@@ -128,12 +119,12 @@ class VectorPlotter:
 
         """
         ...
-
-    def assign_variables(self, data=..., variables=...): # -> Self@VectorPlotter:
+    def assign_variables(self, data=..., variables=...):  # -> Self@VectorPlotter:
         """Define plot variables, optionally using lookup from `data`."""
         ...
-
-    def iter_data(self, grouping_vars=..., *, reverse=..., from_comp_data=..., by_facet=..., allow_empty=..., dropna=...): # -> Generator[tuple[dict[str | Unknown, Any], Unknown | DataFrame] | tuple[dict[Unknown, Unknown], DataFrame | Unknown], None, None]:
+    def iter_data(
+        self, grouping_vars=..., *, reverse=..., from_comp_data=..., by_facet=..., allow_empty=..., dropna=...
+    ):  # -> Generator[tuple[dict[str | Unknown, Any], Unknown | DataFrame] | tuple[dict[Unknown, Unknown], DataFrame | Unknown], None, None]:
         """Generator for getting subsets of data defined by semantic variables.
 
         Also injects "col" and "row" into grouping semantics.
@@ -163,22 +154,14 @@ class VectorPlotter:
 
         """
         ...
-
     @property
-    def comp_data(self): # -> DataFrame:
+    def comp_data(self):  # -> DataFrame:
         """Dataframe with numeric x and y, after unit conversion and log scaling."""
         ...
-
-    def scale_native(self, axis, *args, **kwargs):
-        ...
-
-    def scale_numeric(self, axis, *args, **kwargs):
-        ...
-
-    def scale_datetime(self, axis, *args, **kwargs):
-        ...
-
-    def scale_categorical(self, axis, order=..., formatter=...): # -> Self@VectorPlotter:
+    def scale_native(self, axis, *args, **kwargs): ...
+    def scale_numeric(self, axis, *args, **kwargs): ...
+    def scale_datetime(self, axis, *args, **kwargs): ...
+    def scale_categorical(self, axis, order=..., formatter=...):  # -> Self@VectorPlotter:
         """
         Enforce categorical (fixed-scale) rules for the data on given axis.
 
@@ -198,8 +181,6 @@ class VectorPlotter:
         """
         ...
 
-
-
 class VariableType(UserString):
     """
     Prevent comparisons elsewhere in the library from using the wrong name.
@@ -208,16 +189,12 @@ class VariableType(UserString):
     them. If that changes, they should be more verbose.
 
     """
+
     allowed = ...
-    def __init__(self, data) -> None:
-        ...
+    def __init__(self, data) -> None: ...
+    def __eq__(self, other) -> bool: ...
 
-    def __eq__(self, other) -> bool:
-        ...
-
-
-
-def variable_type(vector, boolean_type=...): # -> VariableType:
+def variable_type(vector, boolean_type=...):  # -> VariableType:
     """
     Determine whether a vector contains numeric, categorical, or datetime data.
 
@@ -242,7 +219,7 @@ def variable_type(vector, boolean_type=...): # -> VariableType:
     """
     ...
 
-def infer_orient(x=..., y=..., orient=..., require_numeric=...): # -> Literal['v', 'h']:
+def infer_orient(x=..., y=..., orient=..., require_numeric=...):  # -> Literal['v', 'h']:
     """Determine how the plot should be oriented based on the data.
 
     For historical reasons, the convention is to call a plot "horizontally"
@@ -271,7 +248,7 @@ def infer_orient(x=..., y=..., orient=..., require_numeric=...): # -> Literal['v
     """
     ...
 
-def unique_dashes(n): # -> list[Unknown]:
+def unique_dashes(n):  # -> list[Unknown]:
     """Build an arbitrarily long list of unique dash styles for lines.
 
     Parameters
@@ -290,7 +267,7 @@ def unique_dashes(n): # -> list[Unknown]:
     """
     ...
 
-def unique_markers(n): # -> list[Unknown]:
+def unique_markers(n):  # -> list[Unknown]:
     """Build an arbitrarily long list of unique marker styles for points.
 
     Parameters
@@ -307,7 +284,7 @@ def unique_markers(n): # -> list[Unknown]:
     """
     ...
 
-def categorical_order(vector, order=...): # -> list[Any]:
+def categorical_order(vector, order=...):  # -> list[Any]:
     """Return a list of unique data values.
 
     Determine an ordered list of levels in ``values``.

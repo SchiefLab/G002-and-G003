@@ -9,8 +9,8 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure, SubFigure
 from seaborn._core.plot import FacetSpec, PairSpec
 
-if TYPE_CHECKING:
-    ...
+if TYPE_CHECKING: ...
+
 class Subplots:
     """
     Interface for creating and using matplotlib subplots based on seaborn parameters.
@@ -27,17 +27,20 @@ class Subplots:
         Data used to define figure setup.
 
     """
-    def __init__(self, subplot_spec: dict, facet_spec: FacetSpec, pair_spec: PairSpec) -> None:
-        ...
 
-    def init_figure(self, pair_spec: PairSpec, pyplot: bool = ..., figure_kws: dict | None = ..., target: Axes | Figure | SubFigure = ...) -> Figure:
+    def __init__(self, subplot_spec: dict, facet_spec: FacetSpec, pair_spec: PairSpec) -> None: ...
+    def init_figure(
+        self,
+        pair_spec: PairSpec,
+        pyplot: bool = ...,
+        figure_kws: dict | None = ...,
+        target: Axes | Figure | SubFigure = ...,
+    ) -> Figure:
         """Initialize matplotlib objects and add seaborn-relevant metadata."""
         ...
-
     def __iter__(self) -> Generator[dict, None, None]:
         """Yield each subplot dictionary with Axes object and metadata."""
         ...
-
     def __len__(self) -> int:
         """Return the number of subplots in this figure."""
         ...

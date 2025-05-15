@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING, Literal
 
 from pandas import Series
 
-if TYPE_CHECKING:
-    ...
+if TYPE_CHECKING: ...
+
 class VarType(UserString):
     """
     Prevent comparisons elsewhere in the library from using the wrong name.
@@ -17,14 +17,10 @@ class VarType(UserString):
     them. If that changes, they should be more verbose.
 
     """
+
     allowed = ...
-    def __init__(self, data) -> None:
-        ...
-
-    def __eq__(self, other) -> bool:
-        ...
-
-
+    def __init__(self, data) -> None: ...
+    def __eq__(self, other) -> bool: ...
 
 def variable_type(vector: Series, boolean_type: Literal["numeric", "categorical"] = ...) -> VarType:
     """

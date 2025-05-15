@@ -1,0 +1,70 @@
+---
+title: "Tables S59 and S60"
+date: "`r Sys.Date()`"
+geometry: "left=0.5in, right=0.5in, top=0.5in, bottom=0.25in"
+output: pdf_document
+header-includes:
+    - \usepackage{caption}
+---
+
+\captionsetup[table]{labelformat=empty}
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(tidyverse)
+library(VISCfunctions)
+library(kableExtra)
+
+# csv files are saved here
+STATS = '~/Repo/Schief856_G002/data/dropbox/Stats.codebase'
+```
+
+\clearpage
+
+```{r figureS29}
+dat = read.csv(file.path(STATS, 'figS29_pvals.csv'))
+dat$p.value = pretty_pvalues(dat$p.value, digits = 4, sig_alpha=0.05, missing_char='NA', background = "yellow")
+dat$fdr = pretty_pvalues(dat$fdr, digits = 4, sig_alpha=0.2, missing_char='NA', background = "yellow")
+dat$weeks[which(dat$weeks[-1] == dat$weeks[-length(dat$weeks)]) + 1] ='\\hfill'
+dat$comp = gsub('->', '$\\\\rightarrow$', dat$comp)
+
+dat = dat %>% filter(panel %in% c('A', 'B'))
+
+kbl(dat %>% dplyr::select(weeks, comp, SampleSizes, summary, p.value, fdr) %>% ungroup(),
+    format = "latex",
+    escape = FALSE,
+    longtable = TRUE,
+    booktabs = TRUE,
+    row.names = FALSE,
+    col.names = c('Week', 'Comparison', 'Sample Sizes', 'Summary', 'P-value', 'FDR'),
+    caption="Table S59.  Testing between groups was done using the Wilcoxon rank-sum test.
+    P values less than 0.05 and Q values less than 0.2 are highlighted.") %>%
+  kable_styling(font_size = 7.5) %>%
+  pack_rows(index=table(dat$panel), hline_before = TRUE, hline_after = TRUE, escape=TRUE)
+```
+
+\clearpage
+
+```{r figureS29_v2}
+dat = read.csv(file.path(STATS, 'figS29_v2_pvals.csv'))
+dat$p.value = pretty_pvalues(dat$p.value, digits = 4, sig_alpha=0.05, missing_char='NA', background = "yellow")
+dat$fdr = pretty_pvalues(dat$fdr, digits = 4, sig_alpha=0.2, missing_char='NA', background = "yellow")
+dat$comp = gsub('->', '$\\\\rightarrow$', dat$comp)
+
+dat = dat %>% filter(panel %in% c('A', 'B'))
+
+kbl(dat %>% dplyr::select(comp, SampleSizes, summary, p.value, fdr) %>% ungroup(),
+    format = "latex",
+    escape = FALSE,
+    longtable = TRUE,
+    booktabs = TRUE,
+    row.names = FALSE,
+    col.names = c('Comparison', 'Sample Sizes', 'Summary', 'P-value', 'FDR'),
+    caption="Table S60.  Testing between groups was done using the Wilcoxon rank-sum test for unpaired data
+    or a signed rank test for paired data. Sample sizes with two numbers are unpaired data and one number if paired.
+    P values less than 0.05 and Q values less than 0.2 are highlighted.") %>%
+  kable_styling(font_size = 7.5) %>%
+  pack_rows(index=table(dat$panel), hline_before = TRUE, hline_after = TRUE, escape=TRUE)
+```

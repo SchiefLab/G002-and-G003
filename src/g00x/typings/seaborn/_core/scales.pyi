@@ -15,37 +15,32 @@ from seaborn._core.typing import Default
 if TYPE_CHECKING:
     TransFuncs = Tuple[Callable[[ArrayLike], ArrayLike], Callable[[ArrayLike], ArrayLike]]
     Pipeline = Sequence[Optional[Callable[[Any], Any]]]
+
 class Scale:
     """Base class for objects that map data values to visual properties."""
+
     values: tuple | str | list | dict | None
     _priority: ClassVar[int]
     _pipeline: Pipeline
     _matplotlib_scale: ScaleBase
     _spacer: staticmethod
     _legend: tuple[list[str], list[Any]] | None
-    def __post_init__(self): # -> None:
+    def __post_init__(self):  # -> None:
         ...
-
-    def tick(self):
-        ...
-
-    def label(self):
-        ...
-
-    def __call__(self, data: Series) -> ArrayLike:
-        ...
-
-
+    def tick(self): ...
+    def label(self): ...
+    def __call__(self, data: Series) -> ArrayLike: ...
 
 @dataclass
 class Nominal(Scale):
     """
     A categorical scale without relative importance / magnitude.
     """
+
     values: tuple | str | list | dict | None = ...
     order: list | None = ...
     _priority: ClassVar[int] = ...
-    def tick(self, locator: Locator | None = ...): # -> Self@Nominal:
+    def tick(self, locator: Locator | None = ...):  # -> Self@Nominal:
         """
         Configure the selection of ticks for the scale's axis or legend.
 
@@ -64,8 +59,7 @@ class Nominal(Scale):
 
         """
         ...
-
-    def label(self, formatter: Formatter | None = ...): # -> Self@Nominal:
+    def label(self, formatter: Formatter | None = ...):  # -> Self@Nominal:
         """
         Configure the selection of labels for the scale's axis or legend.
 
@@ -86,33 +80,37 @@ class Nominal(Scale):
         """
         ...
 
-
+@dataclass
+class Ordinal(Scale): ...
 
 @dataclass
-class Ordinal(Scale):
-    ...
-
-
-@dataclass
-class Discrete(Scale):
-    ...
-
+class Discrete(Scale): ...
 
 @dataclass
 class ContinuousBase(Scale):
     values: tuple | str | None = ...
     norm: tuple | None = ...
 
-
 @dataclass
 class Continuous(ContinuousBase):
     """
     A numeric scale supporting norms and functional transforms.
     """
+
     values: tuple | str | None = ...
     trans: str | TransFuncs | None = ...
     _priority: ClassVar[int] = ...
-    def tick(self, locator: Locator | None = ..., *, at: Sequence[float] = ..., upto: int | None = ..., count: int | None = ..., every: float | None = ..., between: tuple[float, float] | None = ..., minor: int | None = ...) -> Continuous:
+    def tick(
+        self,
+        locator: Locator | None = ...,
+        *,
+        at: Sequence[float] = ...,
+        upto: int | None = ...,
+        count: int | None = ...,
+        every: float | None = ...,
+        between: tuple[float, float] | None = ...,
+        minor: int | None = ...
+    ) -> Continuous:
         """
         Configure the selection of ticks for the scale's axis or legend.
 
@@ -140,8 +138,14 @@ class Continuous(ContinuousBase):
 
         """
         ...
-
-    def label(self, formatter: Formatter | None = ..., *, like: str | Callable | None = ..., base: int | None | Default = ..., unit: str | None = ...) -> Continuous:
+    def label(
+        self,
+        formatter: Formatter | None = ...,
+        *,
+        like: str | Callable | None = ...,
+        base: int | None | Default = ...,
+        unit: str | None = ...
+    ) -> Continuous:
         """
         Configure the appearance of tick labels for the scale's axis or legend.
 
@@ -169,13 +173,12 @@ class Continuous(ContinuousBase):
         """
         ...
 
-
-
 @dataclass
 class Temporal(ContinuousBase):
     """
     A scale for date/time data.
     """
+
     trans = ...
     _priority: ClassVar[int] = ...
     def tick(self, locator: Locator | None = ..., *, upto: int | None = ...) -> Temporal:
@@ -199,7 +202,6 @@ class Temporal(ContinuousBase):
 
         """
         ...
-
     def label(self, formatter: Formatter | None = ..., *, concise: bool = ...) -> Temporal:
         """
         Configure the appearance of tick labels for the scale's axis or legend.
@@ -223,8 +225,6 @@ class Temporal(ContinuousBase):
         """
         ...
 
-
-
 class PseudoAxis:
     """
     Internal class implementing minimal interface equivalent to matplotlib Axis.
@@ -235,50 +235,35 @@ class PseudoAxis:
     code, this object acts like an Axis and can be used to scale other variables.
 
     """
+
     axis_name = ...
-    def __init__(self, scale) -> None:
+    def __init__(self, scale) -> None: ...
+    def set_view_interval(self, vmin, vmax):  # -> None:
         ...
-
-    def set_view_interval(self, vmin, vmax): # -> None:
+    def get_view_interval(self):  # -> tuple[Unknown, Unknown]:
         ...
-
-    def get_view_interval(self): # -> tuple[Unknown, Unknown]:
+    def set_data_interval(self, vmin, vmax):  # -> None:
         ...
-
-    def set_data_interval(self, vmin, vmax): # -> None:
+    def get_data_interval(self):  # -> tuple[None, None] | tuple[Unknown, Unknown]:
         ...
-
-    def get_data_interval(self): # -> tuple[None, None] | tuple[Unknown, Unknown]:
+    def get_tick_space(self):  # -> Literal[5]:
         ...
-
-    def get_tick_space(self): # -> Literal[5]:
+    def set_major_locator(self, locator):  # -> None:
         ...
-
-    def set_major_locator(self, locator): # -> None:
+    def set_major_formatter(self, formatter):  # -> None:
         ...
-
-    def set_major_formatter(self, formatter): # -> None:
+    def set_minor_locator(self, locator):  # -> None:
         ...
-
-    def set_minor_locator(self, locator): # -> None:
+    def set_minor_formatter(self, formatter):  # -> None:
         ...
-
-    def set_minor_formatter(self, formatter): # -> None:
+    def set_units(self, units):  # -> None:
         ...
-
-    def set_units(self, units): # -> None:
-        ...
-
-    def update_units(self, x): # -> None:
+    def update_units(self, x):  # -> None:
         """Pass units to the internal converter, potentially updating its mapping."""
         ...
-
     def convert_units(self, x):
         """Return a numeric representation of the input data."""
         ...
-
-    def get_scale(self): # -> Unknown:
+    def get_scale(self):  # -> Unknown:
         ...
-
-    def get_majorticklocs(self):
-        ...
+    def get_majorticklocs(self): ...

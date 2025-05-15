@@ -11,13 +11,11 @@ class PolyFit(Stat):
     """
     Fit a polynomial of the given order and resample data onto predicted curve.
     """
+
     order: int = ...
     gridsize: int = ...
-    def __call__(self, data, groupby, orient, scales): # -> DataFrame:
+    def __call__(self, data, groupby, orient, scales):  # -> DataFrame:
         ...
 
-
-
 @dataclass
-class OLSFit(Stat):
-    ...
+class OLSFit(Stat): ...

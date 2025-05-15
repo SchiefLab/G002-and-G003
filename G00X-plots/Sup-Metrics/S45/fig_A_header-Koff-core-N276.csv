@@ -1,0 +1,13 @@
+pseudogroup,psname,is_cp,n Abs tested,N participants,Median $\mathregular{K_{off}}$ (s$^{-1}$)
+1,eOD,False,4,3,8.2e-2
+1,eOD,True,4,3,4.6e-2
+2,eOD->eOD,False,4,4,6.7e-2
+2,eOD->eOD,True,6,6,1.6e-1
+3,eOD->core,False,4,4,1.4e-2
+3,eOD->core,True,25,14,3.6e-3
+4,eOD->eOD,False,5,4,4.9e-2
+4,eOD->eOD,True,5,5,2.6e-1
+5,eOD->core,False,5,4,2.1e-3
+5,eOD->core,True,29,17,1.7e-3
+6,eOD->eOD->core,False,7,6,1.2e-2
+6,eOD->eOD->core,True,15,10,1.3e-2

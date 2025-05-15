@@ -1,0 +1,4 @@
+trial,weeks,n Abs tested,% $\mathregular{K_D}$s < 100 $\mu$M,N participants,Median $\mathregular{K_D}$ (M),Binder geomean $\mathregular{K_D}$ (M)
+G001,iGL,113,97,17,1.4e-07,1.4e-07
+G002,iGL,73,93,36,1.8e-07,1.4e-07
+G003,iGL,61,100,17,1.6e-08,1.1e-08
