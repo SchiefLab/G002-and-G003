@@ -1,0 +1,11 @@
+#json_block_div {
+    overflow-y: scroll;
+    height: 12rem;
+}
+
+#neeto {
+    width: 13rem;
+    border-color: black;
+    text-align: center;
+    font-size: medium;
+}
