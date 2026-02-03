@@ -53,3 +53,11 @@ figA_percent_bcr_vrc01_light.csv
 Icon*
 G00X-plots-test/
 G00X-plots/Sup-Metrics/S39/figE_seqs.csv
+
+# Ignore testing nbs
+test.ipynb
+
+# Ignore internal notes
+*.mb
+!docs/
+!README.md
