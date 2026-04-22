@@ -1839,10 +1839,11 @@ def plot_key_mutations_boost(data: Data, outpath: str) -> None:
     figure.savefig(outpath + ".png", dpi=300, transparent=False)
 
 
-def plot_seq_logos_vrc01_class(data: Data, outpath: str) -> None:
-    figure, axes = plt.subplots(4, 2, gridspec_kw={"wspace": 0.1, "hspace": 0.1, "left": 0.2})
+def plot_seq_logos_vrc01_class(data: Data):
+    figure, axes = plt.subplots(5, 2, gridspec_kw={"wspace": 0.1, "hspace": 0.1, "left": 0.2})
     g001_seqs = data.get_g001_sequences_prime()
     g002_seqs = data.get_g002_sequences_prime()
+    g003_seqs = data.get_g003_sequences_prime()
     human_naive = data.get_human_naive_5_len_df().query("is_vrc01_class")
     kappa_vrc01 = data.get_kappa_vrc01_select_df()
     lambda_vrc01 = data.get_lambda_vrc01_select_df()
@@ -1858,6 +1859,10 @@ def plot_seq_logos_vrc01_class(data: Data, outpath: str) -> None:
     # g002 kappa and lambda
     g002_kappa = g002_seqs.query("is_vrc01_class").query("locus_light=='IGK'")["cdr3_aa_light"].to_list()
     g002_lambda = g002_seqs.query("is_vrc01_class").query("locus_light=='IGL'")["cdr3_aa_light"].to_list()
+
+    # g003 kappa and lambda
+    g003_kappa = g003_seqs.query("is_vrc01_class").query("locus_light=='IGK'")["cdr3_aa_light"].to_list()
+    g003_lambda = g003_seqs.query("is_vrc01_class").query("locus_light=='IGL'")["cdr3_aa_light"].to_list()
 
     # human naive
     human_naive_kappa = human_naive.query("locus_light=='IGK'")["cdr3_aa_light"].to_list()
@@ -1890,14 +1895,22 @@ def plot_seq_logos_vrc01_class(data: Data, outpath: str) -> None:
     plot_sequence_logo(axes[2][1], char_set=g002_lambda)
     plot_sequence_logo(
         axes[3][0],
+        char_set=g003_kappa,
+        ytitle="G003",
+        ytitle_font=12,
+        show_left_spine=True,
+    )
+    plot_sequence_logo(axes[3][1], char_set=g003_lambda)
+    plot_sequence_logo(
+        axes[4][0],
         char_set=human_naive_kappa,
         ytitle="Human naive\nGT8 binders",
         ytitle_font=12,
         show_left_spine=True,
-        xticks=list(range(93, 98)),
+        xticks=[89, 90, 91, 96, 97],
     )
-    plot_sequence_logo(axes[3][1], char_set=human_naive_lambda, xticks=list(range(93, 98)))
-    axes[3][0].annotate(
+    plot_sequence_logo(axes[4][1], char_set=human_naive_lambda, xticks=[89, 90, 91, 96, 97])
+    axes[4][0].annotate(
         text="Light Chain Position",
         xy=(1, -0.5),
         xytext=(1.05, -0.4),
@@ -1907,20 +1920,15 @@ def plot_seq_logos_vrc01_class(data: Data, outpath: str) -> None:
         fontsize=14,
     )
     figure.suptitle("VRC01-Class", x=0.55, fontsize=16)
-    figure.savefig(outpath + ".png", dpi=300, transparent=True)
+    return figure, []
 
 
-def plot_seq_logos_nonvrc01_class(data: Data, outpath: str) -> None:
+def plot_seq_logos_nonvrc01_class(data: Data):
     figure, axes = plt.subplots(4, 2, gridspec_kw={"wspace": 0.1, "hspace": 0.1, "left": 0.2})
     g001_seqs = data.get_g001_sequences_prime()
     g002_seqs = data.get_g002_sequences_prime()
+    g003_seqs = data.get_g003_sequences_prime()
     oas_5 = data.get_oas_5_len()
-    kappa_vrc01 = data.get_kappa_vrc01_select_df()
-    lambda_vrc01 = data.get_lambda_vrc01_select_df()
-
-    # bnabs
-    kappa_vrc01 = kappa_vrc01["cdr3_aa_no_gaps"].to_list()
-    lambda_vrc01 = lambda_vrc01["cdr3_aa_no_gaps"].to_list()
 
     # g001 kappa and lambda
     g001_kappa = (
@@ -1950,44 +1958,58 @@ def plot_seq_logos_nonvrc01_class(data: Data, outpath: str) -> None:
         .to_list()
     )
 
-    # human naive
+    # g003 kappa and lambda
+    g003_kappa = (
+        g003_seqs.query("is_vrc01_class==False")
+        .query("has_5_len")
+        .query("locus_light=='IGK'")["cdr3_aa_light"]
+        .to_list()
+    )
+    g003_lambda = (
+        g003_seqs.query("is_vrc01_class==False")
+        .query("has_5_len")
+        .query("locus_light=='IGL'")["cdr3_aa_light"]
+        .to_list()
+    )
+
+    # OAS reference
     oas_kappa = oas_5.query("locus=='IGK'")["cdr3_aa"].to_list()
     oas_lambda = oas_5.query("locus=='IGL'")["cdr3_aa"].to_list()
 
     plot_sequence_logo(
         axes[0][0],
-        char_set=kappa_vrc01,
-        ytitle="bnAbs",
-        ytitle_font=12,
-        show_left_spine=True,
-        title="Kappa",
-    )
-    plot_sequence_logo(axes[0][1], char_set=lambda_vrc01, title="Lambda")
-    plot_sequence_logo(
-        axes[1][0],
         char_set=g001_kappa,
         ytitle="G001",
         ytitle_font=12,
         show_left_spine=True,
+        title="Kappa",
     )
-    plot_sequence_logo(axes[1][1], char_set=g001_lambda)
+    plot_sequence_logo(axes[0][1], char_set=g001_lambda, title="Lambda")
     plot_sequence_logo(
-        axes[2][0],
+        axes[1][0],
         char_set=g002_kappa,
         ytitle="G002",
         ytitle_font=12,
         show_left_spine=True,
     )
-    plot_sequence_logo(axes[2][1], char_set=g002_lambda)
+    plot_sequence_logo(axes[1][1], char_set=g002_lambda)
+    plot_sequence_logo(
+        axes[2][0],
+        char_set=g003_kappa,
+        ytitle="G003",
+        ytitle_font=12,
+        show_left_spine=True,
+    )
+    plot_sequence_logo(axes[2][1], char_set=g003_lambda)
     plot_sequence_logo(
         axes[3][0],
         char_set=oas_kappa,
         ytitle="OAS 5aa L3",
         ytitle_font=12,
         show_left_spine=True,
-        xticks=list(range(93, 98)),
+        xticks=[89, 90, 91, 96, 97],
     )
-    plot_sequence_logo(axes[3][1], char_set=oas_lambda, xticks=list(range(93, 98)))
+    plot_sequence_logo(axes[3][1], char_set=oas_lambda, xticks=[89, 90, 91, 96, 97])
     axes[3][0].annotate(
         text="Light Chain Position",
         xy=(1, -0.5),
@@ -1998,7 +2020,7 @@ def plot_seq_logos_nonvrc01_class(data: Data, outpath: str) -> None:
         fontsize=14,
     )
     figure.suptitle("Non-VRC01-class 5aa LCDR3s", x=0.55, fontsize=16)
-    figure.savefig(outpath + ".png", dpi=300, transparent=True)
+    return figure, []
 
 
 def plot_isotype_data(seq: pd.DataFrame) -> None:

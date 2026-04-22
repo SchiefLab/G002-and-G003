@@ -1,4 +1,5 @@
 """This is our main entry point"""
+
 import functools
 import logging
 import math
@@ -149,7 +150,7 @@ def figures(
     root_logger.setLevel(logging.INFO)
 
     data = ctx.obj["data"]
-    ctx.obj["data"] = outdir if outdir else data.paths.figure_outdir
+    ctx.obj["outdir"] = outdir if outdir else data.paths.figure_outdir
     # ctx.obj["outdir"] = (
     #     Path(__file__).parent.parent.parent / "G00X-plots-test"
     # )  # outdir if outdir else data.paths.figure_outdir
@@ -541,6 +542,22 @@ def s24(ctx: click.Context) -> None:
     save(img, dfs, img_outpath, metric_outdir)
 
 
+@figures.command("S26-with-g003")
+@click.pass_context
+def s26(ctx: click.Context) -> None:
+    """Generate S26 sequence logo figures (VRC01-class and non-VRC01-class)."""
+    data = ctx.obj["data"]
+    fig = ctx.obj["fig"]
+    img_outdir = ctx.obj["img_outdir"]
+    metric_outdir = ctx.obj["metric_outdir"]
+    # Generate VRC01-class sequence logos (figDE)
+    img_vrc01, dfs_vrc01 = plot_seq_logos_vrc01_class(data)
+    save(img_vrc01, dfs_vrc01, img_outdir / f"{fig}_vrc01_class.png", metric_outdir)
+    # Generate non-VRC01-class sequence logos
+    img_nonvrc01, dfs_nonvrc01 = plot_seq_logos_nonvrc01_class(data)
+    save(img_nonvrc01, dfs_nonvrc01, img_outdir / f"{fig}_nonvrc01_class.png", metric_outdir)
+
+
 @figures.command("S27")
 @click.pass_context
 def s27(ctx: click.Context) -> None:
@@ -908,6 +925,7 @@ def plot_sup(ctx: click.Context) -> None:
         "g00x plot --fig S23 s-freq-seq-g003",
         "g00x plot --fig S24 S24",
         "g00x plot --fig S25 prime-mut --method nearest --no-panel-e",
+        "g00x plot --fig S26 S26",
         "g00x plot --fig S27 S27",
         "g00x plot --fig S28 b-count-spr-g00x-eOD",
         "g00x plot --fig S29 number-of-BCR-clusters -u",

@@ -71,17 +71,21 @@ mdx-include = "^1.4.2"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-
-[tool.pyright]
-include = ["src/g00x"]
-reportGeneralTypeIssues = false
-disable = "W1203"
-
 [tool.isort]
 profile = "black"
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore"]
+
+# [tool.black]
+# extend-exclude = '''
+# (
+#   .*\.ipynb
+# )
+# '''
+
+[tool.ruff]
+extend-exclude = ["*.ipynb"]
 
 [tool.poetry.scripts]
 g00x = "g00x_client.cli:main"
