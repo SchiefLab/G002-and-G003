@@ -123,13 +123,31 @@ aws s3 cp --recursive s3://iavig003public/g003/G003/sequencing ./g003/G003/seque
 
 ## Installation pre-requisites
 
+This repository uses [Git Large File Storage (Git LFS)](https://git-lfs.com/) to track large data files (such as `src/g00x/data/vrc1-2_mabs_extended_airr.feather`). You **must** install Git LFS before cloning the repository, otherwise LFS-tracked files will only be present as small pointer files and the pipeline will fail.
+
+Install Git LFS using your system's package manager, for example:
+
+```
+# macOS
+brew install git-lfs
+
+# Debian/Ubuntu
+sudo apt-get install git-lfs
+```
+
+After installing, initialize Git LFS for your user (only needed once per machine):
+
+```
+git lfs install
+```
+
 While not necessary, we highly recommend using the [conda](https://docs.conda.io/en/latest/) open-source package and environment manager. For the purposes of this repository, only a minimal installer for anaconda is necessary (Miniconda).
 
 [Miniconda command line installers](https://docs.anaconda.com/miniconda/#quick-command-line-install)
 
 ## Installation
 
-This installation assumes that `git` and `conda` are in your path.
+This installation assumes that `git`, `git-lfs` and `conda` are in your path.
 
 ```
 # clone the repository
@@ -137,6 +155,9 @@ git clone https://github.com/SchiefLab/G002-and-G003.git
 
 # change directory
 cd G002-and-G003
+
+# fetch the LFS-tracked data files (required before running the pipeline)
+git lfs pull
 
 # this will create a conda environment called g00x and install the package
 ./install.sh
