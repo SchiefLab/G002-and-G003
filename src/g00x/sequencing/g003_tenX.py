@@ -126,7 +126,7 @@ def g003_run_demultiplex(
                 hash_running_dir / Path("outs/fastq_path")
             )
             merged_dataframe.loc[cso_indexes_to_update, "cso_sample_name"] = (
-                "cso-" + merged_dataframe.loc[cso_indexes_to_update, "feature_index"]
+                "cso-" + merged_dataframe.loc[cso_indexes_to_update, "cso_index"]
             )
             continue
 
