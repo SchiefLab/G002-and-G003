@@ -963,6 +963,13 @@ def cso(
     help="The path to the human genome",
 )
 @click.option(
+    "--create-bam",
+    type=click.BOOL,
+    default=False,
+    show_default=True,
+    help="Create BAM files aligned to transcriptome.",
+)
+@click.option(
     "--overwrite",
     is_flag=True,
     default=False,
@@ -975,6 +982,7 @@ def g003_cso(
     cso_frame_output: Path,
     out: Path,
     genome_reference: Path,
+    create_bam: bool,
     overwrite: bool,
 ) -> None:
     """
@@ -1000,7 +1008,7 @@ def g003_cso(
     demultiplex_dataframe = pd.read_feather(demultiplex_dataframe_path)
     demultiplex_dataframe = demultiplex_dataframe.applymap(pd_expand_path)
 
-    demultiplexed_dataframe = g003_run_cso(data, demultiplex_dataframe, out, genome_reference, overwrite)
+    demultiplexed_dataframe = g003_run_cso(data, demultiplex_dataframe, out, genome_reference, create_bam, overwrite)
     demultiplexed_dataframe = demultiplexed_dataframe.applymap(pd_replace_home_with_tilde)
 
     demultiplexed_dataframe.to_csv(out / f"{cso_frame_output}.csv")
