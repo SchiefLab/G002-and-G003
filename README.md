@@ -448,20 +448,22 @@ g00x g002 analysis report -s ./g002/G002/output/final_df.feather -f ./g002/G002/
 ```
 ### G003
 ```bash
-g00x g003 pipeline demultiplex -f ./g003/G003/sorting/G003/ -s ./g003/G003/sequencing/G003/ -o ./g003/G003/output/demultiplex
+g00x g003 pipeline demultiplex -s ./g003/G003/sequencing/G003/ -o ./g003/G003/output/demultiplex
 
 g00x g003 pipeline vdj -d ./g003/G003/output/demultiplex.feather -o ./g003/G003/output/vdj
 
-g00x g003 pipeline cso -d ./g003/G003/output/demultiplex.feather -o ./g003/G003/output/cso
+g00x g003 pipeline cso -d ./g003/G003/output/demultiplex.feather -o ./g003/G003/output/cso -g /Path/to/reference/genome
 
 # Merge VDJ and CSO dataframes, run the output through SADIE for
-g00x g003 pipeline airr -k 3 -c ./g003/G003/output/cso.feather -v ./g003/G003/output/vdj.feather -o ./g003/G003/output/final_df
+g00x g003 pipeline airr -c ./g003/G003/output/cso.feather -v ./g003/G003/output/vdj.feather -o ./g003/G003/output/ -a final_df
+
+g00x g003 pipeline flow /path/to/flow/data -o /path/to/output/dataframe
 
 # Output merged.feather not used to generate figures, but is a sanity check.
-g00x g003 validate merge -s ./g003/G003/sequencing/G003/ -f ./g003/G003/sorting/G003 -o ./g003/G003/output/merged
+g00x g003 pipeline merge -s feather/file/from/pipeline/airr -f feather/file/from/pipeline/flow -o ./g003/G003/output/ -n merged
 
 # Output flow_and_sequencing.feather used to generate figures; will contain counts, frequencies, and metadata from flow and sequencing data.
-g00x g003 analysis report -s ./g003/G003/output/final_df.feather -f ./g003/G003/output/flow_output.feather -o ./g003/G003/output/flow_and_sequencing
+g00x g003 analysis report -s ./g003/G003/output/merged.feather -f ./g003/G003/output/flow_output.feather -o ./g003/G003/output/flow_and_sequencing
 ```
 
 

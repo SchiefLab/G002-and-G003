@@ -1,14 +1,18 @@
 import click
 
+from g00x.data import Data, PlotParameters
 from g00x.cli import g002, g003
 from g00x_figures.cli import figures
 from VISC_codebase.cli import comparison_tables
 
 
 @click.group()
-def main():
+@click.pass_context
+def main(ctx: click.Context):
     """Run All scripts."""
-    pass
+    ctx.ensure_object(dict)
+    ctx.obj = {"data": Data(), "params": PlotParameters()} 
+    #pass
 
 
 # Supplementary Comparison Tables

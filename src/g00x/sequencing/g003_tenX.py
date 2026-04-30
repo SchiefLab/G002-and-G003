@@ -126,7 +126,7 @@ def g003_run_demultiplex(
                 hash_running_dir / Path("outs/fastq_path")
             )
             merged_dataframe.loc[cso_indexes_to_update, "cso_sample_name"] = (
-                "cso-" + merged_dataframe.loc[cso_indexes_to_update, "feature_index"]
+                "cso-" + merged_dataframe.loc[cso_indexes_to_update, "cso_index"]
             )
             continue
 
@@ -351,6 +351,7 @@ def g003_run_cso(
     demux_dataframe: pd.DataFrame,
     out: Path,
     genome_reference: Path,
+    create_bam: bool = True,
     overwrite: bool = False,
 ) -> pd.DataFrame:
     """Run the feature barcode 10x pipeline. It should be run after vdj, but that is your call bro.
@@ -438,6 +439,8 @@ def g003_run_cso(
                 library_csv_name,
                 "--transcriptome",
                 str(genome_reference),
+                "--create-bam", 
+                str(create_bam).lower(), 
                 "--localcores=48",
                 "--uiport=40576",
                 "--jobmode=local",

@@ -1,7 +1,9 @@
-brew install git-lfs
+#brew install git-lfs
+#conda install -c conda-forge -y git-lfs #Cause HPC uses redhat, aslo no sudo rights
+#git lfs install
 # Install Anaconda Environment
 eval "$(conda shell.bash hook)"
-conda create -n g00x python==3.10.10 -y
+conda create -n g00x python==3.10.10 --override-channels -c defaults -y
 conda activate g00x
 
 # Install G00x
