@@ -521,7 +521,7 @@ def g003_run_airr(
         # write out save in function so we can use it as an API call
 
     ## CK Remove this step for now untill we get back the data from Karoniska
-    airr_df = personalize(airr_df, data)
+    #airr_df = personalize(airr_df, data)
 
     logger.info("Converting table to linked airrtable")
     airr_df_lat = LinkedAirrTable(airr_df, key_column="cellid")  # type: ignore
