@@ -2,7 +2,7 @@ import re
 from datetime import date, datetime
 from typing import Any, Literal, Optional
 
-from pydantic import BaseModel, Field, root_validator, validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class ModelError(ValueError):
@@ -19,18 +19,19 @@ class Fields(BaseModel):
 
     run_purpose: str
     run_date: date = Field(..., description="YYMMDD")
-    sort_id: str = Field(regex=r"[A-Z]\d{1}")
-    ptid: str = Field(regex="G00[1-5]-*[0-9]{2}($|-*[0-9]{3})")
-    visit_id: str = Field(regex=r"V\d{1,3}")
+    sort_id: str = Field(pattern=r"[A-Z]\d{1}")
+    ptid: str = Field(pattern="G00[1-5]-*[0-9]{2}($|-*[0-9]{3})")
+    visit_id: str = Field(pattern=r"V\d{1,3}")
     probe_set: Literal["eODGT8"]
     sample_type: Literal["PBMC", "FNA"]
     sort_software_dv: Literal["Chorus", "FlowJo"]
     sort_file_type: Literal["Primary", "Capture", "SortRpt", "Summary", "Data", "Stats"]
-    sample_tube: str = Field(regex=r"na|T\d{1}")
-    sort_pool_file_subset: str = Field(regex="Control|Presort|FNA|P[1-9][a-z]|P[1-9]")
+    sample_tube: str = Field(pattern=r"na|T\d{1}")
+    sort_pool_file_subset: str = Field(pattern="Control|Presort|FNA|P[1-9][a-z]|P[1-9]")
     extention: Literal[".fcs", ".xlsx", ".png", ".pdf", ".jpg"]
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def extract_dates(cls, values: dict[str, Any]) -> dict[str, Any]:
         for date_field in ["run_date"]:
             try:
@@ -48,11 +49,12 @@ class DataFilesFromFlowJo(BaseModel):
     run_purpose: str
     run_date: date = Field(..., description="YYMMDD")
     sort_id: str
-    ptid: str = Field(regex="G00[1-5]-[0-9]{2}($|-[0-9]{3})")
-    visit_id: str = Field(regex=r"V\d{2,3}")
+    ptid: str = Field(pattern="G00[1-5]-[0-9]{2}($|-[0-9]{3})")
+    visit_id: str = Field(pattern=r"V\d{2,3}")
     extention: Literal[".wsp"]
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def extract_dates(cls, values: dict[str, Any]) -> dict[str, Any]:
         for date_field in ["run_date"]:
             try:
@@ -97,7 +99,8 @@ class Sort(BaseModel):
     run_date: Optional[date] = None
     upload_date: Optional[date] = None
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def extract_dates(cls, values: dict[str, Any]) -> dict[str, Any]:
         if not re.fullmatch(
             r"Sort_RunDate\d{2}([0][1-9]|[1][0-2])([0-3][0-9])_UploadDate\d{2}([0][1-9]|[1][0-2])([0-3][0-9])",
@@ -130,7 +133,8 @@ class G00X(BaseModel):
     name: str
     sorts: Optional[Sorts] = None
 
-    @validator("name", pre=True)
+    @field_validator("name", mode="before")
+    @classmethod
     def extract_scheme(cls, v: str) -> str:
         if re.fullmatch("[gG]00[1-5x](_Scheme_Example)?", v):
             return v

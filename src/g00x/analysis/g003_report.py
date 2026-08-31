@@ -395,48 +395,43 @@ def g003_combine_seq_and_flow(
         new_df["calculation"] = f"{long_name} - ({x_value}/100 * {y_value}/100) * 100"
         return new_df
 
-    # Add percent VRC01 class among IgG
-    combined_df = combined_df.append(
-        add_combined_frequencies(
+    combined_df = pd.concat(
+        [
             combined_df,
-            "percent_ep_among_igg",
-            "percent_IGHG_vrc01_class_sequences",
-            "percent_vrc01_among_igg",
-            "Percent of VRC01-class sequences among IgG",  # epitope specific
-        )
-    )  # type: ignore
-
-    # Add percent VRC01 class among IgM
-    combined_df = combined_df.append(
-        add_combined_frequencies(
-            combined_df,
-            "percent_ep_among_igm",
-            "percent_IGHM_vrc01_class_sequences",
-            "percent_vrc01_among_igm",
-            "Percent of VRC01-class sequences among IgM",
-        )
-    )
-
-    # Add percent VRC01 class among IgA
-    combined_df = combined_df.append(
-        add_combined_frequencies(
-            combined_df,
-            "percent_ep_among_iga",
-            "percent_IGHA_vrc01_class_sequences",
-            "percent_vrc01_among_iga",
-            "Percent of VRC01-class sequences among IgA",
-        )
-    )
-
-    # Add percent VRC01 class among IgD-
-    combined_df = combined_df.append(
-        add_combined_frequencies(
-            combined_df,
-            "percent_ep_among_igd_neg",
-            "percent_igdneg_vrc01_class_sequences",
-            "percent_vrc01_among_igd_neg",
-            "Percent of VRC01-class sequences among IgD-",
-        )
+            # Add percent VRC01 class among IgG
+            add_combined_frequencies(
+                combined_df,
+                "percent_ep_among_igg",
+                "percent_IGHG_vrc01_class_sequences",
+                "percent_vrc01_among_igg",
+                "Percent of VRC01-class sequences among IgG",
+            ),
+            # Add percent VRC01 class among IgM
+            add_combined_frequencies(
+                combined_df,
+                "percent_ep_among_igm",
+                "percent_IGHM_vrc01_class_sequences",
+                "percent_vrc01_among_igm",
+                "Percent of VRC01-class sequences among IgM",
+            ),
+            # Add percent VRC01 class among IgA
+            add_combined_frequencies(
+                combined_df,
+                "percent_ep_among_iga",
+                "percent_IGHA_vrc01_class_sequences",
+                "percent_vrc01_among_iga",
+                "Percent of VRC01-class sequences among IgA",
+            ),
+            # Add percent VRC01 class among IgD-
+            add_combined_frequencies(
+                combined_df,
+                "percent_ep_among_igd_neg",
+                "percent_igdneg_vrc01_class_sequences",
+                "percent_vrc01_among_igd_neg",
+                "Percent of VRC01-class sequences among IgD-",
+            ),
+        ],
+        ignore_index=True,
     )
     # from IPython import embed; embed()
     combined_df["value_type"] = pd.Categorical(combined_df["value_type"], ["count", "sequence measure", "frequency"])

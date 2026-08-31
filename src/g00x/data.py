@@ -5,7 +5,7 @@ from pathlib import Path
 from shutil import which
 
 import pandas as pd
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
 
 logger = logging.getLogger()
 
@@ -49,11 +49,8 @@ class DataPaths(BaseModel):
     g003_visit_id_2_week: Path = data_base_path / Path("g003/visit_id2week.json")
     g003_ptid_prefix_2_group: Path = data_base_path / Path("g003/ptid2group.json")
 
-    @validator(
-        "*",
-        pre=True,
-        always=True,
-    )
+    @field_validator("*", mode="before")
+    @classmethod
     def validate_path(cls, v: str) -> str:
         if not Path(v).exists():
             raise ValueError(f"{v} does not exist")

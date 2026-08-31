@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any, Literal, Optional
 
 import pandas as pd
-from pydantic import BaseModel, Field, root_validator, validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class VisitIDs:
@@ -89,70 +89,46 @@ class PrescreenSharedFileFieldsModel(BaseModel):
     group: Optional[int] = None
     weeks: Optional[str] = None
 
-    @validator("sort_id", pre=True)
-    def validate_sort_id(cls, v: str) -> str:
-        if re.fullmatch(r"^[a-zA-Z0-9]{3}$", v):
-            return v
-        raise ModelError(given=v, accepted="Sort ID must be 3 characters/numbers")
+    @model_validator(mode="before")
+    @classmethod
+    def validate_ptid_visit_and_derive_group_weeks(cls, data: dict[str, Any]) -> dict[str, Any]:
+        """Validate ptid and visit_id together, deriving group and weeks."""
+        participant_ids = ParticipantIDs()
+        sort_id = data.get("sort_id", "")
+        if sort_id and not re.fullmatch(r"^[a-zA-Z0-9]{3}$", sort_id):
+            raise ModelError(given=sort_id, accepted="Sort ID must be 3 characters/numbers")
 
-    @validator("ptid", pre=True)
-    def validate_trial_id_site_id_donor_id(cls, v: str) -> str:
-        """Validate the ptid from the enrollment file."""
-        participant_ids_instance = ParticipantIDs()
-        if participant_ids_instance.is_ptid_in_enrollment(v):
-            return v
-        else:
-            raise ModelError(given=v, accepted=",".join(map(str, participant_ids_instance.get_ptids())))
+        ptid = data.get("ptid", "")
+        if ptid:
+            if not participant_ids.is_ptid_in_enrollment(ptid):
+                raise ModelError(given=ptid, accepted=",".join(map(str, participant_ids.get_ptids())))
+            associated_group = int(participant_ids.get_group_by_ptid(ptid))
+            data["group"] = associated_group
+            visit_id = data.get("visit_id", "")
+            if visit_id:
+                timepoints_for_group = VisitIDs().get_timepoints_by_group(associated_group)
+                if visit_id in timepoints_for_group:
+                    data["weeks"] = VisitIDs().get_week_by_timepoint_and_group(associated_group, visit_id)
+                else:
+                    raise ModelError(
+                        given=visit_id,
+                        accepted=f"Visit ID must be one of the following: {timepoints_for_group} for group {associated_group}",
+                    )
+        return data
 
-    @validator("visit_id", pre=True)
-    def validate_visit_id(cls, v: str, values: dict[str, int | str]) -> str:
-        """Validate visit ID based on group
-
-        First look up the already validated ptid. Then look at the assosciated group.
-
-        This function will also assign the group based on the ptid.
-
-        Then check if the visit ID falls in that group"""
-        if "ptid" not in values:
-            raise ValueError("ptid must be validated before visit_id")
-        ptid = values["ptid"]
-        associated_group = int(ParticipantIDs().get_group_by_ptid(ptid))
-        values["group"] = associated_group
-        timepoints_for_group = VisitIDs().get_timepoints_by_group(associated_group)
-        if v in timepoints_for_group:
-            values["weeks"] = VisitIDs().get_week_by_timepoint_and_group(associated_group, v)
-            return v
-        raise ModelError(
-            given=v,
-            accepted=f"Visit ID must be one of the following: {timepoints_for_group} for group {associated_group}",
-        )
-
-    @validator("file_subset", pre=True)
+    @field_validator("file_subset", mode="before")
+    @classmethod
     def validate_file_subset(cls, v: str) -> str:
         if re.fullmatch("[a-j]", v):
             return v
         else:
             raise ModelError(given=v, accepted="file_subset must be a single letter between 'a' and 'j'; i.e. a")
 
-    @validator("run_date", pre=True)
+    @field_validator("run_date", mode="before")
+    @classmethod
     def extract_date(cls, v: str) -> date:
         "Extract the date from the file name as a date object"
         return datetime.strptime(v, "%y%m%d").date()
-
-    # @validator("group", always=True)
-    # def validate_group(cls, v: int, values: dict[str, int | str]) -> int | str:
-    #     if v is None:
-    #         print(values)
-    #         return values["group"]
-    #     else:
-    #         return v
-
-    # @validator("weeks", always=True)
-    # def validate_weeks(cls, v: int, values: dict[str, int | str]) -> int | str:
-    #     if v is None:
-    #         return values["weeks"]
-    #     else:
-    #         return v
 
 
 class ClinicalSharedFileFieldsModel(BaseModel):
@@ -175,45 +151,35 @@ class ClinicalSharedFileFieldsModel(BaseModel):
     group: Optional[int] = None
     weeks: Optional[str] = None
 
-    @validator("sort_id", pre=True)
-    def validate_sort_id(cls, v: str) -> str:
-        if re.fullmatch(r"^[a-zA-Z0-9]{3}$", v):
-            return v
-        raise ModelError(given=v, accepted="Sort ID must be 3 characters/numbers")
+    @model_validator(mode="before")
+    @classmethod
+    def validate_ptid_visit_and_derive_group_weeks(cls, data: dict[str, Any]) -> dict[str, Any]:
+        """Validate ptid and visit_id together, deriving group and weeks."""
+        participant_ids = ParticipantIDs()
+        sort_id = data.get("sort_id", "")
+        if sort_id and not re.fullmatch(r"^[a-zA-Z0-9]{3}$", sort_id):
+            raise ModelError(given=sort_id, accepted="Sort ID must be 3 characters/numbers")
 
-    @validator("ptid", pre=True)
-    def validate_trial_id_site_id_donor_id(cls, v: str) -> str:
-        """Validate the ptid from the enrollment file."""
-        participant_ids_instance = ParticipantIDs()
-        if participant_ids_instance.is_ptid_in_enrollment(v):
-            return v
-        else:
-            raise ModelError(given=v, accepted=",".join(map(str, participant_ids_instance.get_ptids())))
+        ptid = data.get("ptid", "")
+        if ptid:
+            if not participant_ids.is_ptid_in_enrollment(ptid):
+                raise ModelError(given=ptid, accepted=",".join(map(str, participant_ids.get_ptids())))
+            associated_group = int(participant_ids.get_group_by_ptid(ptid))
+            data["group"] = associated_group
+            visit_id = data.get("visit_id", "")
+            if visit_id:
+                timepoints_for_group = VisitIDs().get_timepoints_by_group(associated_group)
+                if visit_id in timepoints_for_group:
+                    data["weeks"] = VisitIDs().get_week_by_timepoint_and_group(associated_group, visit_id)
+                else:
+                    raise ModelError(
+                        given=visit_id,
+                        accepted=f"Visit ID must be one of the following: {timepoints_for_group} for group {associated_group}",
+                    )
+        return data
 
-    @validator("visit_id", pre=True)
-    def validate_visit_id(cls, v: str, values: dict[str, int | str]) -> str:
-        """Validate visit ID based on group
-
-        First look up the already validated ptid. Then look at the assosciated group.
-
-        This function will also assign the group based on the ptid.
-
-        Then check if the visit ID falls in that group"""
-        if "ptid" not in values:
-            raise ModelError(given=v, accepted="ptid does not exist")
-        ptid = values["ptid"]
-        associated_group = int(ParticipantIDs().get_group_by_ptid(ptid))
-        values["group"] = associated_group
-        timepoints_for_group = VisitIDs().get_timepoints_by_group(associated_group)
-        if v in timepoints_for_group:
-            values["weeks"] = VisitIDs().get_week_by_timepoint_and_group(associated_group, v)
-            return v
-        raise ModelError(
-            given=v,
-            accepted=f"Visit ID must be one of the following: {timepoints_for_group} for group {associated_group}",
-        )
-
-    @validator("hashtag", pre=True)
+    @field_validator("hashtag", mode="before")
+    @classmethod
     def validate_hashtag(cls, v: str) -> str:
         "Allow only HT01-HT15"
         if v not in [f"HT{i:02d}" for i in range(1, 16)] and v != "NA":
@@ -222,14 +188,16 @@ class ClinicalSharedFileFieldsModel(BaseModel):
             )
         return v
 
-    @validator("sample_tube", pre=True)
+    @field_validator("sample_tube", mode="before")
+    @classmethod
     def validate_sample_tube(cls, v: str) -> str:
         if re.fullmatch("T[1-9]", v):
             return v
         else:
             raise ModelError(given=v, accepted="sample_tube must start with T and be 1 digit long; i.e. T1")
 
-    @validator("sort_pool", pre=True)
+    @field_validator("sort_pool", mode="before")
+    @classmethod
     def validate_sort_pool(cls, v: str) -> str:
         "Only allow P01, P02, P03, P04, P05, P06, P07, P08, P09, P10 or NA"
         if re.fullmatch("(P[0-9]{2}|NA)", v):
@@ -237,36 +205,19 @@ class ClinicalSharedFileFieldsModel(BaseModel):
         else:
             raise ModelError(given=v, accepted="sort_pool must start with P and be 2 digits long; i.e. P01")
 
-    @validator("file_subset", pre=True)
+    @field_validator("file_subset", mode="before")
+    @classmethod
     def validate_file_subset(cls, v: str) -> str:
         if re.fullmatch("[a-j]", v):
             return v
         else:
             raise ModelError(given=v, accepted="file_subset must be a single letter between 'a' and 'j'; i.e. a")
 
-    @validator("run_date", pre=True)
+    @field_validator("run_date", mode="before")
+    @classmethod
     def extract_date(cls, v: str) -> date:
         "Extract the date from the file name as a date object"
         return datetime.strptime(v, "%y%m%d").date()
-
-    @validator("group", always=True)
-    def validate_group(cls, v: int, values: dict[str, int | str]) -> int | str:
-        if v is None:
-            """Only return the group if it is not None. Otherwise return the value of weeks"""
-            if "group" not in values:
-                raise ModelError(given=v, accepted="group does not exist")
-            return values["group"]
-        else:
-            return v
-
-    @validator("weeks", always=True)
-    def validate_weeks(cls, v: int, values: dict[str, int | str]) -> int | str:
-        if v is None:
-            if "weeks" not in values:
-                raise ModelError(given=v, accepted="weeks does not exist")
-            return values["weeks"]
-        else:
-            return v
 
 
 class PackingSharedFileFieldsModel(BaseModel):
@@ -283,20 +234,23 @@ class PackingSharedFileFieldsModel(BaseModel):
     file_subset: str
     extention: Literal[".fcs", ".csv", ".png", ".PNG", ".pdf"]
 
-    @validator("sort_id", pre=True)
+    @field_validator("sort_id", mode="before")
+    @classmethod
     def validate_sort_id(cls, v: str) -> str:
         if re.fullmatch(r"^[a-zA-Z0-9]{3}$", v):
             return v
         raise ModelError(given=v, accepted="Sort ID must be 3 characters/numbers")
 
-    @validator("sample_tube", pre=True)
+    @field_validator("sample_tube", mode="before")
+    @classmethod
     def validate_sample_tube(cls, v: str) -> str:
         if re.fullmatch("T[1-9]", v):
             return v
         else:
             raise ModelError(given=v, accepted="sample_tube must start with T and be 1 digit long; i.e. T1")
 
-    @validator("sort_pool", pre=True)
+    @field_validator("sort_pool", mode="before")
+    @classmethod
     def validate_sort_pool(cls, v: str) -> str:
         "Only allow P01, P02, P03, P04, P05, P06, P07, P08, P09, P10 or NA"
         if re.fullmatch("(P[0-9]{2}|NA)", v):
@@ -304,14 +258,16 @@ class PackingSharedFileFieldsModel(BaseModel):
         else:
             raise ModelError(given=v, accepted="sort_pool must start with P and be 2 digits long; i.e. P01")
 
-    @validator("file_subset", pre=True)
+    @field_validator("file_subset", mode="before")
+    @classmethod
     def validate_file_subset(cls, v: str) -> str:
         if re.fullmatch("[a-j]", v):
             return v
         else:
             raise ModelError(given=v, accepted="file_subset must be a single letter between 'a' and 'j'; i.e. a")
 
-    @validator("run_date", pre=True)
+    @field_validator("run_date", mode="before")
+    @classmethod
     def extract_date(cls, v: str) -> date:
         "Extract the date from the file name as a date object"
         if isinstance(v, date):
@@ -332,24 +288,28 @@ class ControlSharedFileFieldsModel(BaseModel):
     file_subset: str
     extention: Literal[".fcs", ".csv", ".png", ".PNG", ".pdf"]
 
-    @validator("sort_date", pre=True)
+    @field_validator("sort_date", mode="before")
+    @classmethod
     def extract_date(cls, v: str) -> date:
         return datetime.strptime(v, "%y%m%d").date()
 
-    @validator("sort_id", pre=True)
+    @field_validator("sort_id", mode="before")
+    @classmethod
     def validate_sort_id(cls, v: str):
         if re.fullmatch(r"^[a-zA-Z0-9]{3}$", v):
             return v
         raise ModelError(given=v, accepted="Sort ID must be 3 characters/numbers")
 
-    @validator("sample_id", pre=True)
+    @field_validator("sample_id", mode="before")
+    @classmethod
     def validate_sample_id(cls, v: str) -> str:
         if re.fullmatch("[a-zA-Z]{2,}", v):
             return v
         else:
             raise ModelError(given=v, accepted="Sample ID must be 2 characters long; i.e. AA")
 
-    @validator("hashtag", pre=True)
+    @field_validator("hashtag", mode="before")
+    @classmethod
     def validate_hashtag(cls, v: str) -> str:
         "Allow only HT01, HT02, HT03, HT04, HT05, HT06, HT07, HT08, HT09, HT10"
         if v not in [f"HT{i:02d}" for i in range(1, 11)] and v != "NA":
@@ -358,21 +318,24 @@ class ControlSharedFileFieldsModel(BaseModel):
             )
         return v
 
-    @validator("sample_tube", pre=True)
+    @field_validator("sample_tube", mode="before")
+    @classmethod
     def validate_sample_tube(cls, v: str) -> str:
         if re.fullmatch("T[1-9]", v):
             return v
         else:
             raise ModelError(given=v, accepted="sample_tube must start with T and be 1 digit long; i.e. T1")
 
-    @validator("sort_pool", pre=True)
+    @field_validator("sort_pool", mode="before")
+    @classmethod
     def validate_sort_pool(cls, v: str) -> str:
         if re.fullmatch("(P[0-9]{2}|NA)", v):
             return v
         else:
             raise ModelError(given=v, accepted="sort_pool must start with P and be 2 digits long; i.e. P01")
 
-    @validator("file_subset", pre=True)
+    @field_validator("file_subset", mode="before")
+    @classmethod
     def validate_file_subset(cls, v: str) -> str:
         if re.fullmatch("[a-j]", v):
             return v
@@ -433,61 +396,11 @@ class PrescreenPopulationSummaryFilesModel(PrescreenSharedFileFieldsModel):
     def get_series(self) -> pd.Series:
         return pd.Series(self.__dict__)
 
-    @validator("file_path")
+    @field_validator("file_path")
+    @classmethod
     def validate_file_path(cls, v: str) -> str:
         if not Path(v).exists():
             raise ModelError(given=v, accepted="file_path must exist")
-        # population_csv = pd.read_csv(v, skiprows=6)  # pyright: reportUnknownMemberType=false
-        # parsable_df = population_csv.iloc[:, :3]
-        # population_list = [
-        #     "All Events",
-        #     "P1",
-        #     "P2",
-        #     "P3",
-        #     "P4",
-        #     "P5",
-        #     "P6",
-        #     "P7",
-        #     "P11",
-        #     "P12",
-        #     "P13",
-        #     "P14",
-        #     "P15",
-        #     "P16",
-        #     "P17",
-        #     "P18",
-        #     "P19",
-        #     "P8",
-        #     "P9",
-        #     "P10",
-        # ]
-        # parent_list = [
-        #     "All Events",
-        #     "P1",
-        #     "P2",
-        #     "P3",
-        #     "P4",
-        #     "P5",
-        #     "P6",
-        #     "P5",
-        #     "P11",
-        #     "P12",
-        #     "P13",
-        #     "P12",
-        #     "P15",
-        #     "P15",
-        #     "P5",
-        #     "P18",
-        #     "P5",
-        #     "P8",
-        #     "P8",
-        # ]
-        # if parsable_df["Population"].tolist() != population_list:
-        #     raise ModelError(
-        #         given=v, accepted=f"file_path must contain the correct populations in order {population_list}"
-        #     )
-        # if parsable_df["Parent Name"].tolist()[1:] != parent_list:
-        #     raise ModelError(given=v, accepted="file_path must contain the correct populations in order {parent_list}")
         return v
 
 
@@ -513,7 +426,8 @@ class ClinicalPopulationSummaryFilesModel(ClinicalSharedFileFieldsModel):
     def get_series(self) -> pd.Series:
         return pd.Series(self.__dict__)
 
-    @validator("file_path")
+    @field_validator("file_path")
+    @classmethod
     def validate_file_path(cls, v: str) -> str:
         if not Path(v).exists():
             raise ModelError(given=v, accepted="file_path must exist")
@@ -592,11 +506,13 @@ class XMLModel(BaseModel):
     file_subset: str
     extension: Literal[".xml"]
 
-    @validator("run_date", pre=True)
+    @field_validator("run_date", mode="before")
+    @classmethod
     def extract_date(cls, v: str):
         return datetime.strptime(v, "%y%m%d").date()
 
-    @validator("sorter_id_run_id", pre=True)
+    @field_validator("sorter_id_run_id", mode="before")
+    @classmethod
     def validate_sorter_id_run_id(cls, v: str) -> str:
         if re.fullmatch("S[0-9][A-Z][0-9]{2}", v):
             return v
@@ -605,14 +521,16 @@ class XMLModel(BaseModel):
                 given=v, accepted="sorter_id_run_id must start with S and be 4 char/digits long; i.e. S6C01"
             )
 
-    @validator("experimenter_initials", pre=True)
+    @field_validator("experimenter_initials", mode="before")
+    @classmethod
     def validate_experimenter_initials(cls, v: str) -> str:
         if re.fullmatch("[A-Z]{2}", v):
             return v
         else:
             raise ModelError(given=v, accepted="experimenter_initials must be 2 char long; i.e. MP")
 
-    @validator("file_subset", pre=True)
+    @field_validator("file_subset", mode="before")
+    @classmethod
     def validate_file_subset(cls, v: str) -> str:
         if re.fullmatch("[a-j]", v):
             return v
@@ -645,7 +563,8 @@ class FlowExtrasModel(BaseModel):
     name: Literal["FlowManifest", "PBMCCounts", "Flags", "LFNACounts"]
     extension: Literal[".xlsx"]
 
-    @validator("run_date", pre=True)
+    @field_validator("run_date", mode="before")
+    @classmethod
     def extract_date(cls, v: str) -> date:
         return datetime.strptime(v, "%y%m%d").date()
 
@@ -660,7 +579,8 @@ class PrescreenModel(BaseModel):
     population_summary_files: Optional[PrescreenPopulationSummaryFilesModel] = None
     screenshots: Optional[PrescreenScreenshotsModel] = None
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def extract_dates(cls, values: dict[str, Any]) -> dict[str, Any]:
         if not re.fullmatch(
             r"Prescreen_RunDate\d{2}([0][1-9]|[1][0-2])([0-3][0-9])_UploadDate\d{2}([0][1-9]|[1][0-2])([0-3][0-9])",
@@ -694,7 +614,8 @@ class SortModel(BaseModel):
     flow_manifest: Optional[FlowExtrasModel] = None
     clinical_sample: Optional[ClinicalSamplesModel] = None
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def extract_dates(cls, values: dict[str, Any]) -> dict[str, Any]:
         if not re.fullmatch(
             r"Sort_RunDate\d{2}([0][1-9]|[1][0-2])([0-3][0-9])_UploadDate\d{2}([0][1-9]|[1][0-2])([0-3][0-9])",
@@ -725,7 +646,8 @@ class G00XModel(BaseModel):
     sorts: Optional[SortsModel] = None
     prescreens: Optional[PrescreensModel] = None
 
-    @validator("name", pre=True)
+    @field_validator("name", mode="before")
+    @classmethod
     def extract_scheme(cls, v: str) -> str:
         if re.fullmatch("[gG]00[1-5x](_Scheme_Example)?", v):
             return v

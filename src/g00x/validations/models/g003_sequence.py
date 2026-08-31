@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Literal
 
 import pandas as pd
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, ValidationInfo, field_validator
 
 
 @cache
@@ -37,9 +37,10 @@ class SequenceManifestModel(BaseModel):
     illuimna_folder_name: list[str]
     path: Path
 
-    @validator("path")
-    def validate_path(cls, v: Path, values: dict[str, list[str]]) -> Path:
-        illumina_folder_name: list[str] = values["illuimna_folder_name"]
+    @field_validator("path")
+    @classmethod
+    def validate_path(cls, v: Path, info: ValidationInfo) -> Path:
+        illumina_folder_name: list[str] = info.data.get("illuimna_folder_name", [])
         if v.name != "sequencing_manifest.csv":
             raise ValueError(
                 f"{v} is not sequencing_manifest.csv...it must be named sequencing manifest csv no exceptions"
@@ -95,7 +96,8 @@ class SequenceManifestModel(BaseModel):
 class IlluminaModel(BaseModel):
     run_dir: Path
 
-    @validator("run_dir")
+    @field_validator("run_dir")
+    @classmethod
     def validate_run_dir(cls, v: Path) -> Path:
         if not v.is_dir() or not v.exists():
             raise ValueError(f"{v} is not a directory")
@@ -111,7 +113,8 @@ class RunModel(BaseModel):
 
     name: str
 
-    @validator("name", pre=True)
+    @field_validator("name", mode="before")
+    @classmethod
     def validate_name(cls, v: str) -> str:
         if re.fullmatch(r"run000[0-9]|run001[0-9]", v):
             return v
